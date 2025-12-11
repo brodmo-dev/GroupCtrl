@@ -14,7 +14,6 @@ dependencies = [
  "objc2-app-kit 0.3.2",
  "objc2-foundation 0.3.2",
  "serial_test",
- "thiserror 2.0.17",
 ]
 
 [[package]]

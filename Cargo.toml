@@ -6,7 +6,6 @@ edition = "2024"
 [dependencies]
 objc2-foundation = { version = "0.3.2", features = ["NSString", "NSURL"] }
 objc2-app-kit = { version = "0.3.2", features = ["NSWorkspace"] }
-thiserror = "2.0.17"
 global-hotkey = "0.7.0"
 eframe = "0.33.2"
 anyhow = "1.0.100"
