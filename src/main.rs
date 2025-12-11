@@ -3,7 +3,7 @@ mod app;
 mod hotkeys;
 mod open;
 
-use crate::action::OpenApp;
+use crate::action::Action;
 use crate::app::App;
 use crate::hotkeys::HotkeyManager;
 use anyhow::Error;
@@ -31,7 +31,7 @@ impl eframe::App for GroupCtrl {
             let button = Button::new("Register Finder hotkey");
             if ui.add(button).clicked() {
                 let hotkey = HotKey::new(Some(Modifiers::SUPER | Modifiers::SHIFT), Code::KeyF);
-                let action = OpenApp(App::new("com.apple.finder"));
+                let action = Action::OpenApp(App::new("com.apple.finder"));
                 self.error = self.hotkey_manager.bind_hotkey(hotkey, action).err()
             }
             if let Some(error) = &self.error {

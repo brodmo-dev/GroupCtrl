@@ -7,7 +7,7 @@ use std::collections::HashMap;
 use std::thread;
 
 // We need to store u32 because that's all we get from the keypress event
-pub type HotkeyBinding = (u32, Box<dyn Action + 'static>);
+pub type HotkeyBinding = (u32, Action);
 
 pub fn listen_for_hotkeys(binding_receiver: channel::Receiver<HotkeyBinding>) {
     let mut hotkey_actions = HashMap::new();
@@ -47,9 +47,9 @@ impl HotkeyManager {
         }
     }
 
-    pub fn bind_hotkey<T: Action + 'static>(&self, hotkey: HotKey, action: T) -> Result<()> {
+    pub fn bind_hotkey(&self, hotkey: HotKey, action: Action) -> Result<()> {
         self.global_manager.register(hotkey)?;
-        self.action_sender.send((hotkey.id(), Box::new(action)))?;
+        self.action_sender.send((hotkey.id(), action))?;
         Ok(())
     }
 }

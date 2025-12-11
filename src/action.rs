@@ -1,14 +1,15 @@
 use crate::app::App;
 use crate::open::Open;
 
-pub trait Action: Send + Sync {
-    fn execute(&self);
+#[derive(Debug)]
+pub enum Action {
+    OpenApp(App),
 }
 
-pub struct OpenApp(pub App);
-
-impl Action for OpenApp {
-    fn execute(&self) {
-        self.0.open().unwrap();
+impl Action {
+    pub fn execute(&self) {
+        match self {
+            Action::OpenApp(app) => app.open().unwrap(),
+        }
     }
 }
