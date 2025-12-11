@@ -20,3 +20,10 @@ repos:
         entry: cargo clippy -- -D warnings
         pass_filenames: false
         types: [ rust ]
+
+      - id: cargo-test
+        name: cargo test
+        language: system
+        entry: cargo test
+        pass_filenames: false
+        types: [ rust ]
