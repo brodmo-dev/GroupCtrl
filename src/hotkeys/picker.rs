@@ -21,13 +21,17 @@ pub enum Message {
 impl HotkeyPicker {
     pub fn update(&mut self, message: Message, hotkey_manager: &mut HotkeyManager) {
         match message {
-            Message::StartRecording => self.recording = true,
+            Message::StartRecording => {
+                self.recording = true;
+                hotkey_manager.pause_hotkeys().unwrap();
+            }
             Message::KeyPress(hotkey) => {
                 if self.recording {
                     self.picked = Some(hotkey);
+                    self.recording = false;
+                    hotkey_manager.unpause_hotkeys().unwrap();
                     let action = OpenApp(App::new("com.apple.finder"));
                     hotkey_manager.bind_hotkey(hotkey, action).unwrap();
-                    self.recording = false
                 }
             }
         }

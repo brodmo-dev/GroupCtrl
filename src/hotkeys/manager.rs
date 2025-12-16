@@ -3,6 +3,7 @@ use crate::action::Action;
 use anyhow::Result;
 use bimap::BiMap;
 use crossbeam::channel;
+use global_hotkey::hotkey::HotKey as GlobalHotkey;
 use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
 use log::{error, info};
 use std::collections::HashMap;
@@ -60,10 +61,10 @@ impl Default for HotkeyManager {
 impl HotkeyManager {
     #[cfg(test)]
     fn new_with_sender(sender: channel::Sender<HotkeyBinding>) -> Result<Self> {
-        let manager = GlobalHotKeyManager::new()?;
+        let global_manager = GlobalHotKeyManager::new()?;
         Ok(Self {
             bindings: BiMap::new(),
-            global_manager: manager,
+            global_manager,
             binding_sender: sender,
         })
     }
@@ -86,6 +87,20 @@ impl HotkeyManager {
         self.global_manager.register(hotkey.0)?;
         self.binding_sender.send((hotkey.id(), Some(action)))?;
         Ok(None)
+    }
+
+    fn hotkeys(&self) -> Vec<GlobalHotkey> {
+        self.bindings.left_values().map(|h| h.0).collect()
+    }
+
+    pub fn pause_hotkeys(&self) -> Result<()> {
+        self.global_manager.unregister_all(&self.hotkeys())?;
+        Ok(())
+    }
+
+    pub fn unpause_hotkeys(&self) -> Result<()> {
+        self.global_manager.register_all(&self.hotkeys())?;
+        Ok(())
     }
 }
 
