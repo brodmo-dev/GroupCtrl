@@ -26,6 +26,11 @@ impl Display for Hotkey {
                 write!(f, "{}", text)?;
             }
         }
-        write!(f, "{}", self.0.key)
+        let key_str = self.0.key.to_string();
+        let key = ["Key", "Digit", "Arrow"]
+            .iter()
+            .find_map(|prefix| key_str.strip_prefix(prefix))
+            .unwrap_or(&key_str);
+        write!(f, "{}", key)
     }
 }
