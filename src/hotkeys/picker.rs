@@ -32,6 +32,9 @@ impl HotkeyPicker {
                 if self.recording {
                     self.recording = false;
                     self.error = hotkey_manager.unpause_hotkeys().err();
+                    if self.error.is_some() {
+                        return;
+                    }
                     if hotkey.0.key == Code::Escape {
                         self.picked = None;
                         return;
