@@ -55,17 +55,13 @@ impl HotkeyPicker {
     }
 
     pub fn subscription(&self) -> iced::Subscription<Message> {
-        keyboard::listen().filter_map(|event| {
-            if let Event::KeyPressed {
+        keyboard::listen().filter_map(|event| match event {
+            Event::KeyPressed {
                 modifiers,
                 physical_key,
                 ..
-            } = event
-            {
-                Some(Message::KeyPress(convert_hotkey(modifiers, physical_key)?))
-            } else {
-                None
-            }
+            } => convert_hotkey(modifiers, physical_key).map(Message::KeyPress),
+            _ => None,
         })
     }
 }
