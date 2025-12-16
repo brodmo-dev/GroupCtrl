@@ -45,18 +45,19 @@ pub struct HotkeyManager {
     binding_sender: channel::Sender<HotkeyBinding>,
 }
 
-impl HotkeyManager {
-    pub fn new() -> Result<Self> {
-        let manager = GlobalHotKeyManager::new()?; // Can only have one at a time
+impl Default for HotkeyManager {
+    fn default() -> Self {
         let (tx, rx) = channel::unbounded();
         thread::spawn(move || listen_for_hotkeys(rx));
-        Ok(Self {
+        Self {
             bindings: BiMap::new(),
-            global_manager: manager,
+            global_manager: GlobalHotKeyManager::new().unwrap(),
             binding_sender: tx,
-        })
+        }
     }
+}
 
+impl HotkeyManager {
     #[cfg(test)]
     fn new_with_sender(sender: channel::Sender<HotkeyBinding>) -> Result<Self> {
         let manager = GlobalHotKeyManager::new()?;

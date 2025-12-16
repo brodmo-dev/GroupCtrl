@@ -4,48 +4,40 @@ mod hotkeys;
 mod open;
 mod util;
 
-use crate::action::Action::OpenApp;
-use crate::app::App;
-use crate::hotkeys::{Hotkey, HotkeyManager};
+use crate::hotkeys::{HotkeyManager, HotkeyPicker, PickerMessage};
 use anyhow::Result;
-use global_hotkey::hotkey::{Code, Modifiers};
-use iced::widget::{Button, button};
+use iced::Element;
 use simplelog::*;
 use std::fs;
 use std::fs::File;
 
+#[derive(Default)]
 struct GroupCtrl {
     hotkey_manager: HotkeyManager,
+    hotkey_picker: HotkeyPicker,
 }
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum Message {
-    RegisterHotkey,
-}
-
-impl Default for GroupCtrl {
-    fn default() -> Self {
-        Self {
-            hotkey_manager: HotkeyManager::new().unwrap(),
-        }
-    }
+    Picker(PickerMessage),
 }
 
 impl GroupCtrl {
     fn update(&mut self, message: Message) {
         match message {
-            Message::RegisterHotkey => {
-                let app = App::new("com.apple.finder");
-                let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
-                self.hotkey_manager
-                    .bind_hotkey(hotkey, OpenApp(app))
-                    .unwrap();
+            Message::Picker(picker_msg) => {
+                self.hotkey_picker
+                    .update(picker_msg, &mut self.hotkey_manager);
             }
         }
     }
 
-    fn view(&self) -> Button<'_, Message> {
-        button("Register Hotkey").on_press(Message::RegisterHotkey)
+    fn view(&self) -> Element<'_, Message> {
+        Element::from(self.hotkey_picker.view()).map(Message::Picker)
+    }
+
+    fn subscription(&self) -> iced::Subscription<Message> {
+        self.hotkey_picker.subscription().map(Message::Picker)
     }
 }
 
@@ -67,5 +59,7 @@ fn setup_logging() -> Result<()> {
 
 fn main() -> iced::Result {
     setup_logging().expect("Logging setup failed");
-    iced::run(GroupCtrl::update, GroupCtrl::view)
+    iced::application(GroupCtrl::default, GroupCtrl::update, GroupCtrl::view)
+        .subscription(GroupCtrl::subscription)
+        .run()
 }
