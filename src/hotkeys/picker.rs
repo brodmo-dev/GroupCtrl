@@ -31,11 +31,12 @@ impl HotkeyPicker {
                     self.recording = false;
                     hotkey_manager.unpause_hotkeys().unwrap();
                     if hotkey.0.key == Code::Escape {
+                        self.picked = None;
                         return;
                     }
+                    self.picked = Some(hotkey);
                     let action = OpenApp(App::new("com.apple.finder"));
                     hotkey_manager.bind_hotkey(hotkey, action).unwrap();
-                    self.picked = Some(hotkey);
                 }
             }
         }
