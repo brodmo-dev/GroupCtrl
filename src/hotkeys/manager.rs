@@ -52,7 +52,8 @@ impl Default for HotkeyManager {
         thread::spawn(move || listen_for_hotkeys(rx));
         Self {
             bindings: BiMap::new(),
-            global_manager: GlobalHotKeyManager::new().unwrap(),
+            global_manager: GlobalHotKeyManager::new()
+                .expect("global-hotkey manager creation failed"),
             binding_sender: tx,
         }
     }

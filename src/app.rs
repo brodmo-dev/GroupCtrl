@@ -8,7 +8,11 @@ pub struct App {
 
 impl Display for App {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        let name = self.bundle_id.split(".").last().unwrap();
+        let name = self
+            .bundle_id
+            .split(".")
+            .last()
+            .unwrap_or(self.bundle_id.as_str());
         write!(f, "{}", capitalize(name))
     }
 }
