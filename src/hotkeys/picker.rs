@@ -1,6 +1,6 @@
+use super::convert::convert_hotkey;
+use super::{Hotkey, HotkeyManager};
 use crate::action::Action::OpenApp;
-use crate::hotkeys::convert::convert_hotkey;
-use crate::hotkeys::{Hotkey, HotkeyManager};
 use crate::os::App;
 use crate::os::prelude::*;
 use global_hotkey::hotkey::Code;

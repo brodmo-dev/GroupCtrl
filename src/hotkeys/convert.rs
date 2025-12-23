@@ -1,4 +1,4 @@
-use crate::hotkeys::Hotkey;
+use super::Hotkey;
 use global_hotkey::hotkey::{Code, Modifiers};
 use iced::keyboard::Modifiers as IcedModifiers;
 use iced::keyboard::key::Physical;

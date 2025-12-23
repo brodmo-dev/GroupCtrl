@@ -1,6 +1,6 @@
+use self::open::open;
 use crate::os::App;
 use crate::os::prelude::Openable;
-use crate::os::windows::open::open::open;
 
 mod open;
 mod win32;

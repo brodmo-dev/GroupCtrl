@@ -2,7 +2,7 @@ mod win32 {
     pub use windows::Win32::Foundation::{BOOL, HWND, LPARAM};
     pub use windows::Win32::UI::WindowsAndMessaging::*;
 }
-use crate::os::windows::open::win32::pid_to_exe::pid_to_exe;
+use super::pid_to_exe::pid_to_exe;
 
 fn is_main_window(window: win32::HWND) -> bool {
     fn is_tool_window(window: win32::HWND) -> bool {

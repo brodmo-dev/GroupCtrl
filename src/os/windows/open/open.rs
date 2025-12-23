@@ -1,4 +1,4 @@
-use crate::os::windows::open::win32::focus;
+use super::win32::focus;
 use anyhow::bail;
 
 pub fn open(exe_path: &str) -> anyhow::Result<()> {
