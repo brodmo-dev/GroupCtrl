@@ -4,7 +4,7 @@ use global_hotkey::hotkey::{Code, Modifiers};
 use iced::keyboard::Modifiers as IcedModifiers;
 use iced::keyboard::key::Physical;
 
-use super::Hotkey;
+use crate::models::hotkey::Hotkey;
 
 pub fn convert_hotkey(modifiers: IcedModifiers, key: Physical) -> Option<Hotkey> {
     Some(Hotkey::new(convert_modifiers(modifiers), convert_key(key)?))

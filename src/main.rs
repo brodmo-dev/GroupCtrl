@@ -1,6 +1,7 @@
-mod action;
-mod hotkeys;
+mod components;
+mod models;
 mod os;
+mod services;
 mod util;
 
 use std::fs;
@@ -9,13 +10,15 @@ use iced::widget::{button, row, text};
 use iced::{Element, Task};
 use simplelog::*;
 
-use crate::hotkeys::{HotkeyManager, HotkeyPicker, PickerMessage};
+use crate::components::hotkey_picker::{HotkeyPicker, Message as PickerMessage};
+use crate::models::action::Action;
 use crate::os::prelude::AppPickerTrait;
 use crate::os::{App, AppPicker};
+use crate::services::hotkey::HotkeyService;
 
 #[derive(Default)]
 struct GroupCtrl {
-    hotkey_manager: HotkeyManager,
+    hotkey_service: HotkeyService,
     hotkey_picker: HotkeyPicker,
     selected_app: Option<App>,
 }
@@ -31,8 +34,11 @@ impl GroupCtrl {
     fn update(&mut self, message: Message) -> Task<Message> {
         match message {
             Message::Picker(picker_message) => {
-                self.hotkey_picker
-                    .update(picker_message, &mut self.hotkey_manager);
+                if let Some(app) = &self.selected_app {
+                    let action = Action::OpenApp(app.clone());
+                    self.hotkey_picker
+                        .update(picker_message, &mut self.hotkey_service, action);
+                }
                 Task::none()
             }
             Message::PickApp => Task::perform(AppPicker::pick_app(), |result| {

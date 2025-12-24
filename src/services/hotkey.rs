@@ -7,8 +7,8 @@ use global_hotkey::hotkey::HotKey as GlobalHotkey;
 use global_hotkey::{GlobalHotKeyEvent, GlobalHotKeyManager};
 use log::{error, info};
 
-use super::model::Hotkey;
-use crate::action::Action;
+use crate::models::action::Action;
+use crate::models::hotkey::Hotkey;
 
 // We need to store u32 because that's all we get from the keypress event
 pub type HotkeyBinding = (u32, Option<Action>);
@@ -41,13 +41,13 @@ pub fn listen_for_hotkeys(binding_receiver: channel::Receiver<HotkeyBinding>) {
     }
 }
 
-pub struct HotkeyManager {
+pub struct HotkeyService {
     bindings: BiMap<Hotkey, Action>,
     global_manager: GlobalHotKeyManager,
     binding_sender: channel::Sender<HotkeyBinding>,
 }
 
-impl Default for HotkeyManager {
+impl Default for HotkeyService {
     fn default() -> Self {
         let (tx, rx) = channel::unbounded();
         thread::spawn(move || listen_for_hotkeys(rx));
@@ -60,7 +60,7 @@ impl Default for HotkeyManager {
     }
 }
 
-impl HotkeyManager {
+impl HotkeyService {
     #[cfg(test)]
     fn new_with_sender(sender: channel::Sender<HotkeyBinding>) -> anyhow::Result<Self> {
         let global_manager = GlobalHotKeyManager::new()?;
@@ -124,11 +124,11 @@ mod tests {
     fn bind_hotkey_new() {
         // Arrange
         let (tx, rx) = channel::unbounded();
-        let mut manager = HotkeyManager::new_with_sender(tx).unwrap();
+        let mut service = HotkeyService::new_with_sender(tx).unwrap();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let action = Action::OpenApp(App::new("some-app"));
         // Act
-        let result = manager.bind_hotkey(hotkey, action.clone()).unwrap();
+        let result = service.bind_hotkey(hotkey, action.clone()).unwrap();
         // Assert
         assert_eq!(result, None);
         assert_eq!(rx.try_recv().unwrap(), (hotkey.id(), Some(action)));
@@ -140,12 +140,12 @@ mod tests {
     fn bind_hotkey_repeat() {
         // Arrange
         let (tx, rx) = channel::unbounded();
-        let mut manager = HotkeyManager::new_with_sender(tx).unwrap();
+        let mut service = HotkeyService::new_with_sender(tx).unwrap();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let action = Action::OpenApp(App::new("some-app"));
         // Act
-        manager.bind_hotkey(hotkey, action.clone()).unwrap();
-        let result = manager.bind_hotkey(hotkey, action.clone()).unwrap();
+        service.bind_hotkey(hotkey, action.clone()).unwrap();
+        let result = service.bind_hotkey(hotkey, action.clone()).unwrap();
         // Assert
         assert_eq!(result, None);
         assert_eq!(rx.try_recv().unwrap(), (hotkey.id(), Some(action)));
@@ -157,13 +157,13 @@ mod tests {
     fn bind_hotkey_conflict() {
         // Arrange
         let (tx, rx) = channel::unbounded();
-        let mut manager = HotkeyManager::new_with_sender(tx).unwrap();
+        let mut service = HotkeyService::new_with_sender(tx).unwrap();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let old_action = Action::OpenApp(App::new("some-app"));
         let new_action = Action::OpenApp(App::new("some-other-app"));
         // Act
-        manager.bind_hotkey(hotkey, old_action.clone()).unwrap();
-        let result = manager.bind_hotkey(hotkey, new_action.clone()).unwrap();
+        service.bind_hotkey(hotkey, old_action.clone()).unwrap();
+        let result = service.bind_hotkey(hotkey, new_action.clone()).unwrap();
         // Assert
         assert_eq!(result, Some(old_action.clone()));
         assert_eq!(rx.try_recv().unwrap(), (hotkey.id(), Some(old_action)));
@@ -175,13 +175,13 @@ mod tests {
     fn bind_hotkey_change() {
         // Arrange
         let (tx, rx) = channel::unbounded();
-        let mut manager = HotkeyManager::new_with_sender(tx).unwrap();
+        let mut service = HotkeyService::new_with_sender(tx).unwrap();
         let old_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let new_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyG);
         let action = Action::OpenApp(App::new("some-app"));
         // Act
-        manager.bind_hotkey(old_hotkey, action.clone()).unwrap();
-        let result = manager.bind_hotkey(new_hotkey, action.clone()).unwrap();
+        service.bind_hotkey(old_hotkey, action.clone()).unwrap();
+        let result = service.bind_hotkey(new_hotkey, action.clone()).unwrap();
         // Assert
         assert_eq!(result, None);
         let old_binding = (old_hotkey.id(), Some(action.clone()));

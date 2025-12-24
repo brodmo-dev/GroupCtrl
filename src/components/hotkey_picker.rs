@@ -3,11 +3,10 @@ use iced::keyboard::Event;
 use iced::widget::{Button, button, text};
 use iced::{color, keyboard};
 
-use super::convert::convert_hotkey;
-use super::{Hotkey, HotkeyManager};
-use crate::action::Action::OpenApp;
-use crate::os::App;
-use crate::os::prelude::*;
+use crate::models::action::Action;
+use crate::models::hotkey::Hotkey;
+use crate::services::hotkey::HotkeyService;
+use crate::util::convert::convert_hotkey;
 
 #[derive(Default)]
 pub struct HotkeyPicker {
@@ -23,16 +22,16 @@ pub enum Message {
 }
 
 impl HotkeyPicker {
-    pub fn update(&mut self, message: Message, hotkey_manager: &mut HotkeyManager) {
+    pub fn update(&mut self, message: Message, hotkey_service: &mut HotkeyService, action: Action) {
         match message {
             Message::StartRecording => {
                 self.recording = true;
-                self.error = hotkey_manager.pause_hotkeys().err();
+                self.error = hotkey_service.pause_hotkeys().err();
             }
             Message::KeyRecorded(hotkey) => {
                 if self.recording {
                     self.recording = false;
-                    self.error = hotkey_manager.unpause_hotkeys().err();
+                    self.error = hotkey_service.unpause_hotkeys().err();
                     if self.error.is_some() {
                         return;
                     }
@@ -41,8 +40,7 @@ impl HotkeyPicker {
                         return;
                     }
                     self.picked = Some(hotkey);
-                    let action = OpenApp(App::new("com.apple.finder"));
-                    self.error = hotkey_manager.bind_hotkey(hotkey, action).err();
+                    self.error = hotkey_service.bind_hotkey(hotkey, action).err();
                 }
             }
         }
