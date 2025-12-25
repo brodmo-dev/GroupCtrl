@@ -5,15 +5,14 @@ mod os;
 mod services;
 mod util;
 
-use std::fs;
-
+use dioxus::desktop::{Config, WindowBuilder};
 use simplelog::*;
 
 use crate::components::Root;
 
 fn setup_logging() -> anyhow::Result<()> {
-    fs::create_dir_all("logs")?;
-    let log_file = fs::File::create("logs/app.log")?;
+    std::fs::create_dir_all("logs")?;
+    let log_file = std::fs::File::create("logs/app.log")?;
     let config = ConfigBuilder::new().build();
     CombinedLogger::init(vec![
         TermLogger::new(
@@ -30,13 +29,11 @@ fn setup_logging() -> anyhow::Result<()> {
 fn main() {
     setup_logging().expect("Logging setup failed");
 
-    // Make panics crash loudly during development
+    #[cfg(debug_assertions)] // Make panics crash loudly
     std::panic::set_hook(Box::new(|panic_info| {
         eprintln!("PANIC: {}", panic_info);
         std::process::exit(1);
     }));
-
-    use dioxus::desktop::{Config, WindowBuilder};
 
     dioxus::LaunchBuilder::desktop()
         .with_cfg(Config::new().with_window(WindowBuilder::new().with_always_on_top(false)))

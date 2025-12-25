@@ -1,4 +1,4 @@
-use std::fs;
+use std::fs::File;
 use std::path::Path;
 
 use anyhow::Context;
@@ -24,7 +24,7 @@ impl AppSelection for AppDialog {
 
 fn get_bundle_id(app_path: &Path) -> anyhow::Result<String> {
     let plist_path = app_path.join("Contents/Info.plist");
-    let file = fs::File::open(&plist_path)?;
+    let file = File::open(&plist_path)?;
     let plist: plist::Value = plist::from_reader(file)?;
     plist
         .as_dictionary()
