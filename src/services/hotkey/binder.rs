@@ -10,8 +10,8 @@ use crate::models::action::Action;
 use crate::models::hotkey::Hotkey;
 
 pub trait HotkeyBinder {
-    fn create_shortcut(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()>;
-    fn remove_shortcut(&mut self, hotkey: Hotkey);
+    fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()>;
+    fn unbind_hotkey(&mut self, hotkey: Hotkey);
 }
 
 pub struct DioxusBinder {
@@ -29,7 +29,7 @@ impl DioxusBinder {
 }
 
 impl HotkeyBinder for DioxusBinder {
-    fn create_shortcut(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()> {
+    fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()> {
         let my_action = action.clone();
         let my_recording = self.recording.clone();
         let callback = move |state| {
@@ -45,7 +45,7 @@ impl HotkeyBinder for DioxusBinder {
         Ok(())
     }
 
-    fn remove_shortcut(&mut self, hotkey: Hotkey) {
+    fn unbind_hotkey(&mut self, hotkey: Hotkey) {
         let handle = self.handles.remove(&hotkey).unwrap();
         window().remove_shortcut(handle);
     }
@@ -69,13 +69,13 @@ pub mod tests {
     }
 
     impl HotkeyBinder for MockBinder {
-        fn create_shortcut(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()> {
+        fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()> {
             let mut events = self.events.lock().unwrap();
             events.push(MockEvent::Register(hotkey, action.clone()));
             Ok(())
         }
 
-        fn remove_shortcut(&mut self, hotkey: Hotkey) {
+        fn unbind_hotkey(&mut self, hotkey: Hotkey) {
             let mut events = self.events.lock().unwrap();
             events.push(MockEvent::Unregister(hotkey));
         }
