@@ -1,1 +1,3 @@
-pub mod hotkey;
+mod hotkey;
+
+pub use hotkey::HotkeyService;

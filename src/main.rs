@@ -8,7 +8,7 @@ use std::fs;
 
 use simplelog::*;
 
-use crate::components::app::Root;
+use crate::components::Root;
 
 fn setup_logging() -> anyhow::Result<()> {
     fs::create_dir_all("logs")?;

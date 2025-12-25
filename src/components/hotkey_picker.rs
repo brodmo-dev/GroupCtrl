@@ -1,6 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::models::hotkey::Hotkey;
+use crate::models::Hotkey;
 
 fn is_modifier(code: &Code) -> bool {
     let code_str = code.to_string();

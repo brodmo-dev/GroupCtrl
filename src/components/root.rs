@@ -5,10 +5,9 @@ use dioxus::prelude::*;
 
 use crate::components::app_selector::AppSelector;
 use crate::components::hotkey_picker::HotkeyPicker;
-use crate::models::action::Action;
-use crate::models::hotkey::Hotkey;
+use crate::models::{Action, Hotkey};
 use crate::os::App;
-use crate::services::hotkey::HotkeyService;
+use crate::services::HotkeyService;
 
 #[component]
 pub fn Root() -> Element {

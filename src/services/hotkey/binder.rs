@@ -6,8 +6,7 @@ use anyhow::anyhow;
 use dioxus::desktop::{ShortcutHandle, window};
 use global_hotkey::HotKeyState::Pressed;
 
-use crate::models::action::Action;
-use crate::models::hotkey::Hotkey;
+use crate::models::{Action, Hotkey};
 
 pub trait HotkeyBinder {
     fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()>;
@@ -56,7 +55,6 @@ pub mod tests {
     use std::sync::Mutex;
 
     use super::*;
-    use crate::models::hotkey::Hotkey;
 
     #[derive(Debug, PartialEq, Clone)]
     pub enum MockEvent {
