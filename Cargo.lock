@@ -10,6 +10,7 @@ dependencies = [
  "bimap",
  "crossbeam",
  "dioxus",
+ "futures-util",
  "global-hotkey",
  "log",
  "objc2-app-kit",

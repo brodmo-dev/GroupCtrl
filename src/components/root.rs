@@ -2,16 +2,13 @@ use dioxus::prelude::*;
 
 use super::app_selector::AppSelector;
 use super::hotkey_picker::HotkeyPicker;
-use crate::hooks::use_recording_state;
 use crate::models::{Action, Hotkey};
 use crate::os::App;
 use crate::services::HotkeyService;
 
 #[component]
 pub fn Root() -> Element {
-    let (recording, recording_atomic) = use_recording_state();
-    let mut hotkey_service = use_signal(|| HotkeyService::new(recording_atomic));
-    use_context_provider(|| recording);
+    let mut hotkey_service = use_signal(HotkeyService::new);
     use_context_provider(|| hotkey_service);
 
     let picked_hotkey = use_signal(|| None::<Hotkey>);

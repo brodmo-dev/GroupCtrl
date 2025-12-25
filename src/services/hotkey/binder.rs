@@ -1,6 +1,5 @@
 use std::collections::HashMap;
-use std::sync::Arc;
-use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::{Arc, Mutex};
 
 use anyhow::anyhow;
 use dioxus::desktop::{ShortcutHandle, window};
@@ -14,26 +13,42 @@ pub trait HotkeyBinder {
 }
 
 pub struct DioxusBinder {
-    recording: Arc<AtomicBool>,
+    #[allow(clippy::type_complexity)] // Gotta fix this anyhow
+    recording_callback: Arc<Mutex<Option<Arc<dyn Fn(Hotkey) + Send + Sync>>>>,
     handles: HashMap<Hotkey, ShortcutHandle>,
 }
 
 impl DioxusBinder {
-    pub fn new(recording: Arc<AtomicBool>) -> Self {
+    pub fn new() -> Self {
         Self {
-            recording,
+            recording_callback: Arc::new(Mutex::new(None)),
             handles: HashMap::new(),
         }
+    }
+
+    pub fn set_recording_callback(&mut self, callback: Arc<dyn Fn(Hotkey) + Send + Sync>) {
+        let mut cb = self.recording_callback.lock().unwrap();
+        *cb = Some(callback);
+    }
+
+    pub fn clear_recording_callback(&mut self) {
+        let mut cb = self.recording_callback.lock().unwrap();
+        *cb = None;
     }
 }
 
 impl HotkeyBinder for DioxusBinder {
     fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()> {
         let my_action = action.clone();
-        let my_recording = self.recording.clone();
+        let recording_callback = self.recording_callback.clone();
         let callback = move |state| {
-            if state == Pressed && !my_recording.load(Ordering::Relaxed) {
-                let _ = my_action.execute();
+            if state == Pressed {
+                let cb = recording_callback.lock().unwrap();
+                if let Some(picker_callback) = cb.as_ref() {
+                    picker_callback(hotkey);
+                } else {
+                    let _ = my_action.execute();
+                }
             }
         };
         let handle = window()

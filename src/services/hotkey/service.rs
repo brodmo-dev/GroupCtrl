@@ -1,6 +1,3 @@
-use std::sync::Arc;
-use std::sync::atomic::AtomicBool;
-
 use bimap::BiMap;
 use log::info;
 
@@ -13,15 +10,19 @@ pub struct HotkeyService<B: HotkeyBinder = DioxusBinder> {
 }
 
 impl HotkeyService<DioxusBinder> {
-    pub fn new(recording: Arc<AtomicBool>) -> Self {
+    pub fn new() -> Self {
         Self {
             bindings: BiMap::new(),
-            binder: DioxusBinder::new(recording),
+            binder: DioxusBinder::new(),
         }
     }
 }
 
 impl<B: HotkeyBinder> HotkeyService<B> {
+    pub fn binder_mut(&mut self) -> &mut B {
+        &mut self.binder
+    }
+
     /// Returns existing bind if hotkey is already in use
     pub fn bind_hotkey(
         &mut self,
