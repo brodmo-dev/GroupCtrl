@@ -2,8 +2,7 @@ use std::fmt::{Display, Formatter};
 
 use global_hotkey::hotkey::{Code, HotKey as GlobalHotkey, Modifiers};
 
-use crate::os::Format;
-use crate::os::prelude::*;
+use crate::os::{Format, Formatting};
 
 #[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct Hotkey(pub GlobalHotkey); // We need the GlobalHotkey for registration

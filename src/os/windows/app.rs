@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-use crate::os::prelude::AppTrait;
+use crate::os::AppTrait;
 use crate::util::capitalize;
 
 #[derive(Debug, Clone, Hash, PartialEq, Eq)]

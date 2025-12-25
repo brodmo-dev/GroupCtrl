@@ -1,7 +1,6 @@
 use dioxus::prelude::*;
 
-use crate::os::prelude::AppSelection;
-use crate::os::{App, AppDialog};
+use crate::os::{App, AppDialog, AppSelection};
 
 #[component]
 pub fn AppSelector(mut selected_app: Signal<Option<App>>) -> Element {

@@ -1,6 +1,6 @@
 use global_hotkey::hotkey::Modifiers;
 
-use crate::os::prelude::Formatting;
+use crate::os::Formatting;
 
 pub struct Format;
 

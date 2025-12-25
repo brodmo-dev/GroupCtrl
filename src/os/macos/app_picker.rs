@@ -3,8 +3,7 @@ use std::path::Path;
 
 use anyhow::Context;
 
-use crate::os::App;
-use crate::os::prelude::AppSelection;
+use crate::os::{App, AppSelection};
 
 pub struct AppDialog;
 

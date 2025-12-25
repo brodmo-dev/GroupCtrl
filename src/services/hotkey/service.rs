@@ -52,7 +52,6 @@ mod tests {
 
     use super::*;
     use crate::os::App;
-    use crate::os::prelude::*;
     use crate::services::hotkey::binder::tests::MockBinder;
     use crate::services::hotkey::binder::tests::MockEvent::*;
 

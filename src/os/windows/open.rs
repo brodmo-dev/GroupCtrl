@@ -1,5 +1,4 @@
-use crate::os::App;
-use crate::os::prelude::Openable;
+use crate::os::{App, Openable};
 
 mod open;
 mod win32;

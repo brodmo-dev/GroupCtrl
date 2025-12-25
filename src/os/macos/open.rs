@@ -4,7 +4,7 @@ use objc2_app_kit::NSWorkspace;
 use objc2_foundation::NSString;
 
 use super::app::App;
-use crate::os::prelude::Openable;
+use crate::os::Openable;
 
 impl Openable for App {
     fn open(&self) -> anyhow::Result<()> {
@@ -25,7 +25,6 @@ impl Openable for App {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::os::prelude::*;
 
     fn get_current_app() -> App {
         let workspace = NSWorkspace::sharedWorkspace();
