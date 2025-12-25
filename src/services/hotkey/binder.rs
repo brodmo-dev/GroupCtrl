@@ -7,33 +7,24 @@ use global_hotkey::HotKeyState::Pressed;
 
 use crate::models::{Action, Hotkey};
 
+pub type RecordingCallback = Arc<Mutex<Option<Arc<dyn Fn(Hotkey) + Send + Sync>>>>;
+
 pub trait HotkeyBinder {
     fn bind_hotkey(&mut self, hotkey: Hotkey, action: &Action) -> anyhow::Result<()>;
     fn unbind_hotkey(&mut self, hotkey: Hotkey);
 }
 
 pub struct DioxusBinder {
-    #[allow(clippy::type_complexity)] // Gotta fix this anyhow
-    recording_callback: Arc<Mutex<Option<Arc<dyn Fn(Hotkey) + Send + Sync>>>>,
+    recording_callback: RecordingCallback,
     handles: HashMap<Hotkey, ShortcutHandle>,
 }
 
 impl DioxusBinder {
-    pub fn new() -> Self {
+    pub fn new(recording_callback: RecordingCallback) -> Self {
         Self {
-            recording_callback: Arc::new(Mutex::new(None)),
+            recording_callback,
             handles: HashMap::new(),
         }
-    }
-
-    pub fn set_recording_callback(&mut self, callback: Arc<dyn Fn(Hotkey) + Send + Sync>) {
-        let mut cb = self.recording_callback.lock().unwrap();
-        *cb = Some(callback);
-    }
-
-    pub fn clear_recording_callback(&mut self) {
-        let mut cb = self.recording_callback.lock().unwrap();
-        *cb = None;
     }
 }
 

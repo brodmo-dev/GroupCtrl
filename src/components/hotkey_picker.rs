@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use futures_util::stream::StreamExt;
 
 use crate::models::Hotkey;
-use crate::services::HotkeyService;
+use crate::services::RecordingCallback;
 
 fn is_modifier(code: &Code) -> bool {
     let code_str = code.to_string();
@@ -35,7 +35,7 @@ pub fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element {
         })
     };
 
-    let mut hotkey_service = use_context::<Signal<HotkeyService>>();
+    let recording_callback = use_context::<RecordingCallback>();
 
     // Coroutine to receive captured hotkeys
     let hotkey_coroutine = use_coroutine(move |mut rx: UnboundedReceiver<Hotkey>| async move {
@@ -47,20 +47,15 @@ pub fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element {
 
     // Register/clear callback when recording state changes
     use_effect(move || {
+        let mut cb = recording_callback.lock().unwrap();
         if recording() {
             let tx = hotkey_coroutine.tx();
             let callback = Arc::new(move |hotkey: Hotkey| {
                 let _ = tx.unbounded_send(hotkey);
             });
-            hotkey_service
-                .write()
-                .binder_mut()
-                .set_recording_callback(callback);
+            *cb = Some(callback);
         } else {
-            hotkey_service
-                .write()
-                .binder_mut()
-                .clear_recording_callback();
+            *cb = None;
         }
     });
 
