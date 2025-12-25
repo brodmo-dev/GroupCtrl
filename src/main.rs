@@ -38,9 +38,6 @@ fn main() {
     use dioxus::desktop::{Config, WindowBuilder};
 
     dioxus::LaunchBuilder::desktop()
-        .with_cfg(Config::new().with_window(
-            WindowBuilder::new()
-                .with_always_on_top(false)
-        ))
+        .with_cfg(Config::new().with_window(WindowBuilder::new().with_always_on_top(false)))
         .launch(Root);
 }

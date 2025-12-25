@@ -12,10 +12,6 @@ impl Hotkey {
     pub fn new(mods: Modifiers, key: Code) -> Self {
         Self(GlobalHotkey::new(Some(mods), key))
     }
-
-    pub fn id(&self) -> u32 {
-        self.0.id
-    }
 }
 
 impl Display for Hotkey {
