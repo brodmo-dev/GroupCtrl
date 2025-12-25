@@ -1,6 +1,6 @@
 mod binder;
-mod callback;
+mod sender;
 mod service;
 
-pub use callback::{HotkeyCallback, SharedHotkeyCallback};
+pub use sender::SharedHotkeySender;
 pub use service::HotkeyService;

@@ -1,3 +1,3 @@
 mod hotkey;
 
-pub use hotkey::{HotkeyCallback, HotkeyService, SharedHotkeyCallback};
+pub use hotkey::{HotkeyService, SharedHotkeySender};

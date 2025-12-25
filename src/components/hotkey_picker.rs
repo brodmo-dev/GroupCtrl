@@ -1,10 +1,8 @@
-use std::sync::Arc;
-
 use dioxus::prelude::*;
 use futures_util::StreamExt;
 
 use crate::models::Hotkey;
-use crate::services::{HotkeyCallback, SharedHotkeyCallback};
+use crate::services::SharedHotkeySender;
 use crate::util::is_modifier;
 
 #[component]
@@ -66,15 +64,12 @@ fn use_record_registered(mut recording: Signal<bool>, mut picked_hotkey: Signal<
             picked_hotkey.set(Some(hotkey));
         }
     });
-    let record_registered = use_context::<SharedHotkeyCallback>();
+    let record_registered_sender = use_context::<SharedHotkeySender>();
     use_effect(move || {
-        record_registered.set(if !recording() {
+        record_registered_sender.set(if !recording() {
             None
         } else {
-            let listener_sender = listener.tx();
-            Some(Arc::new(move |hotkey: Hotkey| {
-                let _ = listener_sender.unbounded_send(hotkey);
-            }) as HotkeyCallback)
+            Some(listener.tx())
         });
     });
 }
