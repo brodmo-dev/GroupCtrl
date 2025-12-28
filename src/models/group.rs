@@ -27,15 +27,15 @@ impl Group {
         self.id
     }
 
-    pub fn apps(&self) -> &Vec<App> {
+    pub(super) fn apps(&self) -> &Vec<App> {
         &self.apps
     }
 
-    pub fn add_app(&mut self, app: App) {
+    pub(super) fn add_app(&mut self, app: App) {
         self.apps.push(app);
     }
 
-    pub fn remove_app(&mut self, app: &App) {
+    pub(super) fn remove_app(&mut self, app: &App) {
         self.apps.retain(|a| a != app)
     }
 }

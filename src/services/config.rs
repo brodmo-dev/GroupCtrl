@@ -25,6 +25,10 @@ impl ConfigService {
         &self.config.groups()
     }
 
+    pub fn group_apps(&self, group_id: Uuid) -> &Vec<App> {
+        &self.config.group_apps(group_id)
+    }
+
     pub fn add_group(&mut self, name: String) -> Uuid {
         self.config.add_group(name)
     }

@@ -16,6 +16,10 @@ impl Config {
         &self.groups
     }
 
+    pub fn group_apps(&self, group_id: Uuid) -> &Vec<App> {
+        self.find_group(group_id).apps()
+    }
+
     pub fn add_group(&mut self, name: String) -> Uuid {
         let group = Group::new(name);
         let group_id = group.id();

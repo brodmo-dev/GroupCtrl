@@ -1,4 +1,5 @@
 use crate::models::{Action, Config};
+use crate::services::ConfigService;
 use crate::services::group::GroupService;
 
 #[derive(Default)]
@@ -7,9 +8,9 @@ pub struct ActionService {
 }
 
 impl ActionService {
-    pub fn execute(&mut self, config: &Config, action: &Action) {
+    pub fn execute(&mut self, config_service: &ConfigService, action: &Action) {
         match action {
-            Action::OpenGroup { group_id } => self.group_service.open(config, group_id),
+            Action::OpenGroup { group_id } => self.group_service.open(config_service, *group_id),
             #[cfg(test)]
             Action::Mock(_) => {}
         }
