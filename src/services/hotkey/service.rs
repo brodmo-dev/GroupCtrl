@@ -1,6 +1,6 @@
 use dioxus::hooks::UnboundedSender;
 
-use crate::models::{Action, Actionable, Config, Hotkey};
+use crate::models::{Action, Bindable, Config, Hotkey};
 use crate::services::SharedSender;
 use crate::services::hotkey::binder::{DioxusBinder, HotkeyBinder};
 
@@ -22,10 +22,9 @@ impl HotkeyService<DioxusBinder> {
 impl<B: HotkeyBinder> HotkeyService<B> {
     fn find_conflict(config: &Config, hotkey: Option<Hotkey>) -> Option<Action> {
         config
-            .groups()
-            .iter()
-            .find(|group| group.hotkey == hotkey)
-            .map(|group| group.action())
+            .bindings()
+            .into_iter()
+            .find_map(|(hk, a)| (hk == hotkey).then_some(a))
     }
 
     pub fn bind_hotkey(

@@ -2,7 +2,7 @@ use uuid::Uuid;
 
 use crate::models::group::Group;
 use crate::models::hotkey::Hotkey;
-use crate::models::{Action, Actionable};
+use crate::models::{Action, Bindable};
 use crate::os::App;
 
 #[derive(Default)]
@@ -12,6 +12,10 @@ pub struct Config {
 }
 
 impl Config {
+    pub fn bindings(&self) -> Vec<(Option<Hotkey>, Action)> {
+        self.groups.iter().map(|g| g.binding()).collect()
+    }
+
     pub fn groups(&self) -> &Vec<Group> {
         &self.groups
     }
@@ -52,7 +56,7 @@ impl Config {
 
     pub fn get_binding(&self, group_id: Uuid) -> (Option<Hotkey>, Action) {
         let group = self.find_group(group_id);
-        (group.hotkey, group.action())
+        group.binding()
     }
 
     pub fn set_hotkey(&mut self, group_id: Uuid, hotkey: Option<Hotkey>) {

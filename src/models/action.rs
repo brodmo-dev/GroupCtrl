@@ -2,6 +2,7 @@ use std::fmt::{Display, Formatter};
 
 use uuid::Uuid;
 
+use crate::models::Hotkey;
 use crate::models::group::Group;
 
 #[derive(Debug, PartialEq, Eq, Clone)]
@@ -24,14 +25,15 @@ impl Display for Action {
     }
 }
 
-pub trait Actionable {
-    fn action(&self) -> Action;
+pub trait Bindable {
+    fn binding(&self) -> (Option<Hotkey>, Action);
 }
 
-impl Actionable for Group {
-    fn action(&self) -> Action {
-        Action::OpenGroup {
+impl Bindable for Group {
+    fn binding(&self) -> (Option<Hotkey>, Action) {
+        let action = Action::OpenGroup {
             group_id: self.id(),
-        }
+        };
+        (self.hotkey, action)
     }
 }
