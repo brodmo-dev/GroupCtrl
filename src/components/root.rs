@@ -32,9 +32,9 @@ pub fn Root() -> Element {
     });
 
     rsx! {
+        Stylesheet { href: asset!("/assets/tailwind.css") }
         div {
             class: "flex h-screen",
-            style { "{include_str!(\"../../target/tailwind.css\")}" }
             aside {
                 class: "flex-1 p-2 border-r",
                 GroupList {
