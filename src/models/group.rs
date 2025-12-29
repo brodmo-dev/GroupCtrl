@@ -16,7 +16,8 @@ pub struct Group {
 
 impl PartialEq for Group {
     fn eq(&self, other: &Self) -> bool {
-        self.id == other.id
+        // Re-render of name changes
+        self.id == other.id && self.name == other.name
     }
 }
 

@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use dioxus::prelude::*;
 use futures_util::StreamExt;
 use uuid::Uuid;
@@ -45,7 +47,18 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
     );
     use_context_provider(|| handle_app_list_change.tx()); // used in the (generic) list
 
-    let name = config_service.read().group(group_id).unwrap().name.clone();
+    let name = move || config_service.read().group(group_id).unwrap().name.clone();
+    let mut draft_name = use_signal(|| name());
+    let mut input_handle = use_signal(|| None::<Rc<MountedData>>);
+    let onkeydown = move |evt: KeyboardEvent| {
+        match evt.key() {
+            Key::Enter => config_service.write().set_name(group_id, draft_name()),
+            Key::Escape => draft_name.set(name()),
+            _ => return,
+        }
+        let _ = input_handle.read().as_ref().unwrap().set_focus(false);
+    };
+    let onblur = move |_| draft_name.set(name());
     let apps = config_service
         .read()
         .group(group_id)
@@ -55,9 +68,13 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
     rsx! {
         div {
             class: "flex flex-col gap-2",
-            h2 {
-                class: "font-bold text-sm",
-                "{name}"
+            input {
+                class: "input input-ghost input-xs font-bold text-sm w-full",
+                value: "{draft_name}",
+                onmounted: move |evt| input_handle.set(Some(evt.data())),
+                oninput: move |evt| draft_name.set(evt.value()),
+                onkeydown,
+                onblur
             }
             HotkeyPicker { picked_hotkey }
             AppList { apps }
