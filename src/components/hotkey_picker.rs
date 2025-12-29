@@ -23,6 +23,7 @@ pub(super) fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element
                 span { class: "opacity-50", "None" }
             },
             Some(key) => rsx! {
+                // TODO kbd
                 span { class: "text-base-content", "{key}" }
             },
         }
@@ -32,7 +33,7 @@ pub(super) fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element
             onkeydown: record_unregistered, // globally registered keys never make it here
             tabindex: 0,
             button {
-                class: "btn btn-outline",
+                class: "btn btn-sm btn-outline",
                 onclick: move |_| recording.set(true),
                 { label }
             }

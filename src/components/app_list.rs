@@ -12,9 +12,11 @@ pub fn AppList(apps: Vec<App>) -> Element {
     let selected = use_signal(|| HashSet::<String>::new());
 
     rsx! {
-        List {
-            elements: apps,
-            selected,
+        div {
+            List {
+                elements: apps,
+                selected,
+            }
         }
     }
 }

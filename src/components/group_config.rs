@@ -54,8 +54,11 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
         .to_vec();
     rsx! {
         div {
-            class: "p-4",
-            span { "{name}" }
+            class: "flex flex-col gap-2",
+            h2 {
+                class: "font-bold text-sm",
+                "{name}"
+            }
             HotkeyPicker { picked_hotkey }
             AppList { apps }
         }
