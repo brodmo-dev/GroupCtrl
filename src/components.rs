@@ -1,5 +1,6 @@
 mod app_list;
 mod app_selector;
+mod editable_text;
 mod group_config;
 mod group_list;
 mod hotkey_picker;
