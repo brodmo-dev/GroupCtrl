@@ -2,10 +2,8 @@ use dioxus::prelude::*;
 use futures_util::StreamExt;
 use uuid::Uuid;
 
-use crate::components::app_list::AppList;
-use crate::components::editable_text::EditableText;
-use crate::components::hotkey_picker::HotkeyPicker;
-use crate::components::list::CellChange;
+use crate::components::lists::{AppList, ListOperation};
+use crate::components::util::{EditableText, HotkeyPicker};
 use crate::os::{AppDialog, AppSelection};
 use crate::services::ConfigService;
 
@@ -38,16 +36,16 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
 
 fn use_app_list_change_listener(mut config_service: Signal<ConfigService>, group_id: Uuid) {
     let app_list_change_listener = use_coroutine(
-        move |mut receiver: UnboundedReceiver<CellChange<String>>| async move {
+        move |mut receiver: UnboundedReceiver<ListOperation<String>>| async move {
             while let Some(cc) = receiver.next().await {
                 let mut cs = config_service.write();
                 match cc {
-                    CellChange::Add => {
+                    ListOperation::Add => {
                         if let Ok(Some(app)) = AppDialog::select_app().await {
                             cs.add_app(group_id, app)
                         }
                     }
-                    CellChange::Remove(apps) => {
+                    ListOperation::Remove(apps) => {
                         for app_id in apps {
                             cs.remove_app(group_id, app_id);
                         }

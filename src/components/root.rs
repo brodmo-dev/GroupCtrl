@@ -5,8 +5,7 @@ use futures_util::StreamExt;
 use uuid::Uuid;
 
 use crate::components::group_config::GroupConfig;
-use crate::components::group_list::GroupList;
-use crate::components::list::CellChange;
+use crate::components::lists::{GroupList, ListOperation};
 use crate::models::Action;
 use crate::services::{ActionService, ConfigService, SharedSender};
 
@@ -55,22 +54,32 @@ pub fn Root() -> Element {
     }
 }
 
+fn use_action_listener(config_service: Signal<ConfigService>) -> UnboundedSender<Action> {
+    let listener = use_coroutine(move |mut receiver: UnboundedReceiver<Action>| async move {
+        let mut action_service = ActionService::default();
+        while let Some(action) = receiver.next().await {
+            action_service.execute(&config_service.read(), &action)
+        }
+    });
+    listener.tx()
+}
+
 fn use_groups_list_change_listener(
     mut config_service: Signal<ConfigService>,
     mut selected: Signal<HashSet<Uuid>>,
 ) {
     let handle_app_change = use_coroutine(
-        move |mut receiver: UnboundedReceiver<CellChange<Uuid>>| async move {
+        move |mut receiver: UnboundedReceiver<ListOperation<Uuid>>| async move {
             while let Some(cc) = receiver.next().await {
                 let mut cs = config_service.write();
                 match cc {
-                    CellChange::Add => {
+                    ListOperation::Add => {
                         let group_id = cs.add_group("New Group".to_string());
                         let mut sel = selected.write();
                         sel.clear();
                         sel.insert(group_id);
                     }
-                    CellChange::Remove(groups) => {
+                    ListOperation::Remove(groups) => {
                         for group_id in groups {
                             cs.remove_group(group_id)
                         }
@@ -80,14 +89,4 @@ fn use_groups_list_change_listener(
         },
     );
     use_context_provider(|| handle_app_change.tx()); // used in the list
-}
-
-fn use_action_listener(config_service: Signal<ConfigService>) -> UnboundedSender<Action> {
-    let listener = use_coroutine(move |mut receiver: UnboundedReceiver<Action>| async move {
-        let mut action_service = ActionService::default();
-        while let Some(action) = receiver.next().await {
-            action_service.execute(&config_service.read(), &action)
-        }
-    });
-    listener.tx()
 }

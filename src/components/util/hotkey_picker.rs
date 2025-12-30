@@ -6,7 +6,7 @@ use crate::services::SharedSender;
 use crate::util::is_modifier;
 
 #[component]
-pub(super) fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element {
+pub fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element {
     let mut recording = use_signal(|| false);
     let record_unregistered = move |evt: KeyboardEvent| {
         record_unregistered(recording, picked_hotkey, evt);
