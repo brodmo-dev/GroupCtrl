@@ -23,7 +23,7 @@ pub fn HotkeyPicker(mut picked_hotkey: Signal<Option<Hotkey>>) -> Element {
                 span { class: "opacity-50", "None" }
             },
             Some(key) => rsx! {
-                // TODO kbd
+                // TODO use DaisyUI kbd class
                 span { class: "text-base-content", "{key}" }
             },
         }

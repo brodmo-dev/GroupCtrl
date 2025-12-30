@@ -32,11 +32,11 @@ impl Config {
     }
 
     pub fn group(&self, group_id: Uuid) -> Option<&Group> {
-        // TODO add better error handling
         self.groups.iter().find(|g| g.id() == group_id)
     }
 
     fn group_mut(&mut self, group_id: Uuid) -> &mut Group {
+        // TODO add better error handling
         self.groups.iter_mut().find(|g| g.id() == group_id).unwrap()
     }
 
