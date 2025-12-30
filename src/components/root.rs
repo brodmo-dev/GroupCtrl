@@ -15,12 +15,13 @@ pub fn Root() -> Element {
     let action_sender = use_hook(SharedSender::new);
     let config_service =
         use_signal(|| ConfigService::new(registered_record_sender.clone(), action_sender.clone()));
+    // We inject the action sender like this to bypass the cyclic dependency with config service
     action_sender.set(Some(use_action_listener(config_service)));
     use_context_provider(|| registered_record_sender);
     use_context_provider(|| action_sender);
 
     let selected = use_signal(HashSet::<Uuid>::new);
-    use_groups_list_change_listener(config_service, selected);
+    use_group_list_listener(config_service, selected);
     let active_group = use_memo(move || {
         if selected().len() == 1 {
             selected().iter().next().copied()
@@ -64,29 +65,34 @@ fn use_action_listener(config_service: Signal<ConfigService>) -> UnboundedSender
     listener.tx()
 }
 
-fn use_groups_list_change_listener(
-    mut config_service: Signal<ConfigService>,
-    mut selected: Signal<HashSet<Uuid>>,
-) {
+fn use_group_list_listener(config_service: Signal<ConfigService>, selected: Signal<HashSet<Uuid>>) {
     let handle_app_change = use_coroutine(
         move |mut receiver: UnboundedReceiver<ListOperation<Uuid>>| async move {
-            while let Some(cc) = receiver.next().await {
-                let mut cs = config_service.write();
-                match cc {
-                    ListOperation::Add => {
-                        let group_id = cs.add_group("New Group".to_string());
-                        let mut sel = selected.write();
-                        sel.clear();
-                        sel.insert(group_id);
-                    }
-                    ListOperation::Remove(groups) => {
-                        for group_id in groups {
-                            cs.remove_group(group_id)
-                        }
-                    }
-                }
+            while let Some(list_operation) = receiver.next().await {
+                do_group_list_operation(config_service, selected, list_operation)
             }
         },
     );
-    use_context_provider(|| handle_app_change.tx()); // used in the list
+    use_context_provider(|| handle_app_change.tx()); // used in the (generic) list
+}
+
+fn do_group_list_operation(
+    mut config_service: Signal<ConfigService>,
+    mut selected: Signal<HashSet<Uuid>>,
+    list_operation: ListOperation<Uuid>,
+) {
+    let mut cs = config_service.write();
+    match list_operation {
+        ListOperation::Add => {
+            let group_id = cs.add_group("New Group".to_string());
+            let mut sel = selected.write();
+            sel.clear();
+            sel.insert(group_id);
+        }
+        ListOperation::Remove(groups) => {
+            for group_id in groups {
+                cs.remove_group(group_id)
+            }
+        }
+    }
 }

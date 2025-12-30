@@ -17,7 +17,7 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
     let name = use_signal(|| config_service.read().group(group_id).unwrap().name.clone());
     use_effect(move || config_service.write().set_name(group_id, name()));
 
-    use_app_list_change_listener(config_service, group_id);
+    use_app_list_listener(config_service, group_id);
     let apps = config_service
         .read()
         .group(group_id)
@@ -34,25 +34,32 @@ pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Ele
     }
 }
 
-fn use_app_list_change_listener(mut config_service: Signal<ConfigService>, group_id: Uuid) {
-    let app_list_change_listener = use_coroutine(
+fn use_app_list_listener(config_service: Signal<ConfigService>, group_id: Uuid) {
+    let app_list_listener = use_coroutine(
         move |mut receiver: UnboundedReceiver<ListOperation<String>>| async move {
-            while let Some(cc) = receiver.next().await {
-                let mut cs = config_service.write();
-                match cc {
-                    ListOperation::Add => {
-                        if let Ok(Some(app)) = AppDialog::select_app().await {
-                            cs.add_app(group_id, app)
-                        }
-                    }
-                    ListOperation::Remove(apps) => {
-                        for app_id in apps {
-                            cs.remove_app(group_id, app_id);
-                        }
-                    }
-                }
+            while let Some(list_operation) = receiver.next().await {
+                do_app_list_operation(config_service, group_id, list_operation).await;
             }
         },
     );
-    use_context_provider(|| app_list_change_listener.tx()); // used in the (generic) list
+    use_context_provider(|| app_list_listener.tx()); // used in the (generic) list
+}
+
+async fn do_app_list_operation(
+    mut config_service: Signal<ConfigService>,
+    group_id: Uuid,
+    list_operation: ListOperation<String>,
+) {
+    match list_operation {
+        ListOperation::Add => {
+            if let Ok(Some(app)) = AppDialog::select_app().await {
+                config_service.write().add_app(group_id, app)
+            }
+        }
+        ListOperation::Remove(apps) => {
+            for app_id in apps {
+                config_service.write().remove_app(group_id, app_id);
+            }
+        }
+    }
 }
