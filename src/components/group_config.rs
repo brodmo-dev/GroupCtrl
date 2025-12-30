@@ -13,9 +13,7 @@ use crate::services::ConfigService;
 pub fn GroupConfig(config_service: Signal<ConfigService>, group_id: Uuid) -> Element {
     let picked_hotkey = use_signal(|| config_service.read().group(group_id).unwrap().hotkey);
     use_effect(move || {
-        let hotkey = *picked_hotkey.read(); // TODO change .read to ()
-        let mut service = config_service.write();
-        service.set_hotkey(group_id, hotkey);
+        config_service.write().set_hotkey(group_id, picked_hotkey());
     });
 
     let name = use_signal(|| config_service.read().group(group_id).unwrap().name.clone());

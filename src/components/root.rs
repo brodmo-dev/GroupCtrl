@@ -23,9 +23,8 @@ pub fn Root() -> Element {
     let selected = use_signal(HashSet::<Uuid>::new);
     use_groups_list_change_listener(config_service, selected);
     let active_group = use_memo(move || {
-        let sel = selected.read();
-        if sel.len() == 1 {
-            sel.iter().next().copied()
+        if selected().len() == 1 {
+            selected().iter().next().copied()
         } else {
             None
         }

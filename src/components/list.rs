@@ -31,7 +31,7 @@ where
         let _ = sender.unbounded_send(CellChange::Add);
     };
     let remove = move |_| {
-        let selection = selected.read().clone();
+        let selection = selected().clone();
         selected.clear();
         let _ = my_sender.unbounded_send(CellChange::Remove(selection));
     };
@@ -61,7 +61,7 @@ where
     E: ListCell<I> + Clone + PartialEq + 'static,
 {
     let element_id = element.id();
-    let is_selected = selected.read().contains(&element_id);
+    let is_selected = selected().contains(&element_id);
     let toggle_active = move |evt: Event<MouseData>| {
         let mut sel = selected.write();
         if Keyboard::is_multi_select(evt.modifiers()) {
