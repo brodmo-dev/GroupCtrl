@@ -31,7 +31,7 @@ pub fn Root() -> Element {
     });
 
     rsx! {
-        Stylesheet { href: asset!("/assets/tailwind.css") }
+        { render_stylesheet() }
         div {
             class: "flex h-screen",
             aside {
@@ -52,6 +52,22 @@ pub fn Root() -> Element {
                 }
             }
         }
+    }
+}
+
+// On macOS, use asset! for hot reload support
+#[cfg(target_os = "macos")]
+fn render_stylesheet() -> Element {
+    rsx! {
+        document::Stylesheet { href: asset!("/assets/tailwind.css") }
+    }
+}
+
+// On Windows, use include_str! as a workaround for asset! loading issues
+#[cfg(target_os = "windows")]
+fn render_stylesheet() -> Element {
+    rsx! {
+        style { {include_str!("../../assets/tailwind.css")} }
     }
 }
 
