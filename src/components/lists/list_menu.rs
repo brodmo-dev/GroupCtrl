@@ -30,17 +30,17 @@ where
 
     rsx! {
         div {
-            class: "flex",
+            class: "flex gap-1",
             button {
-                class: "btn btn-xs",
+                class: "btn btn-xs btn-square btn-outline",
                 onclick: add,
-                "Add"
+                "+"
             }
             button {
-                class: "btn btn-xs",
+                class: "btn btn-xs btn-square btn-outline",
                 disabled: selected().is_empty(),
                 onclick: remove,
-                "Remove"
+                "-"
             }
         }
     }

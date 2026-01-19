@@ -10,6 +10,7 @@ use crate::models::Group;
 pub fn GroupList(groups: Vec<Group>, selected: Signal<HashSet<Uuid>>) -> Element {
     rsx! {
         List {
+            title: "Groups".to_string(),
             elements: groups,
             selected,
         }

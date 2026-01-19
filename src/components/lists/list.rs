@@ -8,13 +8,17 @@ use crate::components::lists::list_row::ListRow;
 use crate::models::Identifiable;
 
 #[component]
-pub(super) fn List<E, I>(elements: Vec<E>, selected: Signal<HashSet<I>>) -> Element
+pub(super) fn List<E, I>(title: String, elements: Vec<E>, selected: Signal<HashSet<I>>) -> Element
 where
     I: Clone + Eq + Hash + 'static,
     E: Renderable<I> + Clone + PartialEq + 'static,
 {
     rsx! {
-        ListMenu { selected }
+        div {
+            class: "flex justify-between mb-1",
+            span { class: "font-bold text-sm", "{title}" }
+            ListMenu { selected }
+        }
         for element in elements {
             ListRow { element, selected }
         }

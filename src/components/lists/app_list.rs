@@ -11,6 +11,7 @@ pub fn AppList(apps: Vec<App>) -> Element {
     rsx! {
         div {
             List {
+                title: "Apps".to_string(),
                 elements: apps,
                 selected: use_signal(HashSet::<String>::new),
             }
