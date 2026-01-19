@@ -3,11 +3,9 @@ use std::path::Path;
 
 use anyhow::Context;
 
-use crate::os::{App, AppSelection};
+use crate::os::{App, AppSelection, System};
 
-pub struct AppDialog;
-
-impl AppSelection for AppDialog {
+impl AppSelection for System {
     async fn select_app() -> anyhow::Result<Option<App>> {
         let Some(app_path) = rfd::AsyncFileDialog::new()
             .add_filter("Applications", &["app"])

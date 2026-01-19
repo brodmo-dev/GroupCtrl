@@ -1,10 +1,8 @@
 use global_hotkey::hotkey::Modifiers;
 
-use crate::os::KeyboardBehavior;
+use crate::os::{KeyboardBehavior, System};
 
-pub struct Keyboard;
-
-impl KeyboardBehavior for Keyboard {
+impl KeyboardBehavior for System {
     fn modifier_format() -> [(Modifiers, &'static str); 4] {
         [
             (Modifiers::SUPER, "Cmd+"),

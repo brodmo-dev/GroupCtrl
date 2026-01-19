@@ -4,7 +4,7 @@ use std::hash::Hash;
 use dioxus::prelude::*;
 
 use super::list::Renderable;
-use crate::os::{Keyboard, KeyboardBehavior};
+use crate::os::{KeyboardBehavior, System};
 
 #[component]
 pub(super) fn ListRow<E, I>(element: E, mut selected: Signal<HashSet<I>>) -> Element
@@ -17,7 +17,7 @@ where
     let element_id = element.id();
     let toggle_active = move |evt: Event<MouseData>| {
         let mut sel = selected.write();
-        if Keyboard::is_multi_select(evt.modifiers()) {
+        if System::is_multi_select(evt.modifiers()) {
             if !sel.contains(&element_id) {
                 sel.insert(element_id.clone());
             } else {

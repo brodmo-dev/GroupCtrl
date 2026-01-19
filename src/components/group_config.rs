@@ -4,7 +4,7 @@ use uuid::Uuid;
 
 use crate::components::lists::{AppList, ListOperation};
 use crate::components::util::{EditableText, HotkeyPicker};
-use crate::os::{AppDialog, AppSelection};
+use crate::os::{AppSelection, System};
 use crate::services::ConfigService;
 
 #[component]
@@ -46,7 +46,7 @@ async fn do_app_list_operation(
 ) {
     match list_operation {
         ListOperation::Add => {
-            if let Ok(Some(app)) = AppDialog::select_app().await {
+            if let Ok(Some(app)) = System::select_app().await {
                 config_service.write().add_app(group_id, app)
             }
         }
