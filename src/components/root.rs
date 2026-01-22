@@ -84,17 +84,15 @@ fn do_group_list_operation(
     mut selected: Signal<HashSet<Uuid>>,
     list_operation: ListOperation<Uuid>,
 ) {
-    let mut cs = config_service.write();
+    selected.write().clear();
     match list_operation {
         ListOperation::Add => {
-            let group_id = cs.add_group("New Group".to_string());
-            let mut sel = selected.write();
-            sel.clear();
-            sel.insert(group_id);
+            let group_id = config_service.write().add_group("New Group".to_string());
+            selected.write().insert(group_id);
         }
         ListOperation::Remove(groups) => {
             for group_id in groups {
-                cs.remove_group(group_id)
+                config_service.write().remove_group(group_id);
             }
         }
     }

@@ -19,14 +19,8 @@ where
 {
     let sender = use_context::<UnboundedSender<ListOperation<I>>>();
     let my_sender = sender.clone();
-    let add = move |_| {
-        let _ = sender.unbounded_send(ListOperation::Add);
-    };
-    let remove = move |_| {
-        let selection = selected().clone();
-        selected.clear();
-        let _ = my_sender.unbounded_send(ListOperation::Remove(selection));
-    };
+    let add = move |_| drop(sender.unbounded_send(ListOperation::Add));
+    let remove = move |_| drop(my_sender.unbounded_send(ListOperation::Remove(selected())));
 
     rsx! {
         div {
