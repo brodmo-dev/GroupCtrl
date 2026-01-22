@@ -1,5 +1,5 @@
 [package]
-name = "GroupCtrl"
+name = "GroupCTRL"
 version = "0.1.0"
 edition = "2024"
 
@@ -9,7 +9,7 @@ anyhow = "1.0.100"
 log = "0.4.29"
 simplelog = "0.12.2"
 dioxus = { version = "0.7.2", features = ["desktop"] }
-rfd = "0.16.0"
+rfd = "0.17.2"
 plist = "1.8.0"
 futures-util = "0.3.31"
 uuid = { version = "1.19.0", features = ["serde", "v4"] }
