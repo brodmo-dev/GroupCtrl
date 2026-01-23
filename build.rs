@@ -7,7 +7,7 @@ fn main() {
     for path in ["package.json", "package-lock.json", "input.css", "src"] {
         println!("cargo:rerun-if-changed={}", path);
     }
-    if cmp_mtime("package-lock.json", INSTALL_STAMP) {
+    if gt_mtime("package-lock.json", INSTALL_STAMP) {
         npm(&["install"]);
         fs::File::create(INSTALL_STAMP).unwrap();
     }
@@ -18,14 +18,22 @@ fn npm(args: &[&str]) {
     let output = Command::new("npm")
         .args(args)
         .output()
-        .expect("Please install npm https://nodejs.org/en/download");
+        .map_err(|e| {
+            // Simulate missing npm using PATH=~/.cargo/bin:/usr/bin cargo check
+            panic!(
+                "npm not found, please install it: https://nodejs.org/en/download\nerror: {}",
+                e
+            )
+        })
+        .unwrap();
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        panic!("'npm {}' failed:\n{}", args.join(" "), stderr);
+        panic!("command 'npm {}' failed:\n{}", args.join(" "), stderr);
     }
 }
 
-fn cmp_mtime(left: &str, right: &str) -> bool {
+fn gt_mtime(left: &str, right: &str) -> bool {
     fn get_mtime(path: &str) -> std::io::Result<std::time::SystemTime> {
         fs::metadata(path)?.modified()
     }
