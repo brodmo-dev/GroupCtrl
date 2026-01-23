@@ -1,11 +1,11 @@
 use thiserror::Error;
 
-use crate::models::{Action, Hotkey};
+use crate::models::Hotkey;
 
 #[derive(Error, Debug, Clone, PartialEq)]
 pub enum HotkeyBindError {
     #[error("{hotkey} is already bound to '{conflict}'")]
-    Conflict { hotkey: Hotkey, conflict: Action },
+    Conflict { hotkey: Hotkey, conflict: String },
 
     #[error("{hotkey} is invalid")]
     Invalid { hotkey: Hotkey },

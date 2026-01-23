@@ -11,8 +11,6 @@ impl ActionService {
     pub fn execute(&mut self, config_service: &ConfigService, action: &Action) {
         match action {
             Action::OpenGroup { group_id } => self.group_service.open(config_service, *group_id),
-            #[cfg(test)]
-            Action::Mock(_) => {}
         }
     }
 }

@@ -41,7 +41,7 @@ impl<B: HotkeyBinder> HotkeyService<B> {
         {
             return Err(HotkeyBindError::Conflict {
                 hotkey: hk,
-                conflict,
+                conflict: conflict.describe(config),
             });
         }
 
@@ -81,8 +81,8 @@ mod tests {
         (service, events)
     }
 
-    fn setup_group(config: &mut Config, hotkey: Option<Hotkey>) -> Action {
-        let group_id = config.add_group("Test".to_string());
+    fn setup_group(name: &str, config: &mut Config, hotkey: Option<Hotkey>) -> Action {
+        let group_id = config.add_group(name.to_string());
         config.set_hotkey(group_id, hotkey);
         Action::OpenGroup { group_id }
     }
@@ -92,7 +92,7 @@ mod tests {
         // Arrange
         let (mut service, events) = setup_service();
         let mut config = Config::default();
-        let action = setup_group(&mut config, None);
+        let action = setup_group("Test", &mut config, None);
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
 
         // Act
@@ -108,7 +108,7 @@ mod tests {
         // Arrange
         let (mut service, events) = setup_service();
         let mut config = Config::default();
-        let action = setup_group(&mut config, None);
+        let action = setup_group("Test", &mut config, None);
 
         // Act
         let result = service.bind_hotkey(&config, None, None, action.clone());
@@ -123,7 +123,7 @@ mod tests {
         // Arrange
         let (mut service, events) = setup_service();
         let mut config = Config::default();
-        let action = setup_group(&mut config, None);
+        let action = setup_group("Test", &mut config, None);
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
 
         // Act
@@ -141,7 +141,7 @@ mod tests {
         let old_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let new_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyG);
         let mut config = Config::default();
-        let action = setup_group(&mut config, Some(old_hotkey));
+        let action = setup_group("Test", &mut config, Some(old_hotkey));
 
         // Act
         let result =
@@ -161,8 +161,8 @@ mod tests {
         let (mut service, events) = setup_service();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let mut config = Config::default();
-        let old_action = setup_group(&mut config, Some(hotkey));
-        let new_action = setup_group(&mut config, None);
+        let action = setup_group("Fst", &mut config, Some(hotkey));
+        let new_action = setup_group("Snd", &mut config, None);
 
         // Act
         let result = service.bind_hotkey(&config, Some(hotkey), None, new_action);
@@ -172,7 +172,7 @@ mod tests {
             result,
             Err(HotkeyBindError::Conflict {
                 hotkey,
-                conflict: old_action.clone()
+                conflict: "Open Group Fst".to_string()
             })
         );
         assert_eq!(*events.lock().unwrap(), vec![]);
