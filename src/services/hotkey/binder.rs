@@ -2,6 +2,7 @@ use std::collections::HashMap;
 
 use dioxus::desktop::{ShortcutHandle, ShortcutRegistryError, window};
 use global_hotkey::HotKeyState::Pressed;
+use log::warn;
 
 use super::sender::SharedSender;
 use crate::models::{Action, Hotkey};
@@ -59,8 +60,11 @@ impl HotkeyBinder for DioxusBinder {
     }
 
     fn unbind_hotkey(&mut self, hotkey: Hotkey) {
-        let handle = self.handles.remove(&hotkey).unwrap();
-        window().remove_shortcut(handle);
+        if let Some(handle) = self.handles.remove(&hotkey) {
+            window().remove_shortcut(handle);
+        } else {
+            warn!("Missing handle for hotkey {}", hotkey);
+        }
     }
 }
 

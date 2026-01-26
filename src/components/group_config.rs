@@ -1,3 +1,5 @@
+use std::collections::HashSet;
+
 use dioxus::prelude::*;
 use futures_util::StreamExt;
 use uuid::Uuid;
@@ -28,7 +30,7 @@ pub fn GroupConfig(
         if in_creation_group() == Some(group_id) {
             in_creation_group.set(None); // Consume signal so it doesn't persist
             let on_cancel = EventHandler::new(move |_| {
-                let selected = [group_id].into_iter().collect();
+                let selected = HashSet::from([group_id]);
                 let _ = list_operation_sender.unbounded_send(ListOperation::Remove(selected));
             });
             InputMode::Create { on_cancel }

@@ -34,7 +34,9 @@ impl ConfigService {
     }
 
     pub fn remove_group(&mut self, group_id: Uuid) {
-        self.config.remove_group(group_id)
+        let hotkey = self.config.group(group_id).unwrap().hotkey;
+        self.hotkey_service.unbind_hotkey(hotkey);
+        self.config.remove_group(group_id);
     }
 
     pub fn set_name(&mut self, group_id: Uuid, name: String) {

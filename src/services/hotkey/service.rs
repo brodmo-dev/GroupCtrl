@@ -45,13 +45,17 @@ impl<B: HotkeyBinder> HotkeyService<B> {
             });
         }
 
-        if let Some(ex_hk) = existing_hotkey {
-            self.binder.unbind_hotkey(ex_hk);
-        }
+        self.unbind_hotkey(existing_hotkey);
         if let Some(hk) = hotkey {
             self.binder.bind_hotkey(hk, &action)?
         }
         Ok(())
+    }
+
+    pub fn unbind_hotkey(&mut self, hotkey: Option<Hotkey>) {
+        if let Some(hk) = hotkey {
+            self.binder.unbind_hotkey(hk);
+        }
     }
 }
 
@@ -176,5 +180,18 @@ mod tests {
             })
         );
         assert_eq!(*events.lock().unwrap(), vec![]);
+    }
+
+    #[test]
+    fn unbind_hotkey() {
+        // Arrange
+        let (mut service, events) = setup_service();
+        let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
+
+        // Act
+        service.unbind_hotkey(Some(hotkey));
+
+        // Assert
+        assert_eq!(*events.lock().unwrap(), vec![Unregister(hotkey)]);
     }
 }
