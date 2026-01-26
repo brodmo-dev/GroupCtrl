@@ -18,7 +18,8 @@ pub fn HotkeyPicker(
     let mut input_handle = use_signal(|| None::<Rc<MountedData>>);
     use_effect(move || {
         if let Some(handle) = input_handle() {
-            spawn(async move { drop(handle.set_focus(recording()).await) });
+            let focus = recording(); // outside closure for reactivity
+            spawn(async move { drop(handle.set_focus(focus).await) });
         }
     });
 
