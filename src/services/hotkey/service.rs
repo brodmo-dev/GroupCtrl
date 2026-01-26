@@ -161,7 +161,7 @@ mod tests {
         let (mut service, events) = setup_service();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let mut config = Config::default();
-        let action = setup_group("Fst", &mut config, Some(hotkey));
+        setup_group("Fst", &mut config, Some(hotkey));
         let new_action = setup_group("Snd", &mut config, None);
 
         // Act
@@ -172,7 +172,7 @@ mod tests {
             result,
             Err(HotkeyBindError::Conflict {
                 hotkey,
-                conflict: "Open Group Fst".to_string()
+                conflict: "open group 'Fst'".to_string()
             })
         );
         assert_eq!(*events.lock().unwrap(), vec![]);

@@ -25,7 +25,7 @@ pub fn HotkeyPicker(
 
     let label = if recording() {
         rsx! {
-            span { class: "text-base-content", "Recording..." }
+            span { class: "opacity-75", "Recording..." }
         }
     } else {
         match hotkey {
@@ -37,14 +37,20 @@ pub fn HotkeyPicker(
             },
         }
     };
+    let btn_class = if recording() {
+        "btn-neutral" // Slightly darker than btn-outline hover
+    } else {
+        "btn-outline"
+    };
     rsx! {
         div {
             role: "button",
-            class: "btn btn-sm btn-outline w-fit outline-none",
+            class: "btn btn-sm btn-wide {btn_class}",
             tabindex: 0,
             onmounted: move |evt| input_handle.set(Some(evt.data())),
             onclick: move |_| recording.set(true),
             onkeydown, // globally registered keys never make it here
+            onblur: move |_| recording.set(false),
             { label }
         }
     }
@@ -58,6 +64,7 @@ fn record_unregistered(
     let code = evt.code();
     if !recording() && code == Code::Enter {
         recording.set(true);
+        return;
     }
     if !recording() || is_modifier(&code) {
         return;

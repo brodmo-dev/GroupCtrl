@@ -29,12 +29,15 @@ where
         }
     };
 
+    let btn_class = if is_selected() {
+        "btn-active"
+    } else {
+        "btn-ghost"
+    };
+
     rsx! {
         button {
-           class: format!(
-                "btn btn-sm w-full justify-start {}",
-                if is_selected() { "btn-active" } else { "btn-ghost" }
-            ),
+           class: "btn btn-sm w-full justify-start {btn_class}",
             onclick: toggle_active,
             { element.render() }
         }

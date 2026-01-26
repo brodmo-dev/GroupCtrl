@@ -12,7 +12,8 @@ impl Action {
     pub fn describe(&self, config: &Config) -> String {
         match self {
             Action::OpenGroup { group_id } => {
-                format!("Open Group {}", config.group(*group_id).unwrap().name)
+                // Continuation of "Hotkey is already bound to..."
+                format!("open group '{}'", config.group(*group_id).unwrap().name)
             }
         }
     }

@@ -45,14 +45,11 @@ pub fn GroupConfig(
                 placeholder: "Group name".to_string(),
                 starting_mode: input_mode()
             }
-            div {
-                class: "flex gap-2",
-                HotkeyPicker { hotkey: group().hotkey, set_hotkey },
-                if let Err(error) = set_hotkey_result() {
-                    span {
-                        class: "text-xs text-error",
-                        "{error}"
-                    }
+            HotkeyPicker { hotkey: group().hotkey, set_hotkey },
+            if let Err(error) = set_hotkey_result() {
+                span {
+                    class: "text-xs text-error",
+                    "{error}"
                 }
             }
             AppList { apps: group().apps().to_vec() }
