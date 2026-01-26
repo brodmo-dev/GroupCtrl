@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use dioxus::prelude::*;
 use futures_util::StreamExt;
 
@@ -13,6 +15,12 @@ pub fn HotkeyPicker(
     let mut recording = use_signal(|| false);
     use_record_registered(recording, set_hotkey);
     let onkeydown = move |evt: KeyboardEvent| record_unregistered(recording, set_hotkey, evt);
+    let mut input_handle = use_signal(|| None::<Rc<MountedData>>);
+    use_effect(move || {
+        if let Some(handle) = input_handle() {
+            spawn(async move { drop(handle.set_focus(recording()).await) });
+        }
+    });
 
     let label = if recording() {
         rsx! {
@@ -33,8 +41,9 @@ pub fn HotkeyPicker(
             role: "button",
             class: "btn btn-sm btn-outline w-fit outline-none",
             tabindex: 0,
-            onkeydown, // globally registered keys never make it here
+            onmounted: move |evt| input_handle.set(Some(evt.data())),
             onclick: move |_| recording.set(true),
+            onkeydown, // globally registered keys never make it here
             { label }
         }
     }
