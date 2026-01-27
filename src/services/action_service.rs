@@ -1,16 +1,20 @@
 use crate::models::Action;
-use crate::services::ConfigService;
+use crate::services::ConfigReader;
 use crate::services::group_service::GroupService;
 
-#[derive(Default)]
 pub struct ActionService {
     group_service: GroupService,
 }
 
 impl ActionService {
-    pub fn execute(&mut self, config_service: &ConfigService, action: &Action) {
+    pub fn new(config_reader: ConfigReader) -> Self {
+        Self {
+            group_service: GroupService::new(config_reader),
+        }
+    }
+    pub fn execute(&mut self, action: &Action) {
         match action {
-            Action::OpenGroup { group_id } => self.group_service.open(config_service, *group_id),
+            Action::OpenGroup { group_id } => self.group_service.open(*group_id),
         }
     }
 }

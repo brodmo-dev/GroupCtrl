@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::sync::{Arc, RwLock};
 
 use dioxus::desktop::window;
 use dioxus::prelude::*;
@@ -7,20 +8,25 @@ use uuid::Uuid;
 use crate::components::group_config::GroupConfig;
 use crate::components::lists::{GroupList, ListOperation};
 use crate::components::util::spawn_listener;
-use crate::models::Action;
-use crate::services::{ActionService, ConfigService, SharedSender};
+use crate::models::{Action, Config};
+use crate::services::{ActionService, ConfigReader, ConfigService, SharedSender};
 
 #[component]
 pub fn Root() -> Element {
+    let config = Arc::new(RwLock::new(Config::default()));
+    let config_reader = ConfigReader::new(config.clone());
+    spawn_action_listener(config_reader);
+    let action_sender = use_coroutine_handle::<Action>().tx();
+
     let registered_record_sender = use_hook(SharedSender::new);
-    let action_sender = use_hook(SharedSender::new);
-    let config_service =
-        use_signal(|| ConfigService::new(registered_record_sender.clone(), action_sender.clone()));
-    // We inject the action sender like this to bypass the cyclic dependency with config service
-    spawn_action_listener(config_service);
-    action_sender.set(Some(use_coroutine_handle::<Action>().tx())); // TODO remove shared sender
+    let config_service = use_signal(|| {
+        ConfigService::new(
+            config,
+            registered_record_sender.clone(),
+            action_sender.clone(),
+        )
+    });
     use_context_provider(|| registered_record_sender);
-    use_context_provider(|| action_sender);
 
     use_effect(move || window().set_decorations(true));
 
@@ -42,7 +48,7 @@ pub fn Root() -> Element {
             aside {
                 class: "flex-1 p-2 border-r",
                 GroupList {
-                    groups: config_service.read().groups().clone(),
+                    groups: config_service.read().config().groups().clone(),
                     selected
                 }
             }
@@ -61,10 +67,10 @@ pub fn Root() -> Element {
     }
 }
 
-fn spawn_action_listener(config_service: Signal<ConfigService>) {
-    let mut action_service = ActionService::default();
+fn spawn_action_listener(config_reader: ConfigReader) {
+    let mut action_service = ActionService::new(config_reader);
     spawn_listener(EventHandler::new(move |action| {
-        action_service.execute(&config_service.read(), &action)
+        action_service.execute(&action)
     }))
 }
 

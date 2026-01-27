@@ -14,7 +14,14 @@ pub fn GroupConfig(
     group_id: Uuid,
     in_creation_group: Signal<Option<Uuid>>,
 ) -> Element {
-    let group = use_memo(move || config_service.read().group(group_id).unwrap().clone());
+    let group = use_memo(move || {
+        config_service
+            .read()
+            .config()
+            .group(group_id)
+            .unwrap()
+            .clone()
+    });
     let mut set_hotkey_result = use_signal(|| Ok(()));
     let set_hotkey = move |hotkey| {
         let result = config_service.write().set_hotkey(group_id, hotkey);

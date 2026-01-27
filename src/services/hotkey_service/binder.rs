@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 
 use dioxus::desktop::{ShortcutHandle, ShortcutRegistryError, window};
+use dioxus::hooks::UnboundedSender;
 use global_hotkey::HotKeyState::Pressed;
 use log::warn;
 
@@ -15,14 +16,14 @@ pub trait HotkeyBinder {
 
 pub struct DioxusBinder {
     record_registered_sender: SharedSender<Hotkey>,
-    action_sender: SharedSender<Action>,
+    action_sender: UnboundedSender<Action>,
     handles: HashMap<Hotkey, ShortcutHandle>,
 }
 
 impl DioxusBinder {
     pub(super) fn new(
         record_registered_sender: SharedSender<Hotkey>,
-        action_sender: SharedSender<Action>,
+        action_sender: UnboundedSender<Action>,
     ) -> Self {
         Self {
             record_registered_sender,
@@ -39,13 +40,12 @@ impl HotkeyBinder for DioxusBinder {
         let my_action = action.clone();
         let callback = move |state| {
             if state == Pressed {
+                // TODO send to input handler instead
+                // in hotkey picker (??) since recording is involved
                 if let Some(sender) = my_recorded_register_sender.get() {
                     let _ = sender.unbounded_send(hotkey);
                 } else {
-                    let _ = my_action_sender
-                        .get()
-                        .unwrap()
-                        .unbounded_send(my_action.clone());
+                    let _ = my_action_sender.unbounded_send(my_action.clone());
                 }
             }
         };

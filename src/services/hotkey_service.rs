@@ -3,29 +3,35 @@ mod error;
 mod sender;
 
 use binder::{DioxusBinder, HotkeyBinder};
+use dioxus::hooks::UnboundedSender;
 pub use error::HotkeyBindError;
 pub use sender::SharedSender;
 
-use crate::models::{Action, Config, Hotkey};
+use crate::models::{Action, Hotkey};
+use crate::services::config_reader::ConfigReader;
 
 pub struct HotkeyService<B: HotkeyBinder = DioxusBinder> {
     binder: B,
+    config_reader: ConfigReader,
 }
 
 impl HotkeyService<DioxusBinder> {
     pub fn new(
+        config_reader: ConfigReader,
         record_registered_sender: SharedSender<Hotkey>,
-        action_sender: SharedSender<Action>,
+        action_sender: UnboundedSender<Action>,
     ) -> Self {
         Self {
+            config_reader,
             binder: DioxusBinder::new(record_registered_sender, action_sender),
         }
     }
 }
 
 impl<B: HotkeyBinder> HotkeyService<B> {
-    fn find_conflict(config: &Config, hotkey: Hotkey) -> Option<Action> {
-        config
+    fn find_conflict(&self, hotkey: Hotkey) -> Option<Action> {
+        self.config_reader
+            .read()
             .bindings()
             .into_iter()
             .find_map(|(hk, a)| (hk == Some(hotkey)).then_some(a))
@@ -33,7 +39,6 @@ impl<B: HotkeyBinder> HotkeyService<B> {
 
     pub fn bind_hotkey(
         &mut self,
-        config: &Config,
         hotkey: Option<Hotkey>,
         existing_hotkey: Option<Hotkey>,
         action: Action,
@@ -42,11 +47,11 @@ impl<B: HotkeyBinder> HotkeyService<B> {
             return Ok(());
         }
         if let Some(hk) = hotkey
-            && let Some(conflict) = Self::find_conflict(config, hk)
+            && let Some(conflict) = self.find_conflict(hk)
         {
             return Err(HotkeyBindError::Conflict {
                 hotkey: hk,
-                conflict: conflict.describe(config),
+                conflict: conflict.describe(&self.config_reader.read()),
             });
         }
 
@@ -66,46 +71,57 @@ impl<B: HotkeyBinder> HotkeyService<B> {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::{Arc, Mutex};
+    use std::sync::{Arc, Mutex, RwLock};
 
     use global_hotkey::hotkey::{Code, Modifiers};
 
     use super::binder::tests::MockBinder;
     use super::binder::tests::MockEvent::*;
     use super::*;
+    use crate::models::Config;
+    use crate::services::ConfigService;
     use crate::services::hotkey_service::binder::tests::MockEvent;
 
     impl HotkeyService<MockBinder> {
-        fn new_mock(binder: MockBinder) -> Self {
-            Self { binder }
+        fn new_mock(config_reader: ConfigReader, binder: MockBinder) -> Self {
+            Self {
+                binder,
+                config_reader,
+            }
         }
     }
 
-    fn setup_service() -> (HotkeyService<MockBinder>, Arc<Mutex<Vec<MockEvent>>>) {
+    fn setup_service() -> (
+        Arc<RwLock<Config>>,
+        HotkeyService<MockBinder>,
+        Arc<Mutex<Vec<MockEvent>>>,
+    ) {
+        let config = Arc::new(RwLock::new(Config::default()));
+        // TODO should be tx/rx instead of arc mutex
         let events = Arc::new(Mutex::new(Vec::new()));
         let binder = MockBinder {
             events: events.clone(),
         };
-        let service = HotkeyService::new_mock(binder);
-        (service, events)
+        let config_reader = ConfigReader::new(config.clone());
+        let service = HotkeyService::new_mock(config_reader, binder);
+        (config, service, events)
     }
 
-    fn setup_group(name: &str, config: &mut Config, hotkey: Option<Hotkey>) -> Action {
-        let group_id = config.add_group(name.to_string());
-        config.set_hotkey(group_id, hotkey);
+    fn setup_group(config: Arc<RwLock<Config>>, name: &str, hotkey: Option<Hotkey>) -> Action {
+        let group_id = config.write().unwrap().add_group(name.to_string());
+        let _ = config.write().unwrap().set_hotkey(group_id, hotkey);
         Action::OpenGroup { group_id }
     }
 
     #[test]
     fn bind_hotkey_new() {
         // Arrange
-        let (mut service, events) = setup_service();
-        let mut config = Config::default();
-        let action = setup_group("Test", &mut config, None);
+        let (config, mut service, events) = setup_service();
+        let action = setup_group(config, "Test", None);
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
 
         // Act
-        let result = service.bind_hotkey(&config, Some(hotkey), None, action.clone());
+        let result = service.bind_hotkey(Some(hotkey), None, action.clone());
 
         // Assert
         assert_eq!(result, Ok(()));
@@ -115,12 +131,11 @@ mod tests {
     #[test]
     fn bind_hotkey_repeat_none() {
         // Arrange
-        let (mut service, events) = setup_service();
-        let mut config = Config::default();
-        let action = setup_group("Test", &mut config, None);
+        let (config, mut service, events) = setup_service();
+        let action = setup_group(config, "Test", None);
 
         // Act
-        let result = service.bind_hotkey(&config, None, None, action.clone());
+        let result = service.bind_hotkey(None, None, action.clone());
 
         // Assert
         assert_eq!(result, Ok(()));
@@ -130,13 +145,12 @@ mod tests {
     #[test]
     fn bind_hotkey_repeat_some() {
         // Arrange
-        let (mut service, events) = setup_service();
-        let mut config = Config::default();
-        let action = setup_group("Test", &mut config, None);
+        let (config, mut service, events) = setup_service();
+        let action = setup_group(config, "Test", None);
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
 
         // Act
-        let result = service.bind_hotkey(&config, Some(hotkey), Some(hotkey), action.clone());
+        let result = service.bind_hotkey(Some(hotkey), Some(hotkey), action.clone());
 
         // Assert
         assert_eq!(result, Ok(()));
@@ -146,15 +160,13 @@ mod tests {
     #[test]
     fn bind_hotkey_change() {
         // Arrange
-        let (mut service, events) = setup_service();
+        let (config, mut service, events) = setup_service();
         let old_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
         let new_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyG);
-        let mut config = Config::default();
-        let action = setup_group("Test", &mut config, Some(old_hotkey));
+        let action = setup_group(config, "Test", Some(old_hotkey));
 
         // Act
-        let result =
-            service.bind_hotkey(&config, Some(new_hotkey), Some(old_hotkey), action.clone());
+        let result = service.bind_hotkey(Some(new_hotkey), Some(old_hotkey), action.clone());
 
         // Assert
         assert_eq!(result, Ok(()));
@@ -167,14 +179,13 @@ mod tests {
     #[test]
     fn bind_hotkey_conflict() {
         // Arrange
-        let (mut service, events) = setup_service();
+        let (config, mut service, events) = setup_service();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
-        let mut config = Config::default();
-        setup_group("Fst", &mut config, Some(hotkey));
-        let new_action = setup_group("Snd", &mut config, None);
+        setup_group(config.clone(), "Fst", Some(hotkey));
+        let new_action = setup_group(config, "Snd", None);
 
         // Act
-        let result = service.bind_hotkey(&config, Some(hotkey), None, new_action);
+        let result = service.bind_hotkey(Some(hotkey), None, new_action);
 
         // Assert
         assert_eq!(
@@ -190,7 +201,7 @@ mod tests {
     #[test]
     fn unbind_hotkey() {
         // Arrange
-        let (mut service, events) = setup_service();
+        let (_config, mut service, events) = setup_service();
         let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
 
         // Act
