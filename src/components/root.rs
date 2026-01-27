@@ -15,14 +15,11 @@ use crate::services::{ActionService, ConfigReader, ConfigService};
 pub fn Root() -> Element {
     use_effect(move || window().set_decorations(true));
 
-    let config = Arc::new(RwLock::new(Config::default()));
-    let config_reader = ConfigReader::new(config.clone());
-    let hotkey_sender = use_hotkey_listener(config_reader);
-    let config_service = use_signal(|| ConfigService::new(config, hotkey_sender));
-
+    let config_service = use_signal(init_config_service);
     let selected = use_signal(HashSet::<Uuid>::new);
     let in_creation_group = use_signal(|| None::<Uuid>);
     use_group_list_listener(config_service, selected, in_creation_group);
+
     let active_group = use_memo(move || {
         if selected().len() == 1 {
             selected().iter().next().copied()
@@ -57,16 +54,21 @@ pub fn Root() -> Element {
     }
 }
 
-fn use_hotkey_listener(config_reader: ConfigReader) -> UnboundedSender<(Hotkey, Action)> {
-    let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
+fn init_config_service() -> ConfigService {
+    let config = Arc::new(RwLock::new(Config::default()));
+    let config_reader = ConfigReader::new(config.clone());
     let mut action_service = ActionService::new(config_reader);
-    use_listener(Callback::new(move |(hotkey, action): (Hotkey, Action)| {
+
+    let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
+    let hotkey_sender = use_listener(Callback::new(move |(hotkey, action): (Hotkey, Action)| {
         if let Some(sender) = active_recorder() {
             let _ = sender.unbounded_send(hotkey);
         } else {
             action_service.execute(&action);
         }
-    }))
+    }));
+
+    ConfigService::new(config, hotkey_sender)
 }
 
 fn use_group_list_listener(
