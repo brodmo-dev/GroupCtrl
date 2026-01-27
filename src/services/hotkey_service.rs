@@ -103,7 +103,11 @@ mod tests {
 
     fn setup_group(config: Arc<RwLock<Config>>, name: &str, hotkey: Option<Hotkey>) -> Action {
         let group_id = config.write().unwrap().add_group(name.to_string());
-        let _ = config.write().unwrap().set_hotkey(group_id, hotkey);
+        config
+            .write()
+            .unwrap()
+            .set_hotkey(group_id, hotkey)
+            .unwrap();
         Action::OpenGroup { group_id }
     }
 

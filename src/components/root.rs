@@ -62,7 +62,7 @@ fn init_config_service() -> ConfigService {
     let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
     let hotkey_sender = use_listener(Callback::new(move |(hotkey, action): (Hotkey, Action)| {
         if let Some(sender) = active_recorder() {
-            let _ = sender.unbounded_send(hotkey);
+            sender.unbounded_send(hotkey).unwrap();
         } else {
             action_service.execute(&action);
         }

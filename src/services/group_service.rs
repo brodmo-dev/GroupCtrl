@@ -34,6 +34,7 @@ impl GroupService {
     fn open_app(app: &App) {
         let result = app.open();
         if let Err(error) = result {
+            // This can fail because the app was uninstalled, etc
             error!(
                 "Could not open app '{}' due to the following error: {}",
                 app, error

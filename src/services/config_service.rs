@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use dioxus::hooks::UnboundedSender;
 use uuid::Uuid;
 
-use crate::models::{Action, Config, Hotkey};
+use crate::models::{Action, Bindable, Config, Hotkey};
 use crate::os::App;
 use crate::services::HotkeyService;
 use crate::services::config_reader::ConfigReader;
@@ -45,15 +45,15 @@ impl ConfigService {
     }
 
     pub fn set_name(&mut self, group_id: Uuid, name: String) {
-        self.config_mut().set_name(group_id, name)
+        self.config_mut().set_name(group_id, name).unwrap()
     }
 
     pub fn add_app(&mut self, group_id: Uuid, app: App) {
-        self.config_mut().add_app(group_id, app)
+        self.config_mut().add_app(group_id, app).unwrap()
     }
 
     pub fn remove_app(&mut self, group_id: Uuid, app_id: String) {
-        self.config_mut().remove_app(group_id, app_id)
+        self.config_mut().remove_app(group_id, app_id).unwrap()
     }
 
     pub fn set_hotkey(
@@ -61,10 +61,10 @@ impl ConfigService {
         group_id: Uuid,
         hotkey: Option<Hotkey>,
     ) -> Result<(), HotkeyBindError> {
-        let (existing_hotkey, action) = self.config().get_binding(group_id).unwrap();
+        let (existing_hotkey, action) = self.config().group(group_id).unwrap().binding();
         self.hotkey_service
             .bind_hotkey(hotkey, existing_hotkey, action)?;
-        self.config_mut().set_hotkey(group_id, hotkey);
+        self.config_mut().set_hotkey(group_id, hotkey).unwrap();
         Ok(())
     }
 }

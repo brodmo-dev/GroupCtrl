@@ -1,3 +1,4 @@
+use anyhow::Context;
 use uuid::Uuid;
 
 use crate::models::group::Group;
@@ -31,36 +32,41 @@ impl Config {
         self.groups.retain(|g| g.id() != group_id)
     }
 
-    pub fn group(&self, group_id: Uuid) -> Option<&Group> {
-        self.groups.iter().find(|g| g.id() == group_id)
+    pub fn group(&self, group_id: Uuid) -> anyhow::Result<&Group> {
+        self.groups
+            .iter()
+            .find(|g| g.id() == group_id)
+            .with_context(|| format!("Group {} not found", group_id))
     }
 
-    fn group_mut(&mut self, group_id: Uuid) -> &mut Group {
-        self.groups.iter_mut().find(|g| g.id() == group_id).unwrap()
+    fn group_mut(&mut self, group_id: Uuid) -> anyhow::Result<&mut Group> {
+        self.groups
+            .iter_mut()
+            .find(|g| g.id() == group_id)
+            .with_context(|| format!("Group {} not found (mut)", group_id))
     }
 
-    pub fn set_name(&mut self, group_id: Uuid, name: String) {
-        let group = self.group_mut(group_id);
+    pub fn set_name(&mut self, group_id: Uuid, name: String) -> anyhow::Result<()> {
+        let group = self.group_mut(group_id)?;
         group.name = name;
+        Ok(())
     }
 
-    pub fn add_app(&mut self, group_id: Uuid, app: App) {
-        let group = self.group_mut(group_id);
-        group.add_app(app)
-    }
-
-    pub fn remove_app(&mut self, group_id: Uuid, app_id: String) {
-        let group = self.group_mut(group_id);
-        group.remove_app(app_id)
-    }
-
-    pub fn get_binding(&self, group_id: Uuid) -> Option<(Option<Hotkey>, Action)> {
-        let group = self.group(group_id)?;
-        Some(group.binding())
-    }
-
-    pub fn set_hotkey(&mut self, group_id: Uuid, hotkey: Option<Hotkey>) {
-        let group = self.group_mut(group_id);
+    pub fn set_hotkey(&mut self, group_id: Uuid, hotkey: Option<Hotkey>) -> anyhow::Result<()> {
+        let group = self.group_mut(group_id)?;
         group.hotkey = hotkey;
+        Ok(())
+    }
+
+    pub fn add_app(&mut self, group_id: Uuid, app: App) -> anyhow::Result<()> {
+        let group = self.group_mut(group_id)?;
+        group.add_app(app);
+        Ok(())
+    }
+
+    pub fn remove_app(&mut self, group_id: Uuid, app_id: String) -> anyhow::Result<()> {
+        let group = self.group_mut(group_id)?;
+        group.remove_app(app_id);
+        Ok(())
     }
 }

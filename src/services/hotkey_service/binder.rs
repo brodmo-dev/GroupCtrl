@@ -33,7 +33,9 @@ impl HotkeyBinder for DioxusBinder {
         let my_action = action.clone();
         let callback = move |state| {
             if state == Pressed {
-                let _ = my_hotkey_sender.unbounded_send((hotkey, my_action.clone()));
+                my_hotkey_sender
+                    .unbounded_send((hotkey, my_action.clone()))
+                    .unwrap();
             }
         };
         let handle = window()
