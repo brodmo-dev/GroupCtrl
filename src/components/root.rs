@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::components::group_config::GroupConfig;
 use crate::components::lists::{GroupList, ListOperation};
-use crate::components::util::spawn_listener;
+use crate::components::util::use_listener;
 use crate::models::{Action, Config, Hotkey};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 
@@ -60,15 +60,13 @@ pub fn Root() -> Element {
 fn use_hotkey_listener(config_reader: ConfigReader) -> UnboundedSender<(Hotkey, Action)> {
     let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
     let mut action_service = ActionService::new(config_reader);
-    spawn_listener(EventHandler::new(
-        move |(hotkey, action): (Hotkey, Action)| {
-            if let Some(sender) = active_recorder() {
-                let _ = sender.unbounded_send(hotkey);
-            } else {
-                action_service.execute(&action);
-            }
-        },
-    ))
+    use_listener(Callback::new(move |(hotkey, action): (Hotkey, Action)| {
+        if let Some(sender) = active_recorder() {
+            let _ = sender.unbounded_send(hotkey);
+        } else {
+            action_service.execute(&action);
+        }
+    }))
 }
 
 fn use_group_list_listener(
@@ -76,21 +74,19 @@ fn use_group_list_listener(
     mut selected: Signal<HashSet<Uuid>>,
     mut in_creation_group: Signal<Option<Uuid>>,
 ) {
-    spawn_listener(EventHandler::new(
-        move |list_operation: ListOperation<Uuid>| {
-            selected.write().clear();
-            match list_operation {
-                ListOperation::Add => {
-                    let group_id = config_service.write().add_group("New Group".to_string());
-                    selected.write().insert(group_id);
-                    in_creation_group.set(Some(group_id));
-                }
-                ListOperation::Remove(groups) => {
-                    for group_id in groups {
-                        config_service.write().remove_group(group_id);
-                    }
+    use_listener(Callback::new(move |list_operation: ListOperation<Uuid>| {
+        selected.write().clear();
+        match list_operation {
+            ListOperation::Add => {
+                let group_id = config_service.write().add_group("New Group".to_string());
+                selected.write().insert(group_id);
+                in_creation_group.set(Some(group_id));
+            }
+            ListOperation::Remove(groups) => {
+                for group_id in groups {
+                    config_service.write().remove_group(group_id);
                 }
             }
-        },
-    ));
+        }
+    }));
 }

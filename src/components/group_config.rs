@@ -4,7 +4,7 @@ use dioxus::prelude::*;
 use uuid::Uuid;
 
 use crate::components::lists::{AppList, ListOperation};
-use crate::components::util::{EditableText, HotkeyPicker, InputMode, spawn_listener};
+use crate::components::util::{EditableText, HotkeyPicker, InputMode, use_listener};
 use crate::os::{AppSelection, System};
 use crate::services::ConfigService;
 
@@ -32,7 +32,7 @@ pub fn GroupConfig(
     use_app_list_listener(config_service, group_id);
 
     let list_operation_tx = use_coroutine_handle::<ListOperation<Uuid>>();
-    let on_cancel = EventHandler::new(move |_| {
+    let on_cancel = Callback::new(move |_| {
         let selected = HashSet::from([group_id]);
         list_operation_tx.send(ListOperation::Remove(selected));
     });
@@ -67,20 +67,18 @@ pub fn GroupConfig(
 }
 
 fn use_app_list_listener(mut config_service: Signal<ConfigService>, group_id: Uuid) {
-    spawn_listener(EventHandler::new(
-        move |list_operation| match list_operation {
-            ListOperation::Add => {
-                spawn(async move {
-                    if let Ok(Some(app)) = System::select_app().await {
-                        config_service.write().add_app(group_id, app)
-                    }
-                });
-            }
-            ListOperation::Remove(apps) => {
-                for app_id in apps {
-                    config_service.write().remove_app(group_id, app_id);
+    use_listener(Callback::new(move |list_operation| match list_operation {
+        ListOperation::Add => {
+            spawn(async move {
+                if let Ok(Some(app)) = System::select_app().await {
+                    config_service.write().add_app(group_id, app)
                 }
+            });
+        }
+        ListOperation::Remove(apps) => {
+            for app_id in apps {
+                config_service.write().remove_app(group_id, app_id);
             }
-        },
-    ));
+        }
+    }));
 }

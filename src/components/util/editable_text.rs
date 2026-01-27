@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 #[derive(PartialEq, Clone, Copy)]
 pub enum InputMode {
     Edit,
-    Create { on_cancel: EventHandler<()> },
+    Create { on_cancel: Callback<()> },
 }
 
 #[component]

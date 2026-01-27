@@ -2,15 +2,12 @@ use std::rc::Rc;
 
 use dioxus::prelude::*;
 
-use crate::components::util::spawn_listener;
+use crate::components::util::use_listener;
 use crate::models::Hotkey;
 use crate::util::is_modifier;
 
 #[component]
-pub fn HotkeyPicker(
-    mut hotkey: Option<Hotkey>,
-    set_hotkey: EventHandler<Option<Hotkey>>,
-) -> Element {
+pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotkey>>) -> Element {
     let mut recording = use_signal(|| false);
     use_record_registered(recording, set_hotkey);
     let onkeydown = move |evt: KeyboardEvent| record_unregistered(recording, set_hotkey, evt);
@@ -57,7 +54,7 @@ pub fn HotkeyPicker(
 
 fn record_unregistered(
     mut recording: Signal<bool>,
-    set_hotkey: EventHandler<Option<Hotkey>>,
+    set_hotkey: Callback<Option<Hotkey>>,
     evt: KeyboardEvent,
 ) {
     let code = evt.code();
@@ -77,9 +74,9 @@ fn record_unregistered(
     recording.set(false);
 }
 
-fn use_record_registered(mut recording: Signal<bool>, set_hotkey: EventHandler<Option<Hotkey>>) {
+fn use_record_registered(mut recording: Signal<bool>, set_hotkey: Callback<Option<Hotkey>>) {
     let mut active_recorder = use_context::<Signal<Option<UnboundedSender<Hotkey>>>>();
-    let recorder = spawn_listener(EventHandler::new(move |hotkey| {
+    let recorder = use_listener(Callback::new(move |hotkey| {
         set_hotkey.call(Some(hotkey));
         recording.set(false);
     }));
