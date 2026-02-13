@@ -1,4 +1,5 @@
 mod app;
+mod app_observer;
 mod app_openable;
 mod app_query;
 mod app_selection;

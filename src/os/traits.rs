@@ -27,3 +27,7 @@ pub trait Openable {
 pub trait ConfigDir {
     fn config_dir() -> PathBuf;
 }
+
+pub trait AppObserver {
+    fn observe_app_activations() -> std::sync::mpsc::Receiver<String>;
+}
