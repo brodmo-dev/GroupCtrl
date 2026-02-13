@@ -29,7 +29,11 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
                 span { class: "opacity-50", "None" }
             },
             Some(key) => rsx! {
-                span { class: "text-base-content", "{key}" }
+                span { class: "text-base-content gap-0.5 flex",
+                    for part in key.show_parts() {
+                        kbd { class: "kbd kbd-sm", "{part}" }
+                    }
+                }
             },
         }
     };
