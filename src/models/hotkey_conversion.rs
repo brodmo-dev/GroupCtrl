@@ -1,5 +1,4 @@
 use global_hotkey::hotkey::{Code, Modifiers};
-use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
 use super::Hotkey;
 use crate::os::{KeyboardBehavior, ModifierFormat, System};
@@ -11,27 +10,20 @@ pub(super) fn show_hotkey_parts(hotkey: &Hotkey) -> Vec<String> {
     hotkey_to_string_vec(hotkey.mods, hotkey.key, System::gui_modifier_format())
 }
 
-impl Serialize for Hotkey {
-    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-    where
-        S: Serializer,
-    {
-        let vec = hotkey_to_string_vec(self.mods, self.key, System::serde_modifier_format());
-        serializer.serialize_str(&vec.join(SERDE_SEP))
+impl From<Hotkey> for String {
+    fn from(hotkey: Hotkey) -> Self {
+        hotkey_to_string_vec(hotkey.mods, hotkey.key, System::serde_modifier_format())
+            .join(SERDE_SEP)
     }
 }
 
-impl<'de> Deserialize<'de> for Hotkey {
-    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
-        let s = String::deserialize(deserializer)?;
+impl From<String> for Hotkey {
+    fn from(s: String) -> Self {
         let parts: Vec<&str> = s.split(SERDE_SEP).collect();
         let (mod_parts, key_part) = parts.split_at(parts.len() - 1);
         let mods = parse_mods(mod_parts, System::serde_modifier_format());
         let key = parse_key(key_part[0]);
-        Ok(Hotkey::new(mods, key))
+        Hotkey::new(mods, key)
     }
 }
 

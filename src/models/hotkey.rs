@@ -1,10 +1,12 @@
 use std::fmt::{Display, Formatter};
 
 use global_hotkey::hotkey::{Code, HotKey as GlobalHotkey, Modifiers};
+use serde::{Deserialize, Serialize};
 
 use crate::models::hotkey_conversion::show_hotkey_parts;
 
-#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(into = "String", from = "String")]
 pub struct Hotkey {
     pub(super) mods: Modifiers,
     pub(super) key: Code,
