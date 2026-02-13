@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use super::Config;
 use crate::os::{ConfigDir, System};
 
-const PERSISTENCE_DIR_NAME: &str = "GroupCtrl";
+const PERSISTENCE_DIR_NAME: &str = "groupctrl";
 const CONFIG_FILE_NAME: &str = "config.yaml";
 
 impl Config {
