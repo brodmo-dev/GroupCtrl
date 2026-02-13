@@ -1,5 +1,5 @@
 use std::collections::VecDeque;
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, RwLock};
 use std::thread;
 
 use log::error;
@@ -14,12 +14,12 @@ const MAX_HISTORY: usize = 1024; // Prevent potential memory leak
 #[derive(Clone)]
 pub struct GroupService {
     config_reader: ConfigReader,
-    history: Arc<Mutex<VecDeque<String>>>,
+    history: Arc<RwLock<VecDeque<String>>>,
 }
 
 impl GroupService {
     pub fn new(config_reader: ConfigReader) -> Self {
-        let history = Arc::new(Mutex::new(VecDeque::new()));
+        let history = Arc::new(RwLock::new(VecDeque::new()));
         Self::spawn_history_writer(history.clone());
         Self {
             config_reader,
@@ -27,11 +27,11 @@ impl GroupService {
         }
     }
 
-    fn spawn_history_writer(history: Arc<Mutex<VecDeque<String>>>) {
+    fn spawn_history_writer(history: Arc<RwLock<VecDeque<String>>>) {
         let rx = System::observe_app_activations();
         thread::spawn(move || {
             for app_id in rx {
-                let mut history = history.lock().unwrap();
+                let mut history = history.write().unwrap();
                 history.retain(|aid| aid != &app_id);
                 history.push_front(app_id);
                 history.truncate(MAX_HISTORY);
@@ -59,7 +59,7 @@ impl GroupService {
 
     fn most_recent_app(&self, apps: &[App]) -> Option<App> {
         self.history
-            .lock()
+            .read()
             .unwrap()
             .iter()
             .find_map(|id| apps.iter().find(|a| a.id() == *id))
