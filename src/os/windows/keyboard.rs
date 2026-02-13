@@ -1,14 +1,23 @@
 use global_hotkey::hotkey::Modifiers;
 
-use crate::os::{KeyboardBehavior, System};
+use crate::os::{KeyboardBehavior, ModifierFormat, System};
 
 impl KeyboardBehavior for System {
-    fn modifier_format() -> [(Modifiers, &'static str); 4] {
+    fn serde_modifier_format() -> ModifierFormat {
         [
-            (Modifiers::CONTROL, "Ctrl+"),
-            (Modifiers::SUPER, "Win+"),
-            (Modifiers::ALT, "Alt+"),
-            (Modifiers::SHIFT, "Shift+"),
+            (Modifiers::CONTROL, "Ctrl"),
+            (Modifiers::META, "Win"),
+            (Modifiers::ALT, "Alt"),
+            (Modifiers::SHIFT, "Shift"),
+        ]
+    }
+
+    fn gui_modifier_format() -> ModifierFormat {
+        [
+            (Modifiers::META, "Win"),
+            (Modifiers::CONTROL, "Ctrl"),
+            (Modifiers::ALT, "Alt"),
+            (Modifiers::SHIFT, "Shift"),
         ]
     }
 

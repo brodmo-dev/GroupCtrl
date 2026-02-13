@@ -116,7 +116,7 @@ mod tests {
         // Arrange
         let (config, mut service, rx) = setup_service();
         let action = setup_group(config, "Test", None);
-        let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
+        let hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyF);
 
         // Act
         let result = service.bind_hotkey(Some(hotkey), None, action.clone());
@@ -148,7 +148,7 @@ mod tests {
         // Arrange
         let (config, mut service, rx) = setup_service();
         let action = setup_group(config, "Test", None);
-        let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
+        let hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyF);
 
         // Act
         let result = service.bind_hotkey(Some(hotkey), Some(hotkey), action.clone());
@@ -162,8 +162,8 @@ mod tests {
     fn bind_hotkey_change() {
         // Arrange
         let (config, mut service, rx) = setup_service();
-        let old_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
-        let new_hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyG);
+        let old_hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyF);
+        let new_hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyG);
         let action = setup_group(config, "Test", Some(old_hotkey));
 
         // Act
@@ -181,7 +181,7 @@ mod tests {
     fn bind_hotkey_conflict() {
         // Arrange
         let (config, mut service, rx) = setup_service();
-        let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
+        let hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyF);
         setup_group(config.clone(), "Fst", Some(hotkey));
         let new_action = setup_group(config, "Snd", None);
 
@@ -203,7 +203,7 @@ mod tests {
     fn unbind_hotkey() {
         // Arrange
         let (_config, mut service, rx) = setup_service();
-        let hotkey = Hotkey::new(Modifiers::SUPER | Modifiers::SHIFT, Code::KeyF);
+        let hotkey = Hotkey::new(Modifiers::META | Modifiers::SHIFT, Code::KeyF);
 
         // Act
         service.unbind_hotkey(Some(hotkey));

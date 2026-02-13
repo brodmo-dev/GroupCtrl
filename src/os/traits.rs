@@ -4,8 +4,11 @@ use global_hotkey::hotkey::Modifiers;
 
 use crate::os::App;
 
+pub type ModifierFormat = [(Modifiers, &'static str); 4];
+
 pub trait KeyboardBehavior {
-    fn modifier_format() -> [(Modifiers, &'static str); 4];
+    fn serde_modifier_format() -> ModifierFormat;
+    fn gui_modifier_format() -> ModifierFormat;
     fn is_multi_select(modifiers: Modifiers) -> bool;
 }
 

@@ -3,6 +3,7 @@ mod config;
 mod config_persistence;
 mod group;
 mod hotkey;
+mod hotkey_conversion;
 mod traits;
 
 pub use action::{Action, Bindable};
