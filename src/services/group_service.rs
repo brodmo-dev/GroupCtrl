@@ -40,31 +40,32 @@ impl GroupService {
     }
 
     pub async fn open(&self, group_id: Uuid) {
-        let apps = self
-            .config_reader
-            .read()
-            .group(group_id)
-            .unwrap()
-            .apps()
-            .clone();
-        if let Ok(Some(current)) = System::current_app()
-            && let Some(pos) = apps.iter().position(|app| app == &current)
+        let group = self.config_reader.read().group(group_id).unwrap().clone();
+        let apps = group.apps();
+        if let Some(app) = self
+            .next_app(apps)
+            .or_else(|| group.main_app().cloned())
+            .or_else(|| self.find_in_history(apps)) // most recent
+            .or_else(|| apps.first().cloned())
         {
-            let next_pos = (pos + 1) % apps.len();
-            Self::open_app(&apps[next_pos]).await;
-        } else if let Some(app) = self.most_recent_app(&apps) {
             Self::open_app(&app).await;
         }
     }
 
-    fn most_recent_app(&self, apps: &[App]) -> Option<App> {
+    fn next_app(&self, apps: &[App]) -> Option<App> {
+        let current = System::current_app().ok()??;
+        let pos = apps.iter().position(|app| app == &current)?;
+        let next_pos = (pos + 1) % apps.len();
+        Some(apps[next_pos].clone())
+    }
+
+    fn find_in_history(&self, apps: &[App]) -> Option<App> {
         self.history
             .read()
             .unwrap()
             .iter()
             .find_map(|id| apps.iter().find(|a| a.id() == *id))
             .cloned()
-            .or_else(|| apps.first().cloned())
     }
 
     async fn open_app(app: &App) {

@@ -66,6 +66,11 @@ impl ConfigService {
         self.save();
     }
 
+    pub fn set_main_app(&mut self, group_id: Uuid, app: Option<App>) {
+        self.config_mut().set_main_app(group_id, app).unwrap();
+        self.save();
+    }
+
     pub fn set_hotkey(
         &mut self,
         group_id: Uuid,

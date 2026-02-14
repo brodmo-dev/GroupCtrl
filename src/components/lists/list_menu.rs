@@ -8,8 +8,8 @@ pub enum ListOperation<I>
 where
     I: Clone + Eq + Hash + 'static,
 {
-    Add, // adding is interactive
-    Remove(HashSet<I>),
+    Add,                // adding is interactive
+    Remove(HashSet<I>), // TODO remove HashSet
 }
 
 #[component]

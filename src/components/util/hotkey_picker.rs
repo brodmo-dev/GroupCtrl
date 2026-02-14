@@ -38,14 +38,14 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
         }
     };
     let btn_class = if recording() {
-        "btn-neutral" // Slightly darker than btn-outline hover
+        "btn-neutral"
     } else {
         "btn-outline"
     };
     rsx! {
         div {
             role: "button",
-            class: "btn btn-sm btn-wide {btn_class}",
+            class: "btn btn-sm flex-1 {btn_class}",
             tabindex: 0,
             onmounted: move |evt| input_handle.set(Some(evt.data())),
             onclick: move |_| recording.set(true),

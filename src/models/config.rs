@@ -70,4 +70,10 @@ impl Config {
         group.remove_app(app_id);
         Ok(())
     }
+
+    pub fn set_main_app(&mut self, group_id: Uuid, app: Option<App>) -> anyhow::Result<()> {
+        let group = self.group_mut(group_id)?;
+        group.set_main_app(app);
+        Ok(())
+    }
 }

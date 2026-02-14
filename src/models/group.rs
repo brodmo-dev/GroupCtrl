@@ -14,6 +14,7 @@ pub struct Group {
     pub name: String,
     pub hotkey: Option<Hotkey>,
     apps: Vec<App>,
+    main_app: Option<App>,
 }
 
 impl Identifiable<Uuid> for Group {
@@ -29,6 +30,7 @@ impl Group {
             name,
             hotkey: None,
             apps: Vec::new(),
+            main_app: None,
         }
     }
 
@@ -36,12 +38,23 @@ impl Group {
         &self.apps
     }
 
+    pub fn main_app(&self) -> Option<&App> {
+        self.main_app.as_ref()
+    }
+
     pub(super) fn add_app(&mut self, app: App) {
         self.apps.push(app);
     }
 
     pub(super) fn remove_app(&mut self, app_id: String) {
+        if self.main_app.as_ref().map(|a| a.id()).as_deref() == Some(&app_id) {
+            self.main_app = None;
+        }
         self.apps.retain(|a| a.id() != app_id)
+    }
+
+    pub(super) fn set_main_app(&mut self, app: Option<App>) {
+        self.main_app = app;
     }
 }
 

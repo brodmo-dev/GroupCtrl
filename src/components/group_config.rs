@@ -4,7 +4,9 @@ use dioxus::prelude::*;
 use uuid::Uuid;
 
 use crate::components::lists::{AppList, ListOperation};
-use crate::components::util::{EditableText, HotkeyPicker, InputMode, use_listener};
+use crate::components::util::{
+    EditableText, HotkeyPicker, InputMode, LabeledRow, MainAppPicker, use_listener,
+};
 use crate::os::{AppSelection, System};
 use crate::services::ConfigService;
 
@@ -27,6 +29,9 @@ pub fn GroupConfig(
         let result = config_service.write().set_hotkey(group_id, hotkey);
         set_hotkey_result.set(result);
     };
+    let set_main_app = Callback::new(move |app| {
+        config_service.write().set_main_app(group_id, app);
+    });
     let name = use_signal(|| group().name.clone());
     use_effect(move || config_service.write().set_name(group_id, name()));
     use_app_list_listener(config_service, group_id);
@@ -54,11 +59,22 @@ pub fn GroupConfig(
                 placeholder: "Group name".to_string(),
                 starting_mode: input_mode()
             }
-            HotkeyPicker { hotkey: group().hotkey, set_hotkey },
+            LabeledRow {
+                label: "On".to_string(),
+                HotkeyPicker { hotkey: group().hotkey, set_hotkey },
+            }
             if let Err(error) = set_hotkey_result() {
                 span {
                     class: "text-xs text-error",
                     "{error}"
+                }
+            }
+            LabeledRow {
+                label: "Open".to_string(),
+                MainAppPicker {
+                    apps: group().apps().to_vec(),
+                    main_app: group().main_app().cloned(),
+                    set_main_app: set_main_app,
                 }
             }
             AppList { apps: group().apps().to_vec() }
