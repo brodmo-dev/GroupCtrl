@@ -2,6 +2,7 @@ use std::collections::HashSet;
 use std::hash::Hash;
 
 use dioxus::prelude::*;
+use lucide_dioxus::{Minus, Plus};
 
 use crate::ui::util::SmallButton;
 
@@ -30,8 +31,8 @@ where
     rsx! {
         div {
             class: "flex items-center gap-1",
-            SmallButton { onclick: add, "+" }
-            SmallButton { onclick: remove, "-" }
+            SmallButton { onclick: add, Plus {} }
+            SmallButton { onclick: remove, Minus {} }
         }
     }
 }

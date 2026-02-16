@@ -15,6 +15,7 @@ dependencies = [
  "futures-util",
  "global-hotkey",
  "log",
+ "lucide-dioxus",
  "objc2",
  "objc2-app-kit",
  "objc2-foundation",
@@ -2154,6 +2155,15 @@ name = "longest-increasing-subsequence"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b3bd0dd2cd90571056fdb71f6275fada10131182f84899f4b2a916e565d81d86"
+
+[[package]]
+name = "lucide-dioxus"
+version = "2.564.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f5a635861cc50135801ddda1a4553d72f456af0f4c7758f8b2f52a964b39fc5"
+dependencies = [
+ "dioxus",
+]
 
 [[package]]
 name = "mac"

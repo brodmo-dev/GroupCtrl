@@ -3,6 +3,7 @@ use std::sync::{Arc, RwLock};
 
 use dioxus::desktop::window;
 use dioxus::prelude::*;
+use lucide_dioxus::{Minus, Plus};
 use uuid::Uuid;
 
 use crate::components::sidebar::*;
@@ -50,22 +51,19 @@ pub fn Root() -> Element {
                     collapsible: SidebarCollapsible::None,
 
                     SidebarHeader {
-                        class: "!p-1",
+                        class: "!p-2 !pb-0",
                         div {
                             class: "flex items-center justify-between w-full",
-                            span {
-                                class: "sidebar-group-label !pt-1.5",
-                                "Groups"
-                            }
+                            span { class: "label p-1", "Groups" }
                             div {
                                 class: "flex items-center gap-1",
-                                SmallButton { onclick: add, "+" }
-                                SmallButton { onclick: remove, "-" }
+                                SmallButton { onclick: add, Plus {} }
+                                SmallButton { onclick: remove, Minus {} }
                             }
                         }
                     }
                     SidebarContent {
-                        SidebarGroup { class: "!p-1",
+                        SidebarGroup { class: "!p-2 !pt-1",
                             SidebarGroupContent {
                                 SidebarMenu {
                                     for group in groups {

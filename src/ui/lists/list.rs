@@ -19,15 +19,15 @@ where
             class: "flex flex-col flex-1 min-h-0 rounded-xl",
             style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
             div {
-                class: "flex items-center justify-between w-full !p-1",
+                class: "flex items-center justify-between w-full !p-2 !pb-0",
                 span {
-                    class: "sidebar-group-label !pt-1.5",
+                    class: "label p-1",
                     "{title}"
                 }
                 ListMenu { selected }
             }
             div {
-                class: "sidebar-group !p-1 flex-1 min-h-0",
+                class: "sidebar-group !p-2 !pt-1 flex-1 min-h-0",
                 "data-sidebar": "group",
                 div {
                     class: "sidebar-group-content flex-1 min-h-0",
