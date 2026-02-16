@@ -62,7 +62,7 @@ pub fn EditableText(
 
     rsx! {
         Input {
-            class: "input text-sm",
+            class: "input",
             value: "{draft}",
             placeholder: "{placeholder}",
             onmounted: move |evt: MountedEvent| input_handle.set(Some(evt.data())),

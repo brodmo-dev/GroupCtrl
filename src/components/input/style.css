@@ -32,8 +32,7 @@
 
 .input:hover:not(:disabled),
 .input:focus-visible {
-  background: var(--light, var(--primary-color-4))
-    var(--dark, color-mix(in oklab, #FFFFFF26 50%, transparent));
+  background-color: var(--primary-color-5);
   color: var(--secondary-color-1);
   outline: none;
 }

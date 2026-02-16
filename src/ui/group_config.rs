@@ -49,17 +49,17 @@ pub fn GroupConfig(
 
     rsx! {
         div {
-            class: "flex flex-col gap-2 flex-1 min-h-0 p-2",
-            style: "max-width: var(--sidebar-width);",
-            EditableText {
-                text: name,
-                placeholder: "Group name".to_string(),
-                starting_mode: input_mode()
-            }
+            class: "flex flex-col gap-2 flex-1 min-h-0 p-2 w-full",
             div {
-                class: "grid items-center gap-2",
+                class: "text-sm grid items-center gap-2",
                 style: "grid-template-columns: auto 1fr;",
-                Label { html_for: "hotkey-picker", "On" }
+                Label { html_for: "editable-text", "Name" }
+                EditableText {
+                    text: name,
+                    placeholder: "Group name".to_string(),
+                    starting_mode: input_mode()
+                }
+                Label { html_for: "hotkey-picker", "Hotkey" }
                 HotkeyPicker { hotkey: group().hotkey, set_hotkey }
                 if let Err(error) = set_hotkey_result() {
                     div {}
@@ -68,7 +68,7 @@ pub fn GroupConfig(
                         "{error}"
                     }
                 }
-                Label { html_for: "main-app-picker", "Open" }
+                Label { html_for: "main-app-picker", "Target" }
                 MainAppPicker {
                     apps: group().apps().to_vec(),
                     main_app: group().main_app().cloned(),
