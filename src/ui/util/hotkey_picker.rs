@@ -22,12 +22,12 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
 
     let label = if recording() {
         rsx! {
-            span { class: "opacity-75 text-xs", "Recording..." }
+            span { class: "opacity-75", "Recording..." }
         }
     } else {
         match hotkey {
             None => rsx! {
-                span { class: "opacity-50 text-xs", "None" }
+                span { class: "opacity-50", "None" }
             },
             Some(key) => rsx! {
                 span { class: "gap-0.5 flex justify-center",
