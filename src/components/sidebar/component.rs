@@ -11,7 +11,7 @@ use crate::components::sheet::{
 use crate::components::tooltip::{Tooltip, TooltipContent, TooltipTrigger};
 
 // constants
-const SIDEBAR_WIDTH: &str = "200px";
+const SIDEBAR_WIDTH: &str = "16rem";
 const SIDEBAR_WIDTH_MOBILE: &str = "18rem";
 const SIDEBAR_WIDTH_ICON: &str = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT: &str = "b";

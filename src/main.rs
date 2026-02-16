@@ -57,7 +57,7 @@ fn main() {
                     WindowBuilder::new()
                         .with_decorations(false)
                         .with_always_on_top(false)
-                        .with_inner_size(LogicalSize::new(520, 400))
+                        .with_inner_size(LogicalSize::new(500, 400))
                         .with_min_inner_size(LogicalSize::new(400, 400))
                         .with_max_inner_size(LogicalSize::new(600, 600))
                         .with_title("GroupCtrl"),

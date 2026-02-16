@@ -49,10 +49,10 @@ pub fn GroupConfig(
 
     rsx! {
         div {
-            class: "flex flex-col gap-2 flex-1 min-h-0 p-2 w-full",
+            class: "flex flex-col gap-2 flex-1 min-h-0 min-w-0 p-2",
             div {
                 class: "text-sm grid items-center gap-2",
-                style: "grid-template-columns: auto 1fr;",
+                style: "grid-template-columns: auto minmax(0, 1fr);",
                 Label { html_for: "editable-text", "Name" }
                 EditableText {
                     text: name,

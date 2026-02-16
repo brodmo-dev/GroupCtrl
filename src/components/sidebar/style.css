@@ -152,7 +152,8 @@
 
 .sidebar-static {
   display: flex;
-  width: var(--sidebar-width);
+  flex: 2 1 0%;
+  max-width: var(--sidebar-width);
   height: 100%;
   flex-direction: column;
   background: var(--sidebar-background);
@@ -266,8 +267,8 @@
 .sidebar-inset {
   position: relative;
   display: flex;
-  width: 100%;
-  flex: 1 1 0%;
+  min-width: 0;
+  flex: 3 1 0%;
   flex-direction: column;
   background: var(--primary-color-1);
 }
