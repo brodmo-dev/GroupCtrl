@@ -25,9 +25,10 @@ fn resolve_app_path(bundle_id: &str) -> Option<String> {
 }
 
 fn resolve_name(app_path: &str) -> Option<String> {
-    let ns_path = NSString::from_str(app_path);
-    let name = NSFileManager::defaultManager().displayNameAtPath(&ns_path);
-    Some(name.to_string())
+    let name = NSFileManager::defaultManager()
+        .displayNameAtPath(&NSString::from_str(app_path))
+        .to_string();
+    Some(name.strip_suffix(".app").unwrap_or(&name).to_string())
 }
 
 fn heuristic_name(bundle_id: &str) -> String {
@@ -38,9 +39,6 @@ fn heuristic_name(bundle_id: &str) -> String {
 fn convert_icon(app_path: &str, bundle_id: &str) -> Option<PathBuf> {
     let dir = crate::os::icons_dir();
     let png_path = dir.join(format!("{bundle_id}.png"));
-    // if png_path.metadata().is_ok() {
-    //     return Some(png_path);
-    // }
     std::fs::create_dir_all(&dir).ok()?;
     let ns_path = NSString::from_str(app_path);
     let image = NSWorkspace::sharedWorkspace().iconForFile(&ns_path);
