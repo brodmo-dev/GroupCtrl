@@ -7,4 +7,5 @@ pub mod select;
 pub mod separator;
 pub mod sheet;
 pub mod sidebar;
+pub mod toast;
 pub mod tooltip;

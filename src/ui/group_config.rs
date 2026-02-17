@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use dioxus_primitives::toast::{ToastOptions, consume_toast};
 use uuid::Uuid;
 
 use crate::components::label::Label;
@@ -23,10 +24,13 @@ pub fn GroupConfig(
     });
     let name = use_signal(|| group().name.clone());
     use_effect(move || config_service.write().set_name(group_id, name()));
-    let mut set_hotkey_result = use_signal(|| Ok(()));
     let set_hotkey = move |hotkey| {
-        let result = config_service.write().set_hotkey(group_id, hotkey);
-        set_hotkey_result.set(result);
+        if let Err(error) = config_service.write().set_hotkey(group_id, hotkey) {
+            consume_toast().error(
+                "Error binding hotkey".to_string(),
+                ToastOptions::new().description(error.to_string()),
+            );
+        }
     };
     let set_target = Callback::new(move |app| {
         config_service.write().set_target(group_id, app);
@@ -61,13 +65,6 @@ pub fn GroupConfig(
                 }
                 Label { html_for: "hotkey-picker", "Hotkey" }
                 HotkeyPicker { hotkey: group().hotkey, set_hotkey }
-                if let Err(error) = set_hotkey_result() {
-                    div {}
-                    span {
-                        class: "text-xs text-error",
-                        "{error}"
-                    }
-                }
                 Label { html_for: "target-picker", "Target" }
                 TargetPicker {
                     apps: group().apps().to_vec(),

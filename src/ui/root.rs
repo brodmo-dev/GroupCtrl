@@ -8,6 +8,7 @@ use uuid::Uuid;
 
 use crate::components::label::Label;
 use crate::components::sidebar::*;
+use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 use crate::ui::group_config::GroupConfig;
@@ -45,6 +46,7 @@ pub fn Root() -> Element {
     rsx! {
         div {
             "data-theme": "dim",
+            ToastProvider {
             SidebarProvider {
                 Sidebar {
                     side: SidebarSide::Left,
@@ -91,6 +93,7 @@ pub fn Root() -> Element {
                     }
                 }
             }
+        }
         }
     }
 }
