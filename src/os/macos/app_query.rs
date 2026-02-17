@@ -7,8 +7,6 @@ impl AppQuery for System {
         Ok(NSWorkspace::sharedWorkspace()
             .frontmostApplication()
             .and_then(|app| app.bundleIdentifier())
-            .map(|bid| App {
-                bundle_id: bid.to_string(),
-            }))
+            .map(|bid| App::from(bid.to_string())))
     }
 }

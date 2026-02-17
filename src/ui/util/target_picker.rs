@@ -1,7 +1,8 @@
 use dioxus::prelude::*;
 
+use super::AppLabel;
 use crate::components::select::*;
-use crate::os::App;
+use crate::os::{App, AppMetadata};
 
 #[component]
 pub fn TargetPicker(
@@ -9,21 +10,19 @@ pub fn TargetPicker(
     target: Option<App>,
     set_target: Callback<Option<App>>,
 ) -> Element {
-    let placeholder = match &target {
-        Some(app) => app.to_string(),
-        None => "(Most Recent)".to_string(),
-    };
-    let value: Option<Option<Option<App>>> = Some(Some(target));
+    let value: Option<Option<Option<App>>> = Some(Some(target.clone()));
     rsx! {
         div { class: "flex-1",
         Select::<Option<App>> {
             value,
-            placeholder,
             on_value_change: move |choice: Option<Option<App>>| {
                 set_target.call(choice.flatten());
             },
             SelectTrigger {
-                SelectValue {}
+                match &target {
+                    Some(app) => rsx! { AppLabel { app: app.clone() } },
+                    None => rsx! { span { "(Most Recent)" } },
+                }
             }
             SelectList {
                 SelectOption::<Option<App>> {
@@ -35,9 +34,9 @@ pub fn TargetPicker(
                 for (i, app) in apps.iter().enumerate() {
                     SelectOption::<Option<App>> {
                         value: Some(app.clone()),
-                        text_value: app.to_string(),
+                        text_value: app.name().to_string(),
                         index: i + 1,
-                        "{app}"
+                        AppLabel { app: app.clone() }
                     }
                 }
             }

@@ -1,4 +1,4 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 
 use global_hotkey::hotkey::Modifiers;
 
@@ -13,6 +13,10 @@ pub trait KeyboardBehavior {
     fn is_multi_select(modifiers: Modifiers) -> bool;
 }
 
+pub trait ConfigDir {
+    fn config_dir() -> PathBuf;
+}
+
 pub trait AppQuery {
     fn current_app() -> anyhow::Result<Option<App>>;
 }
@@ -25,8 +29,9 @@ pub trait Openable {
     async fn open(&self) -> anyhow::Result<()>;
 }
 
-pub trait ConfigDir {
-    fn config_dir() -> PathBuf;
+pub trait AppMetadata {
+    fn name(&self) -> &str;
+    fn icon_path(&self) -> Option<&Path>;
 }
 
 pub trait AppObserver {

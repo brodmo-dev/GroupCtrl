@@ -3,8 +3,8 @@ use std::collections::HashSet;
 use dioxus::prelude::*;
 
 use super::list::{List, Renderable};
-use crate::models::Identifiable;
 use crate::os::App;
+use crate::ui::util::AppLabel;
 
 #[component]
 pub fn AppList(apps: Vec<App>) -> Element {
@@ -22,8 +22,6 @@ pub fn AppList(apps: Vec<App>) -> Element {
 
 impl Renderable<String> for App {
     fn render(&self) -> Element {
-        rsx! {
-            span { "{self.id()}" }
-        }
+        rsx! { AppLabel { app: self.clone() } }
     }
 }

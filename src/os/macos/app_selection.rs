@@ -16,7 +16,7 @@ impl AppSelection for System {
             return Ok(None);
         };
         let bundle_id = get_bundle_id(app_path.path())?;
-        Ok(Some(App { bundle_id }))
+        Ok(Some(App::from(bundle_id)))
     }
 }
 
