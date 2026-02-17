@@ -53,8 +53,8 @@ impl GroupService {
     }
 
     fn next_app(&self, apps: &[App]) -> Option<App> {
-        let current = System::current_app().ok()??;
-        let pos = apps.iter().position(|app| app == &current)?;
+        let current_id = System::current_app().ok()??;
+        let pos = apps.iter().position(|app| app.id() == current_id)?;
         let next_pos = (pos + 1) % apps.len();
         Some(apps[next_pos].clone())
     }

@@ -18,7 +18,7 @@ pub trait ConfigDir {
 }
 
 pub trait AppQuery {
-    fn current_app() -> anyhow::Result<Option<App>>;
+    fn current_app() -> anyhow::Result<Option<String>>;
 }
 
 pub trait AppSelection {

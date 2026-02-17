@@ -51,8 +51,8 @@ mod tests {
         let initial_app = System::current_app();
         let app = App::from("com.apple.finder".to_string());
         assert!(block_on(app.open()).is_ok());
-        if let Ok(Some(restore)) = initial_app {
-            block_on(restore.open()).unwrap();
+        if let Ok(Some(restore_id)) = initial_app {
+            block_on(App::from(restore_id).open()).unwrap();
         }
     }
 
