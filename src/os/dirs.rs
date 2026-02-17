@@ -16,10 +16,5 @@ pub fn icons_dir() -> PathBuf {
 }
 
 pub fn placeholder_icon() -> PathBuf {
-    let path = icons_dir().join("placeholder");
-    if !path.exists() {
-        let _ = std::fs::create_dir_all(path.parent().unwrap());
-        let _ = std::fs::write(&path, b"?");
-    }
-    path
+    icons_dir().join("placeholder")
 }

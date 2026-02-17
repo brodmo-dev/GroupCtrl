@@ -31,6 +31,11 @@ fn setup_logging() -> anyhow::Result<()> {
 fn main() {
     setup_logging().expect("Logging setup failed");
 
+    let icons_dir = crate::os::icons_dir();
+    if icons_dir.exists() {
+        let _ = std::fs::remove_dir_all(&icons_dir);
+    }
+
     #[cfg(debug_assertions)] // Make panics crash loudly
     std::panic::set_hook(Box::new(|panic_info| {
         eprintln!("PANIC: {}", panic_info);
