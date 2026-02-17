@@ -1,12 +1,14 @@
+use std::path::Path;
+
 use dioxus::prelude::*;
 
-use crate::os::{App, AppMetadata, placeholder_icon};
+use crate::os::{App, AppMetadata};
 
 #[component]
 pub fn AppLabel(app: App) -> Element {
     let icon_src = app
         .icon_path()
-        .unwrap_or(&placeholder_icon())
+        .unwrap_or(Path::new("doesnotexist"))
         .display()
         .to_string();
     rsx! {

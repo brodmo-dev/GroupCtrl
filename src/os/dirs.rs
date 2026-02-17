@@ -14,7 +14,3 @@ pub fn icons_dir() -> PathBuf {
         .join(APP_DIR_NAME)
         .join("icons")
 }
-
-pub fn placeholder_icon() -> PathBuf {
-    icons_dir().join("placeholder")
-}
