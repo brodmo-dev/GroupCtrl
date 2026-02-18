@@ -4,7 +4,7 @@ use std::hash::Hash;
 use dioxus::prelude::*;
 use lucide_dioxus::{Minus, Plus};
 
-use crate::ui::util::SmallButton;
+use crate::components::button::{Button, ButtonVariant};
 
 #[derive(Clone)]
 pub enum ListOperation<I>
@@ -16,7 +16,7 @@ where
 }
 
 #[component]
-pub(super) fn ListMenu<I>(selected: Signal<HashSet<I>>) -> Element
+pub fn ListMenu<I>(selected: Signal<HashSet<I>>) -> Element
 where
     I: Clone + Eq + Hash + 'static,
 {
@@ -33,6 +33,18 @@ where
             class: "flex items-center gap-1",
             SmallButton { onclick: add, Plus {} }
             SmallButton { onclick: remove, Minus {} }
+        }
+    }
+}
+
+#[component]
+fn SmallButton(onclick: EventHandler<MouseEvent>, children: Element) -> Element {
+    rsx! {
+        Button {
+            variant: ButtonVariant::Secondary,
+            class: "!p-0 size-6 grid place-items-center [&>svg]:size-3",
+            onclick: move |e| onclick.call(e),
+            {children}
         }
     }
 }

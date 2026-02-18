@@ -1,5 +1,5 @@
+mod app_list;
 mod group_config;
-mod lists;
 mod root;
 mod util;
 

@@ -3,7 +3,6 @@ use std::sync::{Arc, RwLock};
 
 use dioxus::desktop::window;
 use dioxus::prelude::*;
-use lucide_dioxus::{Minus, Plus};
 use uuid::Uuid;
 
 use crate::components::label::Label;
@@ -12,8 +11,7 @@ use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 use crate::ui::group_config::GroupConfig;
-use crate::ui::lists::ListOperation;
-use crate::ui::util::{SmallButton, use_listener, use_selection};
+use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
 
 #[component]
 pub fn Root() -> Element {
@@ -32,15 +30,6 @@ pub fn Root() -> Element {
         }
     });
 
-    let tx = use_coroutine_handle::<ListOperation<Uuid>>();
-
-    let add = move |_: MouseEvent| tx.send(ListOperation::Add);
-    let remove = move |_: MouseEvent| {
-        for item in selected() {
-            tx.send(ListOperation::Remove(item));
-        }
-    };
-
     let groups = config_service.read().config().groups().clone();
 
     rsx! {
@@ -58,11 +47,7 @@ pub fn Root() -> Element {
                         div {
                             class: "flex items-center justify-between w-full",
                             Label { html_for: "group-list", class: "p-1", "Groups" }
-                            div {
-                                class: "flex items-center gap-1",
-                                SmallButton { onclick: add, Plus {} }
-                                SmallButton { onclick: remove, Minus {} }
-                            }
+                            ListMenu { selected }
                         }
                     }
                     SidebarContent {

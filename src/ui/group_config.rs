@@ -5,8 +5,10 @@ use uuid::Uuid;
 use crate::components::label::Label;
 use crate::os::{AppSelection, System};
 use crate::services::ConfigService;
-use crate::ui::lists::{AppList, ListOperation};
-use crate::ui::util::{EditableText, HotkeyPicker, InputMode, TargetPicker, use_listener};
+use crate::ui::app_list::AppList;
+use crate::ui::util::{
+    EditableText, HotkeyPicker, InputMode, ListOperation, TargetPicker, use_listener,
+};
 
 #[component]
 pub fn GroupConfig(
