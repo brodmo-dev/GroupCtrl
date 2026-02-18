@@ -72,6 +72,7 @@
     left: anchor(left);
     min-width: anchor-size(width);
     bottom: 8px;
+    max-height: fit-content;
     overflow-y: auto;
     box-sizing: border-box;
     padding: 0.25rem;
