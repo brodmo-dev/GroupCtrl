@@ -1,10 +1,8 @@
 use std::collections::HashSet;
 
 use dioxus::prelude::*;
-use dioxus_primitives::scroll_area::ScrollDirection;
 
 use crate::components::label::Label;
-use crate::components::scroll_area::ScrollArea;
 use crate::models::Identifiable;
 use crate::os::App;
 use crate::ui::util::{AppLabel, ListMenu, use_selection};
@@ -27,8 +25,8 @@ pub fn AppList(apps: Vec<App>) -> Element {
                 div {
                     class: "sidebar-group-content flex flex-col flex-1 min-h-0",
                     "data-sidebar": "group-content",
-                    ScrollArea {
-                        direction: ScrollDirection::Vertical,
+                    div {
+                        class: "flex-1 min-h-0 overflow-y-auto",
                         ul {
                             id: "app-list",
                             class: "sidebar-menu",
