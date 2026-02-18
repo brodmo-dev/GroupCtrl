@@ -24,12 +24,10 @@ impl HotkeyService<DioxusBinder> {
             binder: DioxusBinder::new(hotkey_sender),
         };
         for (hotkey, action) in config_reader.read().bindings() {
-            if let Some(hk) = hotkey {
-                service
-                    .binder
-                    .bind_hotkey(hk, &action)
-                    .unwrap_or_else(|e| error!("error restoring hotkey on startup: {e}"))
-            }
+            service
+                .binder
+                .bind_hotkey(hotkey, &action)
+                .unwrap_or_else(|e| error!("error restoring hotkey on startup: {e}"));
         }
         service
     }
@@ -41,7 +39,7 @@ impl<B: HotkeyBinder> HotkeyService<B> {
             .read()
             .bindings()
             .into_iter()
-            .find_map(|(hk, a)| (hk == Some(hotkey)).then_some(a))
+            .find_map(|(hk, action)| (hk == hotkey).then_some(action))
     }
 
     pub fn bind_hotkey(

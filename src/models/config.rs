@@ -14,8 +14,14 @@ pub struct Config {
 }
 
 impl Config {
-    pub fn bindings(&self) -> Vec<(Option<Hotkey>, Action)> {
-        self.groups.iter().map(|g| g.binding()).collect()
+    pub fn bindings(&self) -> Vec<(Hotkey, Action)> {
+        self.groups
+            .iter()
+            .filter_map(|group| {
+                let (hotkey, action) = group.binding();
+                Some((hotkey?, action))
+            })
+            .collect()
     }
 
     pub fn groups(&self) -> &Vec<Group> {
