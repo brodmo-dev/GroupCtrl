@@ -51,9 +51,12 @@ impl ConfigService {
         self.save();
     }
 
-    pub fn set_name(&mut self, group_id: Uuid, name: String) {
-        self.config_mut().set_name(group_id, name).unwrap();
-        self.save();
+    pub fn set_name(&mut self, group_id: Uuid, name: String) -> bool {
+        let set = self.config_mut().set_name(group_id, name).unwrap();
+        if set {
+            self.save();
+        }
+        set
     }
 
     pub fn set_target(&mut self, group_id: Uuid, app: Option<App>) {

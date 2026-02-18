@@ -53,10 +53,16 @@ impl Config {
             .with_context(|| format!("group {} not found (mut)", group_id))
     }
 
-    pub fn set_name(&mut self, group_id: Uuid, name: String) -> anyhow::Result<()> {
-        let group = self.group_mut(group_id)?;
-        group.name = name;
-        Ok(())
+    pub fn set_name(&mut self, group_id: Uuid, name: String) -> anyhow::Result<bool> {
+        if self
+            .groups
+            .iter()
+            .any(|g| g.id() != group_id && g.name == name)
+        {
+            return Ok(false);
+        }
+        self.group_mut(group_id)?.name = name;
+        Ok(true)
     }
 
     pub fn set_hotkey(&mut self, group_id: Uuid, hotkey: Option<Hotkey>) -> anyhow::Result<()> {

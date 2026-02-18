@@ -13,9 +13,10 @@ pub enum InputMode {
 
 #[component]
 pub fn EditableText(
-    text: Signal<String>,
+    text: ReadSignal<String>, // use a signal so we can pass text more freely inside closures
     placeholder: String,
     starting_mode: InputMode,
+    on_commit: Callback<String>,
 ) -> Element {
     let mut draft = use_signal(|| match starting_mode {
         InputMode::Edit => text(),
@@ -44,7 +45,7 @@ pub fn EditableText(
             if draft().trim().is_empty() {
                 cancel();
             } else {
-                text.set(draft());
+                on_commit.call(draft());
             }
             set_focus(false);
         }

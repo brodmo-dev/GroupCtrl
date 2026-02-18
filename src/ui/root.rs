@@ -34,7 +34,6 @@ pub fn Root() -> Element {
 
     rsx! {
         div {
-            "data-theme": "dim",
             ToastProvider {
             SidebarProvider {
                 Sidebar {
@@ -127,7 +126,8 @@ fn use_group_list_listener(
         selected.write().clear();
         match list_operation {
             ListOperation::Add => {
-                let group_id = config_service.write().add_group("New Group".to_string());
+                let name = unique_group_name(&config_service.read(), "New Group");
+                let group_id = config_service.write().add_group(name);
                 selected.write().insert(group_id);
                 in_creation_group.set(Some(group_id));
             }
@@ -136,4 +136,20 @@ fn use_group_list_listener(
             }
         }
     }));
+}
+
+fn unique_group_name(config_service: &ConfigService, base: &str) -> String {
+    let config = config_service.config();
+    let names: Vec<&str> = config.groups().iter().map(|g| g.name.as_str()).collect();
+    if !names.contains(&base) {
+        return base.to_string();
+    }
+    let mut n = 2;
+    loop {
+        let candidate = format!("{} {}", base, n);
+        if !names.contains(&candidate.as_str()) {
+            return candidate;
+        }
+        n += 1;
+    }
 }

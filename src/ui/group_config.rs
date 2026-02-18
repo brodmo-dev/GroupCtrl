@@ -24,8 +24,15 @@ pub fn GroupConfig(
             .unwrap()
             .clone()
     });
-    let name = use_signal(|| group().name.clone());
-    use_effect(move || config_service.write().set_name(group_id, name()));
+    let name = use_memo(move || group().name.clone());
+    let set_name = Callback::new(move |new_name: String| {
+        if !config_service.write().set_name(group_id, new_name) {
+            consume_toast().error(
+                "Duplicate group name".to_string(),
+                ToastOptions::new().description("A group with that name already exists"),
+            );
+        }
+    });
     let set_hotkey = move |hotkey| {
         if let Err(error) = config_service.write().set_hotkey(group_id, hotkey) {
             consume_toast().error(
@@ -63,7 +70,8 @@ pub fn GroupConfig(
                 EditableText {
                     text: name,
                     placeholder: "Group name".to_string(),
-                    starting_mode: input_mode()
+                    starting_mode: input_mode(),
+                    on_commit: set_name,
                 }
                 Label { html_for: "hotkey-picker", "Hotkey" }
                 HotkeyPicker { hotkey: group().hotkey, set_hotkey }
