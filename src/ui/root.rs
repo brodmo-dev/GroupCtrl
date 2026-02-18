@@ -54,7 +54,7 @@ pub fn Root() -> Element {
                         class: "!p-2 !pb-0",
                         div {
                             class: "flex items-center justify-between w-full",
-                            Label { html_for: "group-list", class: "p-4", "Groups" }
+                            Label { html_for: "group-list", class: "pl-1.5", "Groups" }
                             ListMenu { selected }
                         }
                     }

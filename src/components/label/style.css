@@ -1,5 +1,5 @@
 /* Label Styles */
-.label {
+label {
     display: flex;
     align-items: center;
     color: var(--muted-text);
