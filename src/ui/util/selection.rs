@@ -3,7 +3,7 @@ use std::hash::Hash;
 
 use dioxus::prelude::*;
 
-use crate::os::{KeyboardBehavior, System};
+use crate::os::{Keyboard, System};
 
 pub fn use_selection<I>(
     id: I,

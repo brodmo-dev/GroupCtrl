@@ -1,13 +1,13 @@
 use global_hotkey::hotkey::{Code, Modifiers};
 
 use super::Hotkey;
-use crate::os::{KeyboardBehavior, ModifierFormat, System};
+use crate::os::{Keyboard, ModifierFormat, System};
 
 const SERDE_SEP: &str = "+";
 const KEY_PREFIXES: [&str; 4] = ["Key", "Digit", "Arrow", ""];
 
 pub(super) fn show_hotkey_parts(hotkey: &Hotkey) -> Vec<String> {
-    let mut parts = mods_to_string_vec(hotkey.mods, System::gui_modifier_format());
+    let mut parts = mods_to_string_vec(hotkey.mods, System::show_modifier_format());
     let key_show = System::show_key(hotkey.key).unwrap_or_else(|| show_key_common(hotkey.key));
     parts.push(key_show);
     parts

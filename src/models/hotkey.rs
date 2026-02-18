@@ -4,7 +4,7 @@ use global_hotkey::hotkey::{Code, HotKey as GlobalHotkey, Modifiers};
 use serde::{Deserialize, Serialize};
 
 use crate::models::hotkey_conversion::show_hotkey_parts;
-use crate::os::{KeyboardBehavior, System};
+use crate::os::{Keyboard, System};
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(into = "String", from = "String")]
@@ -29,7 +29,7 @@ impl Hotkey {
 
 impl Display for Hotkey {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "{}", self.show_parts().join(System::key_sep()))
+        write!(f, "{}", self.show_parts().join(System::show_parts_sep()))
     }
 }
 
