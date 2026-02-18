@@ -4,6 +4,7 @@ mod error;
 use binder::{DioxusBinder, HotkeyBinder};
 use dioxus::hooks::UnboundedSender;
 pub use error::HotkeyBindError;
+use log::error;
 
 use crate::models::{Action, Hotkey};
 use crate::services::config_reader::ConfigReader;
@@ -18,10 +19,19 @@ impl HotkeyService<DioxusBinder> {
         config_reader: ConfigReader,
         hotkey_sender: UnboundedSender<(Hotkey, Action)>,
     ) -> Self {
-        Self {
-            config_reader,
+        let mut service = Self {
+            config_reader: config_reader.clone(),
             binder: DioxusBinder::new(hotkey_sender),
+        };
+        for (hotkey, action) in config_reader.read().bindings() {
+            if let Some(hk) = hotkey {
+                service
+                    .binder
+                    .bind_hotkey(hk, &action)
+                    .unwrap_or_else(|e| error!("error restoring hotkey on startup: {e}"))
+            }
         }
+        service
     }
 }
 
