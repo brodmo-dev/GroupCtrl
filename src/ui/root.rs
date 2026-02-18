@@ -9,6 +9,7 @@ use crate::components::label::Label;
 use crate::components::sidebar::*;
 use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
+use crate::os::{App, Openable};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 use crate::ui::group_config::GroupConfig;
 use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
@@ -16,6 +17,14 @@ use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
 #[component]
 pub fn Root() -> Element {
     use_effect(move || window().set_decorations(true));
+    #[cfg(all(debug_assertions, target_os = "macos"))]
+    use_effect(move || {
+        if let Some(id) = crate::PREVIOUS_APP.get() {
+            spawn(async move {
+                let _ = App::from(id.clone()).open().await;
+            });
+        }
+    });
 
     let config_service = use_config_service();
     let selected = use_signal(HashSet::<Uuid>::new);

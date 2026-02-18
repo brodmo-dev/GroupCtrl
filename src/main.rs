@@ -10,7 +10,11 @@ use dioxus::desktop::{Config, LogicalSize, WindowBuilder};
 use dioxus::prelude::*;
 use simplelog::*;
 
+use crate::os::{AppQuery, System};
 use crate::ui::Root;
+
+#[cfg(all(debug_assertions, target_os = "macos"))]
+pub static PREVIOUS_APP: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
 fn setup_logging() -> anyhow::Result<()> {
     std::fs::create_dir_all("logs")?;
@@ -55,19 +59,24 @@ fn main() {
         include_str!("../assets/dx-components-theme.css")
     );
 
+    #[cfg(all(debug_assertions, target_os = "macos"))]
+    if let Ok(Some(id)) = System::current_app() {
+        let _ = PREVIOUS_APP.set(id);
+    }
+
+    let window = {
+        let builder = WindowBuilder::new()
+            .with_decorations(false)
+            .with_inner_size(LogicalSize::new(500, 400))
+            .with_min_inner_size(LogicalSize::new(400, 400))
+            .with_max_inner_size(LogicalSize::new(600, 600))
+            .with_title("GroupCtrl");
+        #[cfg(debug_assertions)] // for hot reload
+        let builder = builder.with_always_on_top(true).with_focused(false);
+        builder
+    };
+
     LaunchBuilder::desktop()
-        .with_cfg(
-            Config::new()
-                .with_window(
-                    WindowBuilder::new()
-                        .with_decorations(false)
-                        .with_always_on_top(false)
-                        .with_inner_size(LogicalSize::new(500, 400))
-                        .with_min_inner_size(LogicalSize::new(400, 400))
-                        .with_max_inner_size(LogicalSize::new(600, 600))
-                        .with_title("GroupCtrl"),
-                )
-                .with_custom_head(head),
-        )
+        .with_cfg(Config::new().with_window(window).with_custom_head(head))
         .launch(Root);
 }
