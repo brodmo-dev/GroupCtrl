@@ -86,6 +86,7 @@
     will-change: transform, opacity;
 }
 
+
 .select-list[data-state="closed"] {
     animation: select-list-animate-out 150ms ease-in forwards;
     pointer-events: none;

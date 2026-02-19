@@ -58,8 +58,8 @@ pub fn Root() -> Element {
                         }
                     }
                     SidebarContent {
-                        SidebarGroup { class: "!p-2 !pt-1",
-                            SidebarGroupContent {
+                        SidebarGroup { class: "!p-2 !pt-1 flex-1 min-h-0",
+                            SidebarGroupContent { class: "flex-1 min-h-0 overflow-y-auto",
                                 SidebarMenu { id: "group-list",
                                     for group in groups {
                                         GroupMenuItem {
