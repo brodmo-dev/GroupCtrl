@@ -1,3 +1,3 @@
-cp screenshot.png screenshot.png.bak
-magick screenshot.png -channel A -threshold 100% +channel screenshot.png
+cp screenshot.png screenshot.bak.png
+magick screenshot.png -channel A -threshold 99% +channel -trim +repage screenshot.png
 magick screenshot.png -bordercolor transparent -border 50x25 screenshot.png
