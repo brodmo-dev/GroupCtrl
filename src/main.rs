@@ -13,6 +13,8 @@ use simplelog::*;
 use crate::os::{AppQuery, System};
 use crate::ui::Root;
 
+const FONT_URL: &str = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap";
+
 #[cfg(all(debug_assertions, target_os = "macos"))]
 pub static PREVIOUS_APP: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
@@ -48,15 +50,13 @@ fn main() {
 
     #[cfg(target_os = "macos")]
     let head = format!(
-        r#"<link rel="stylesheet" href="{}"><link rel="stylesheet" href="{}">"#,
-        asset!("/assets/tailwind.css"),
-        asset!("/theme.css")
+        r#"<link rel="stylesheet" href="{FONT_URL}"><link rel="stylesheet" href="{}">"#,
+        asset!("/assets/tailwind.css")
     );
     #[cfg(target_os = "windows")]
     let head = format!(
-        r#"<style>{}{}</style>"#,
-        include_str!("../assets/tailwind.css"),
-        include_str!("../theme.css")
+        r#"<link rel="stylesheet" href="{FONT_URL}"><style>{}</style>"#,
+        include_str!("../assets/tailwind.css")
     );
 
     #[cfg(all(debug_assertions, target_os = "macos"))]
