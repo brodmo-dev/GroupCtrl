@@ -2,6 +2,8 @@
 
 Hotkeys for switching apps
 
+<img alt="GroupCtrl Screenshot" src="screenshot.png" width="500">
+
 ## Features
 
 - App groups: Assign one hotkey for many apps and cycle between them.
