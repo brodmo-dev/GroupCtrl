@@ -63,7 +63,7 @@ pub fn GroupConfig(
         div {
             class: "flex flex-col gap-2 flex-1 min-h-0 min-w-0 p-2",
             div {
-                class: "text-sm grid items-center gap-2",
+                class: "text-sm grid items-center gap-2 pl-1",
                 style: "grid-template-columns: auto minmax(0, 1fr);",
                 label { r#for: "editable-text", "Name" }
                 EditableText {

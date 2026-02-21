@@ -2,7 +2,7 @@
 
 Hotkeys for switching apps
 
-<img alt="GroupCtrl screenshot" src="screenshot.png?v=2" width="500">
+<img alt="GroupCtrl screenshot" src="screenshot.png?v=3" width="500">
 
 ## Features
 
