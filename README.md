@@ -2,7 +2,7 @@
 
 Hotkeys for switching apps
 
-<img alt="GroupCtrl Screenshot" src="screenshot.png" width="500">
+<img alt="GroupCtrl screenshot" src="screenshot.png?v=2" width="500">
 
 ## Features
 
@@ -17,6 +17,7 @@ Hotkeys for switching apps
 - Hide Dock using `Cmd+Opt+D`
 - Use [Hyperkey](https://hyperkey.app/) or [Karabiner](https://karabiner-elements.pqrs.org/)
   to map Caps Lock to `Cmd+Opt+Control`
+- Show Desktop using `F11`
 
 ## Alternatives
 
