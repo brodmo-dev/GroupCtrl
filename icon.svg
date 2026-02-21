@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512">
+    <rect width="512" height="512" fill="#282c34"/>
+    <text
+            font-family="Bungee" fill="#61afef"
+            x="60" y="395" font-size="350"
+    >G
+    </text>
+    <text
+            font-family="Bungee" fill="#98c379"
+            x="290" y="280" font-size="250"
+    >^
+    </text>
+    <!-- for development only -->
+    <!--rect
+            width="512" height="512" rx="120" ry="120"
+            fill="none" stroke="white" stroke-width="2"
+    /-->
+</svg>

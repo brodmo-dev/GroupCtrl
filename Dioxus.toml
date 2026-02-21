@@ -5,3 +5,4 @@ default_platform = "desktop"
 [bundle]
 identifier = "dev.brodmo.groupctrl"
 publisher = "Moritz Brödel"
+icon = ["icon.png"]
