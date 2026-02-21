@@ -36,15 +36,20 @@ pub fn Root() -> Element {
             None
         }
     });
-
     let groups = config_service.read().config().groups().clone();
 
+    let border_pad_val = if cfg!(target_os = "macos") {
+        "1px" // compensate for macOS window border
+    } else {
+        "0px"
+    };
     rsx! {
         div {
             onmounted: move |_| window().set_decorations(true),
             ToastProvider {
             SidebarProvider {
                 Sidebar {
+                    style: "padding-left: {border_pad_val};",
                     side: SidebarSide::Left,
                     variant: SidebarVariant::Sidebar,
                     collapsible: SidebarCollapsible::None,
@@ -74,6 +79,7 @@ pub fn Root() -> Element {
                     }
                 }
                 SidebarInset {
+                    style: "padding-bottom: {border_pad_val}; padding-right: {border_pad_val};",
                     if let Some(group_id) = active_group() {
                         GroupConfig {
                             key: "{group_id}",
