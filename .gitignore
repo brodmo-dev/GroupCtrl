@@ -2,7 +2,7 @@
 .idea
 .claude
 
-assets/
+tailwind.css
 target/
 node_modules/
 logs/
