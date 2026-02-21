@@ -12,6 +12,7 @@ pub fn icons_dir() -> PathBuf {
     data_local_dir().join("icons")
 }
 
+#[cfg(not(debug_assertions))]
 pub fn logs_dir() -> PathBuf {
     data_local_dir().join("logs")
 }

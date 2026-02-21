@@ -18,19 +18,22 @@ const FONT_URL: &str = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz
 #[cfg(all(debug_assertions, target_os = "macos"))]
 pub static PREVIOUS_APP: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
+#[cfg(debug_assertions)]
+fn setup_logging() -> anyhow::Result<()> {
+    TermLogger::init(
+        LevelFilter::Debug,
+        ConfigBuilder::new().build(),
+        TerminalMode::Mixed,
+        ColorChoice::Auto,
+    )?;
+    Ok(())
+}
+
+#[cfg(not(debug_assertions))]
 fn setup_logging() -> anyhow::Result<()> {
     std::fs::create_dir_all(os::logs_dir())?;
     let log_file = std::fs::File::create(os::logs_dir().join("app.log"))?;
-    let config = ConfigBuilder::new().build();
-    CombinedLogger::init(vec![
-        TermLogger::new(
-            LevelFilter::Info,
-            config.clone(),
-            TerminalMode::Mixed,
-            ColorChoice::Auto,
-        ),
-        WriteLogger::new(LevelFilter::Debug, config, log_file),
-    ])?;
+    WriteLogger::init(LevelFilter::Info, ConfigBuilder::new().build(), log_file)?;
     Ok(())
 }
 
