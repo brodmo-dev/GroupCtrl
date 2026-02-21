@@ -3,7 +3,9 @@
 .claude
 
 tailwind.css
-target/
+*.icns
+
 node_modules/
-logs/
+target/
+
 dx_log.txt
