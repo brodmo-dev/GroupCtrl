@@ -13,9 +13,7 @@ pub fn AppLabel(app: App) -> Element {
         .to_string();
     rsx! {
         div { class: "flex gap-2",
-            div { class: "w-5 h-5 shrink-0 flex items-center justify-center",
-                img { src: icon_src }
-            }
+            img { class: "w-5 h-5", src: icon_src }
             span { "{app.name()}" }
         }
     }

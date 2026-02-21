@@ -433,6 +433,7 @@
 .sidebar-menu-button[data-sidebar="menu-button"] {
     display: flex;
     overflow: hidden;
+    line-height: 1.25rem;
     width: 100%;
     box-sizing: border-box;
     align-items: center;
@@ -494,7 +495,6 @@
 
 /* Size variants */
 .sidebar-menu-button[data-sidebar="menu-button"][data-size="default"] {
-    height: 2rem;
     font-size: 0.875rem;
 }
 
