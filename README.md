@@ -1,4 +1,7 @@
-# GroupCtrl
+<h1>
+  <sub><img src="assets/icon.png" width="35" alt="GroupCtrl icon" /></sub>
+  GroupCtrl
+</h1>
 
 Hotkeys for switching apps
 
