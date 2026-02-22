@@ -2,8 +2,10 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
-use dioxus::desktop::trayicon::{default_tray_icon, init_tray_icon};
-use dioxus::desktop::window;
+use dioxus::desktop::trayicon::{
+    MouseButton, MouseButtonState, TrayIconEvent, default_tray_icon, init_tray_icon,
+};
+use dioxus::desktop::{use_tray_icon_event_handler, window};
 use dioxus::prelude::*;
 use uuid::Uuid;
 
@@ -28,9 +30,36 @@ pub fn Root() -> Element {
     });
 
     use_hook(|| {
+        // TODO spawn this so it is delayed by a frame (try)
         window().set_decorations(true);
         System::configure_window();
         init_tray_icon(default_tray_icon(), None);
+    });
+
+    // TODO refactor this out of root
+    let mut is_visible = use_signal(|| false);
+    use_tray_icon_event_handler(move |evt| {
+        // Dioxus always sets the window to visible on left click up, so we capture
+        // visibility on Down and act on Up to work around it.
+        if let TrayIconEvent::Click {
+            button: MouseButton::Left,
+            button_state,
+            ..
+        } = evt
+        {
+            match button_state {
+                MouseButtonState::Down => {
+                    is_visible.set(window().is_visible());
+                }
+                MouseButtonState::Up => {
+                    if is_visible() {
+                        spawn(async move {
+                            window().set_visible(false);
+                        });
+                    }
+                }
+            }
+        }
     });
 
     let mut root_handle = use_signal(|| None::<Rc<MountedData>>);
