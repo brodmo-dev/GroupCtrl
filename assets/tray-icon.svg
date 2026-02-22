@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
+    <g transform="translate(0, 108) scale(0.16)">
+        <text
+                x="0" y="0" font-size="700"
+                font-family="Bungee" fill="black"
+        >G
+        </text>
+        <text
+                x="460" y="-230" font-size="500"
+                font-family="Bungee" fill="black"
+        >^
+        </text>
+    </g>
+    <!-- for development only -->
+    <!--    <rect-->
+    <!--            width="128" height="128"-->
+    <!--            fill="none" stroke="white" stroke-width="2"-->
+    <!--    />-->
+</svg>

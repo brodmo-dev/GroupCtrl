@@ -1,5 +1,6 @@
 icon:
 	cd assets && \
+	rsvg-convert tray-icon.svg | magick png:- tray-icon.rgba && \
 	mkdir -p icon.iconset && \
 	rsvg-convert -w 16   -h 16   icon.svg -o icon.iconset/icon_16x16.png && \
 	rsvg-convert -w 32   -h 32   icon.svg -o icon.iconset/icon_16x16@2x.png && \

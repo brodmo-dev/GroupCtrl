@@ -4,6 +4,7 @@
 
 tailwind.css
 *.icns
+*.rgba
 
 node_modules/
 target/
