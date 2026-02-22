@@ -6,7 +6,7 @@ mod services;
 mod ui;
 mod util;
 
-use dioxus::desktop::{Config, LogicalSize, WindowBuilder};
+use dioxus::desktop::{Config, LogicalSize, WindowBuilder, WindowCloseBehaviour};
 use dioxus::prelude::*;
 use simplelog::*;
 
@@ -83,6 +83,12 @@ fn main() {
     };
 
     LaunchBuilder::desktop()
-        .with_cfg(Config::new().with_window(window).with_custom_head(head))
+        .with_cfg(
+            Config::new()
+                .with_window(window)
+                .with_custom_head(head)
+                .with_close_behaviour(WindowCloseBehaviour::WindowHides)
+                .with_exits_when_last_window_closes(false),
+        )
         .launch(Root);
 }

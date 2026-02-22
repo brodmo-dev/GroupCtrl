@@ -38,3 +38,7 @@ pub trait AppMetadata {
 pub trait AppObserver {
     fn observe_app_activations() -> std::sync::mpsc::Receiver<String>;
 }
+
+pub trait WindowConfiguration {
+    fn configure_window();
+}

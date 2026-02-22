@@ -1,6 +1,7 @@
 use std::collections::HashSet;
 use std::sync::{Arc, RwLock};
 
+use dioxus::desktop::trayicon::{default_tray_icon, init_tray_icon};
 use dioxus::desktop::window;
 use dioxus::prelude::*;
 use uuid::Uuid;
@@ -8,7 +9,7 @@ use uuid::Uuid;
 use crate::components::sidebar::*;
 use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
-use crate::os::{App, Openable};
+use crate::os::{App, Openable, System, WindowConfiguration};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 use crate::ui::group_config::GroupConfig;
 use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
@@ -22,6 +23,12 @@ pub fn Root() -> Element {
                 let _ = App::from(id.clone()).open().await;
             });
         }
+    });
+
+    use_hook(|| {
+        window().set_decorations(true);
+        System::configure_window();
+        init_tray_icon(default_tray_icon(), None);
     });
 
     let config_service = use_config_service();
@@ -45,7 +52,6 @@ pub fn Root() -> Element {
     };
     rsx! {
         div {
-            onmounted: move |_| window().set_decorations(true),
             ToastProvider {
             SidebarProvider {
                 Sidebar {
