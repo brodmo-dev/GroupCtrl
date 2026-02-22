@@ -3,7 +3,7 @@ use global_hotkey::hotkey::{Code, Modifiers};
 use crate::os::{Keyboard, ModifierFormat, System};
 
 impl Keyboard for System {
-    fn is_multi_select(modifiers: Modifiers) -> bool {
+    fn is_command(modifiers: Modifiers) -> bool {
         modifiers.ctrl()
     }
 

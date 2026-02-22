@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use dioxus::prelude::*;
 
 use crate::components::button::{Button, ButtonVariant};
@@ -12,11 +10,10 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
     let mut recording = use_signal(|| false);
     use_record_registered(recording, set_hotkey);
     let onkeydown = move |evt: KeyboardEvent| record_unregistered(recording, set_hotkey, evt);
-    let mut input_handle = use_signal(|| None::<Rc<MountedData>>);
+    let restore_focus: Callback<()> = consume_context();
     use_effect(move || {
-        if let Some(handle) = input_handle() {
-            let focus = recording(); // outside closure for reactivity
-            spawn(async move { drop(handle.set_focus(focus).await) });
+        if !recording() {
+            restore_focus.call(());
         }
     });
 
@@ -47,7 +44,6 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
             variant,
             class: "button flex-1",
             tabindex: 0,
-            onmounted: move |evt: MountedEvent| input_handle.set(Some(evt.data())),
             onclick: move |_| recording.set(true),
             onkeydown, // globally registered keys never make it here
             onblur: move |_| recording.set(false),

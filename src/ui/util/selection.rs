@@ -16,7 +16,7 @@ where
     let is_selected = use_memo(move || selected().contains(&id_for_memo));
     let toggle = move |e: MouseEvent| {
         let mut sel = selected.write();
-        if System::is_multi_select(e.modifiers()) {
+        if System::is_command(e.modifiers()) {
             if sel.contains(&id) {
                 sel.remove(&id);
             } else {

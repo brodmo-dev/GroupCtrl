@@ -7,7 +7,7 @@ use crate::os::App;
 pub type ModifierFormat = [(Modifiers, &'static str); 4];
 
 pub trait Keyboard {
-    fn is_multi_select(modifiers: Modifiers) -> bool;
+    fn is_command(modifiers: Modifiers) -> bool;
     fn show_parts_sep() -> &'static str;
     fn show_key(key: Code) -> Option<String>;
     fn show_modifier_format() -> ModifierFormat;

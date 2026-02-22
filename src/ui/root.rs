@@ -1,4 +1,5 @@
 use std::collections::HashSet;
+use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
 use dioxus::desktop::trayicon::{default_tray_icon, init_tray_icon};
@@ -9,13 +10,14 @@ use uuid::Uuid;
 use crate::components::sidebar::*;
 use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
-use crate::os::{App, Openable, System, WindowConfiguration};
+use crate::os::{App, Keyboard, Openable, System, WindowConfiguration};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 use crate::ui::group_config::GroupConfig;
 use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
 
 #[component]
 pub fn Root() -> Element {
+    // restore focus for hot reload quality of life
     #[cfg(all(debug_assertions, target_os = "macos"))]
     use_effect(move || {
         if let Some(id) = crate::PREVIOUS_APP.get() {
@@ -30,6 +32,21 @@ pub fn Root() -> Element {
         System::configure_window();
         init_tray_icon(default_tray_icon(), None);
     });
+
+    let mut root_handle = use_signal(|| None::<Rc<MountedData>>);
+    use_context_provider(|| {
+        Callback::new(move |()| {
+            if let Some(handle) = root_handle() {
+                spawn(async move { drop(handle.set_focus(true).await) });
+            }
+        })
+    });
+    let onmounted = move |evt: MountedEvent| root_handle.set(Some(evt.data()));
+    let onkeydown = move |evt: KeyboardEvent| {
+        if System::is_command(evt.modifiers()) && evt.key() == Key::Character("q".to_string()) {
+            std::process::exit(0);
+        }
+    };
 
     let config_service = use_config_service();
     let selected = use_signal(HashSet::<Uuid>::new);
@@ -52,6 +69,9 @@ pub fn Root() -> Element {
     };
     rsx! {
         div {
+            tabindex: -1,
+            onmounted,
+            onkeydown,
             ToastProvider {
             SidebarProvider {
                 Sidebar {
