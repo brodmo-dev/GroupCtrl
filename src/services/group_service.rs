@@ -41,12 +41,18 @@ impl GroupService {
 
     pub async fn open(&self, group_id: Uuid) {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
-        let apps = group.apps();
+        let all_running = System::running_apps().unwrap_or_default();
+        let group_running: Vec<App> = group
+            .apps()
+            .iter()
+            .filter(|app| all_running.contains(&app.id()))
+            .cloned()
+            .collect();
         if let Some(app) = self
-            .next_app(apps)
+            .next_app(&group_running)
             .or_else(|| group.target.clone())
-            .or_else(|| self.find_in_history(apps)) // most recent
-            .or_else(|| apps.first().cloned())
+            .or_else(|| self.find_in_history(&group_running))
+            .or_else(|| group_running.first().cloned())
         {
             Self::open_app(&app).await;
         }
