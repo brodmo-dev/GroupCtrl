@@ -9,4 +9,12 @@ impl AppQuery for System {
             .and_then(|app| app.bundleIdentifier())
             .map(|bid| bid.to_string()))
     }
+
+    fn running_apps() -> anyhow::Result<Vec<String>> {
+        Ok(NSWorkspace::sharedWorkspace()
+            .runningApplications()
+            .iter()
+            .filter_map(|app| app.bundleIdentifier().map(|bid| bid.to_string()))
+            .collect())
+    }
 }

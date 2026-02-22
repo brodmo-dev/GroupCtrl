@@ -22,6 +22,8 @@ pub trait ConfigDir {
 
 pub trait AppQuery {
     fn current_app() -> anyhow::Result<Option<String>>;
+    #[allow(unused)]
+    fn running_apps() -> anyhow::Result<Vec<String>>;
 }
 
 pub trait AppSelection {
