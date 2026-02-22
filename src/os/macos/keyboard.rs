@@ -7,6 +7,14 @@ impl Keyboard for System {
         modifiers.meta()
     }
 
+    fn is_quit(modifiers: Modifiers, key: Code) -> bool {
+        modifiers.meta() && key == Code::KeyQ
+    }
+
+    fn is_close(modifiers: Modifiers, key: Code) -> bool {
+        modifiers.meta() && key == Code::KeyW
+    }
+
     fn show_parts_sep() -> &'static str {
         ""
     }

@@ -8,6 +8,8 @@ pub type ModifierFormat = [(Modifiers, &'static str); 4];
 
 pub trait Keyboard {
     fn is_command(modifiers: Modifiers) -> bool;
+    fn is_quit(modifiers: Modifiers, key: Code) -> bool;
+    fn is_close(modifiers: Modifiers, key: Code) -> bool;
     fn show_parts_sep() -> &'static str;
     fn show_key(key: Code) -> Option<String>;
     fn show_modifier_format() -> ModifierFormat;

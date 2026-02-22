@@ -43,8 +43,10 @@ pub fn Root() -> Element {
     });
     let onmounted = move |evt: MountedEvent| root_handle.set(Some(evt.data()));
     let onkeydown = move |evt: KeyboardEvent| {
-        if System::is_command(evt.modifiers()) && evt.key() == Key::Character("q".to_string()) {
+        if System::is_quit(evt.modifiers(), evt.code()) {
             std::process::exit(0);
+        } else if System::is_close(evt.modifiers(), evt.code()) {
+            window().set_visible(false);
         }
     };
 
