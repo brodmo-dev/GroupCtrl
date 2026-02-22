@@ -7,17 +7,31 @@ use dioxus::prelude::*;
 use uuid::Uuid;
 
 use super::group_config::GroupConfig;
-use super::setup::setup_window;
 use super::util::{ListMenu, ListOperation, use_listener, use_selection};
 use crate::components::sidebar::*;
 use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
-use crate::os::{Keyboard, System};
+use crate::os::{App, Keyboard, Openable, System, WindowConfiguration};
 use crate::services::{ActionService, ConfigReader, ConfigService};
+use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
 
 #[component]
 pub fn Root() -> Element {
-    setup_window();
+    // restore focus for hot reload quality of life
+    #[cfg(all(debug_assertions, target_os = "macos"))]
+    use_effect(move || {
+        if let Some(id) = crate::PREVIOUS_APP.get() {
+            spawn(async move {
+                let _ = App::from(id.clone()).open().await;
+            });
+        }
+    });
+
+    use_hook(|| {
+        System::configure_window();
+        setup_tray_icon()
+    });
+    handle_tray_icon_events();
 
     let config_service = use_config_service();
     let selected = use_signal(HashSet::<Uuid>::new);
@@ -32,7 +46,10 @@ pub fn Root() -> Element {
     });
     let groups = config_service.read().config().groups().clone();
 
-    let onmounted = move |evt: MountedEvent| provide_unfocus_callback().set(Some(evt.data()));
+    let onmounted = move |evt: MountedEvent| {
+        window().set_decorations(true);
+        provide_unfocus_callback().set(Some(evt.data()));
+    };
     let onkeydown = move |evt: KeyboardEvent| handle_window_shortcuts(evt.modifiers(), evt.key());
     let border_pad_val = if cfg!(target_os = "macos") {
         "1px" // compensate for macOS window border
