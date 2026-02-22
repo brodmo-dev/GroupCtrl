@@ -1,0 +1,44 @@
+groups:
+- name: Web
+  hotkey: null
+  target: com.brave.Browser
+  apps:
+  - com.brave.Browser
+  - com.markmcguill.strongbox.mac
+- name: Files
+  hotkey: Cmd+Opt+Ctrl+F
+  target: null
+  apps:
+  - com.apple.finder
+  - com.apple.Preview
+  - com.sublimetext.4
+  - com.microsoft.Excel
+- name: Programming
+  hotkey: null
+  target: com.jetbrains.intellij
+  apps:
+  - com.jetbrains.intellij
+  - com.jetbrains.pycharm
+  - com.jetbrains.rustrover
+- name: Terminal
+  hotkey: null
+  target: null
+  apps: []
+- name: Notes
+  hotkey: null
+  target: null
+  apps:
+  - com.anthropic.claudefordesktop
+- name: Todos
+  hotkey: null
+  target: null
+  apps: []
+- name: AI
+  hotkey: null
+  target: null
+  apps: []
+- name: Music
+  hotkey: Cmd+D
+  target: com.spotify.client
+  apps:
+  - com.spotify.client
