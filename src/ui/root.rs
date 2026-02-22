@@ -2,88 +2,27 @@ use std::collections::HashSet;
 use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 
-use dioxus::desktop::trayicon::{
-    MouseButton, MouseButtonState, TrayIconEvent, default_tray_icon, init_tray_icon,
-};
-use dioxus::desktop::{use_tray_icon_event_handler, window};
+use dioxus::desktop::window;
 use dioxus::prelude::*;
 use uuid::Uuid;
 
+use super::group_config::GroupConfig;
+use super::setup::setup_window;
+use super::util::{ListMenu, ListOperation, use_listener, use_selection};
 use crate::components::sidebar::*;
 use crate::components::toast::ToastProvider;
 use crate::models::{Config, Hotkey, Identifiable};
-use crate::os::{App, Keyboard, Openable, System, WindowConfiguration};
+use crate::os::{Keyboard, System};
 use crate::services::{ActionService, ConfigReader, ConfigService};
-use crate::ui::group_config::GroupConfig;
-use crate::ui::util::{ListMenu, ListOperation, use_listener, use_selection};
 
 #[component]
 pub fn Root() -> Element {
-    // restore focus for hot reload quality of life
-    #[cfg(all(debug_assertions, target_os = "macos"))]
-    use_effect(move || {
-        if let Some(id) = crate::PREVIOUS_APP.get() {
-            spawn(async move {
-                let _ = App::from(id.clone()).open().await;
-            });
-        }
-    });
-
-    use_hook(|| {
-        // TODO spawn this so it is delayed by a frame (try)
-        window().set_decorations(true);
-        System::configure_window();
-        init_tray_icon(default_tray_icon(), None);
-    });
-
-    // TODO refactor this out of root
-    let mut is_visible = use_signal(|| false);
-    use_tray_icon_event_handler(move |evt| {
-        // Dioxus always sets the window to visible on left click up, so we capture
-        // visibility on Down and act on Up to work around it.
-        if let TrayIconEvent::Click {
-            button: MouseButton::Left,
-            button_state,
-            ..
-        } = evt
-        {
-            match button_state {
-                MouseButtonState::Down => {
-                    is_visible.set(window().is_visible());
-                }
-                MouseButtonState::Up => {
-                    if is_visible() {
-                        spawn(async move {
-                            window().set_visible(false);
-                        });
-                    }
-                }
-            }
-        }
-    });
-
-    let mut root_handle = use_signal(|| None::<Rc<MountedData>>);
-    use_context_provider(|| {
-        Callback::new(move |()| {
-            if let Some(handle) = root_handle() {
-                spawn(async move { drop(handle.set_focus(true).await) });
-            }
-        })
-    });
-    let onmounted = move |evt: MountedEvent| root_handle.set(Some(evt.data()));
-    let onkeydown = move |evt: KeyboardEvent| {
-        if System::is_quit(evt.modifiers(), evt.code()) {
-            std::process::exit(0);
-        } else if System::is_close(evt.modifiers(), evt.code()) {
-            window().set_visible(false);
-        }
-    };
+    setup_window();
 
     let config_service = use_config_service();
     let selected = use_signal(HashSet::<Uuid>::new);
     let in_creation_group = use_signal(|| None::<Uuid>);
     use_group_list_listener(config_service, selected, in_creation_group);
-
     let active_group = use_memo(move || {
         if selected().len() == 1 {
             selected().iter().next().copied()
@@ -93,6 +32,8 @@ pub fn Root() -> Element {
     });
     let groups = config_service.read().config().groups().clone();
 
+    let onmounted = move |evt: MountedEvent| provide_unfocus_callback().set(Some(evt.data()));
+    let onkeydown = move |evt: KeyboardEvent| handle_window_shortcuts(evt.modifiers(), evt.key());
     let border_pad_val = if cfg!(target_os = "macos") {
         "1px" // compensate for macOS window border
     } else {
@@ -152,6 +93,21 @@ pub fn Root() -> Element {
     }
 }
 
+#[component]
+fn GroupMenuItem(group_id: Uuid, name: String, selected: Signal<HashSet<Uuid>>) -> Element {
+    let (is_active, toggle) = use_selection(group_id, selected);
+
+    rsx! {
+        SidebarMenuItem {
+            SidebarMenuButton {
+                is_active: is_active(),
+                onclick: move |e| toggle.call(e),
+                span { "{name}" }
+            }
+        }
+    }
+}
+
 fn use_config_service() -> Signal<ConfigService> {
     let config = use_hook(|| Arc::new(RwLock::new(Config::load().unwrap_or_default())));
     let config_reader = use_hook(|| ConfigReader::new(config.clone()));
@@ -170,21 +126,6 @@ fn use_config_service() -> Signal<ConfigService> {
     }));
 
     use_signal(|| ConfigService::new(config, hotkey_sender))
-}
-
-#[component]
-fn GroupMenuItem(group_id: Uuid, name: String, selected: Signal<HashSet<Uuid>>) -> Element {
-    let (is_active, toggle) = use_selection(group_id, selected);
-
-    rsx! {
-        SidebarMenuItem {
-            SidebarMenuButton {
-                is_active: is_active(),
-                onclick: move |e| toggle.call(e),
-                span { "{name}" }
-            }
-        }
-    }
 }
 
 fn use_group_list_listener(
@@ -221,5 +162,26 @@ fn unique_group_name(config_service: &ConfigService, base: &str) -> String {
             return candidate;
         }
         n += 1;
+    }
+}
+
+// Dioxus shortcuts only work if focus is in window -> restore focus to root div to unfocus
+fn provide_unfocus_callback() -> Signal<Option<Rc<MountedData>>> {
+    let root_handle = use_signal(|| None::<Rc<MountedData>>);
+    use_context_provider(|| {
+        Callback::new(move |()| {
+            if let Some(handle) = root_handle() {
+                spawn(async move { drop(handle.set_focus(true).await) });
+            }
+        })
+    });
+    root_handle
+}
+
+fn handle_window_shortcuts(modifiers: Modifiers, key: Key) {
+    if System::is_quit(modifiers, key.clone()) {
+        std::process::exit(0);
+    } else if System::is_close(modifiers, key) {
+        window().set_visible(false);
     }
 }

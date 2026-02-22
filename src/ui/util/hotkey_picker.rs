@@ -10,10 +10,10 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
     let mut recording = use_signal(|| false);
     use_record_registered(recording, set_hotkey);
     let onkeydown = move |evt: KeyboardEvent| record_unregistered(recording, set_hotkey, evt);
-    let restore_focus: Callback<()> = consume_context();
+    let unfocus: Callback<()> = consume_context();
     use_effect(move || {
         if !recording() {
-            restore_focus.call(());
+            unfocus.call(());
         }
     });
 

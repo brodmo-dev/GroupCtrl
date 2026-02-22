@@ -34,7 +34,7 @@ pub fn EditableText(
         }
     });
 
-    let restore_focus: Callback<()> = consume_context();
+    let unfocus: Callback<()> = consume_context();
     let mut mode = use_signal(|| starting_mode);
     let mut cancel = move || match mode() {
         InputMode::Edit => draft.set(text()),
@@ -48,11 +48,11 @@ pub fn EditableText(
             } else {
                 on_commit.call(draft());
             }
-            restore_focus.call(());
+            unfocus.call(());
         }
         Key::Escape => {
             cancel();
-            restore_focus.call(());
+            unfocus.call(());
         }
         #[cfg(target_os = "macos")]
         Key::Character(c) if c == "a" && evt.modifiers().contains(Modifiers::META) => {

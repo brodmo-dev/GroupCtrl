@@ -1,3 +1,4 @@
+use dioxus::prelude::Key;
 use global_hotkey::hotkey::{Code, Modifiers};
 
 use crate::os::{Keyboard, ModifierFormat, System};
@@ -7,12 +8,12 @@ impl Keyboard for System {
         modifiers.ctrl()
     }
 
-    fn is_quit(modifiers: Modifiers, key: Code) -> bool {
-        modifiers.alt() && key == Code::F4
+    fn is_quit(modifiers: Modifiers, key: Key) -> bool {
+        modifiers.alt() && key == Key::F4
     }
 
     fn is_close(modifiers: Modifiers, key: Code) -> bool {
-        modifiers.ctrl() && key == Code::F4
+        modifiers.ctrl() && key == Key::F4
     }
 
     fn show_parts_sep() -> &'static str {
