@@ -1,5 +1,5 @@
 <h1>
-  <sub><img src="assets/icon.png" width="35" alt="GroupCtrl icon" /></sub>
+  <sub><img src="assets/icon.svg" width="35" alt="GroupCtrl icon" /></sub>
   GroupCtrl
 </h1>
 
