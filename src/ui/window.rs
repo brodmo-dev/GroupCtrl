@@ -29,6 +29,7 @@ pub fn Window() -> Element {
 
     let onmounted = move |evt: MountedEvent| {
         window().set_decorations(true);
+        window().set_focus();
         provide_unfocus_callback().set(Some(evt.data()));
     };
     let onkeydown = move |evt: KeyboardEvent| handle_window_shortcuts(evt.modifiers(), evt.key());
