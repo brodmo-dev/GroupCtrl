@@ -72,8 +72,10 @@ pub fn GroupConfig(
                     starting_mode: input_mode(),
                     on_commit: set_name,
                 }
+
                 label { r#for: "hotkey-picker", "Hotkey" }
                 HotkeyPicker { hotkey: group().hotkey, set_hotkey }
+
                 label { r#for: "target-picker", "Target" }
                 TargetPicker {
                     apps: group().apps().to_vec(),
