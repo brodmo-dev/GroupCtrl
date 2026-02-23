@@ -11,7 +11,7 @@ pub fn AppList(apps: Vec<App>) -> Element {
     let mut selected = use_signal(HashSet::<String>::new);
     rsx! {
         div {
-            class: "sidebar-static rounded-xl",
+            class: "sidebar-static rounded-lg",
             onclick: move |_| selected.write().clear(),
             div {
                 class: "sidebar-header",

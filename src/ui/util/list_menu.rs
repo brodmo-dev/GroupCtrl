@@ -30,7 +30,7 @@ where
 
     rsx! {
         div {
-            class: "flex items-center gap-1",
+            class: "flex gap-1",
             SmallButton { onclick: add, disabled: false, Plus { stroke_width: 4 } }
             SmallButton { onclick: remove, disabled: selected().is_empty(), Minus { stroke_width: 4 } }
         }
