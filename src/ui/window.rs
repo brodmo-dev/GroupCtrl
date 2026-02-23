@@ -6,11 +6,11 @@ use dioxus::prelude::*;
 use crate::components::sidebar::SidebarProvider;
 use crate::components::toast::ToastProvider;
 use crate::os::{App, Keyboard, Openable, System, WindowConfiguration};
-use crate::ui::group_list::GroupList;
+use crate::ui::groups::Groups;
 use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
 
 #[component]
-pub fn Root() -> Element {
+pub fn Window() -> Element {
     // restore focus for hot reload quality of life
     #[cfg(all(debug_assertions, target_os = "macos"))]
     use_effect(move || {
@@ -39,7 +39,7 @@ pub fn Root() -> Element {
             onkeydown,
             ToastProvider {
                 SidebarProvider {
-                    GroupList {}
+                    Groups {}
                 }
             }
         }

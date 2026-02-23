@@ -11,7 +11,7 @@ use crate::models::{Config, Hotkey, Identifiable};
 use crate::services::{ActionService, ConfigReader, ConfigService};
 
 #[component]
-pub fn GroupList() -> Element {
+pub fn Groups() -> Element {
     let config_service = use_config_service();
     let selected = use_signal(HashSet::<Uuid>::new);
     let in_creation_group = use_signal(|| None::<Uuid>);

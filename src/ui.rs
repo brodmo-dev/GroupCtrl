@@ -1,8 +1,8 @@
 mod app_list;
 mod group_config;
-mod group_list;
-mod root;
+mod groups;
 mod tray_icon;
 mod util;
+mod window;
 
-pub use root::Root;
+pub use window::Window;

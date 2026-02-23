@@ -11,7 +11,7 @@ use dioxus::prelude::*;
 use simplelog::*;
 
 use crate::os::{AppQuery, System};
-use crate::ui::Root;
+use crate::ui::Window;
 
 const FONT_URL: &str = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap";
 
@@ -90,5 +90,5 @@ fn main() {
                 .with_close_behaviour(WindowCloseBehaviour::WindowHides)
                 .with_exits_when_last_window_closes(false),
         )
-        .launch(Root);
+        .launch(Window);
 }
