@@ -13,7 +13,7 @@ use crate::services::{ActionService, ConfigReader, ConfigService};
 #[component]
 pub fn Groups() -> Element {
     let config_service = use_config_service();
-    let selected = use_signal(HashSet::<Uuid>::new);
+    let mut selected = use_signal(HashSet::<Uuid>::new);
     let in_creation_group = use_signal(|| None::<Uuid>);
     use_group_list_listener(config_service, selected, in_creation_group);
 
@@ -34,6 +34,7 @@ pub fn Groups() -> Element {
     rsx! {
         Sidebar {
             style: "padding-left: {border_pad_val};",
+            onclick: move |_| selected.write().clear(),
             collapsible: SidebarCollapsible::None,
             SidebarHeader {
                 label { r#for: "group-list", class: "pl-1", "Groups" }

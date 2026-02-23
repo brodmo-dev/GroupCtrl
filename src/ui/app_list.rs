@@ -8,10 +8,11 @@ use crate::ui::util::{AppLabel, ListMenu, use_selection};
 
 #[component]
 pub fn AppList(apps: Vec<App>) -> Element {
-    let selected = use_signal(HashSet::<String>::new);
+    let mut selected = use_signal(HashSet::<String>::new);
     rsx! {
         div {
             class: "sidebar-static rounded-xl",
+            onclick: move |_| selected.write().clear(),
             div {
                 class: "sidebar-header",
                 label { r#for: "app-list", class: "pl-1.25", "Apps" }

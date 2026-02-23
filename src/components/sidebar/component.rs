@@ -256,6 +256,7 @@ pub fn Sidebar(
     #[props(default)] side: SidebarSide,
     #[props(default)] variant: SidebarVariant,
     #[props(default)] collapsible: SidebarCollapsible,
+    #[props(default)] onclick: EventHandler<MouseEvent>,
     #[props(extends = GlobalAttributes)] attributes: Vec<Attribute>,
     children: Element,
 ) -> Element {
@@ -277,7 +278,7 @@ pub fn Sidebar(
         let merged = merge_attributes(vec![base, attributes]);
 
         return rsx! {
-            div { ..merged, {children} }
+            div { onclick: move |e| onclick.call(e), ..merged, {children} }
         };
     }
 
