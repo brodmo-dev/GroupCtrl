@@ -1,9 +1,8 @@
-MACOS_APP_PATH := target/dx/GroupCtrl/release/macos/GroupCtrl.app
+MACOS_APP_PATH := target/dx/GroupCtrl/bundle/macos/bundle/macos/GroupCtrl.app
 SIGNING_IDENTITY := Developer ID Application: Moritz Brödel (7P73434GLV)
 
 macos-bundle:
 	dx bundle --release
-	cp assets/icon.icns $(MACOS_APP_PATH)/Contents/Resources/icon.icns  # Dioxus bug
 
 macos-sign:
 	codesign --force --options runtime --sign "$(SIGNING_IDENTITY)" $(MACOS_APP_PATH)
