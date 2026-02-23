@@ -1,6 +1,4 @@
-RELEASE_PATH := target/dx/GroupCtrl/release
-MACOS_APP_PATH := $(RELEASE_PATH)/macos/GroupCtrl.app
-MACOS_ZIP_PATH := $(RELEASE_PATH)/macos/GroupCtrl.zip
+MACOS_APP_PATH := target/dx/GroupCtrl/release/macos/GroupCtrl.app
 SIGNING_IDENTITY := Developer ID Application: Moritz Brödel (7P73434GLV)
 
 macos-bundle:
@@ -11,12 +9,15 @@ macos-sign:
 	codesign --force --options runtime --sign "$(SIGNING_IDENTITY)" $(MACOS_APP_PATH)
 
 macos-notarize:
-	ditto -c -k --keepParent $(MACOS_APP_PATH) $(MACOS_ZIP_PATH)
-	xcrun notarytool submit $(MACOS_ZIP_PATH) --keychain-profile dev --wait
+	ditto -c -k --keepParent $(MACOS_APP_PATH) target/GroupCtrl.zip
+	xcrun notarytool submit target/GroupCtrl.zip --keychain-profile dev --wait
 	xcrun stapler staple $(MACOS_APP_PATH)
-	rm $(MACOS_ZIP_PATH)
 
-macos-release: macos-bundle macos-sign macos-notarize
+macos-dmg:
+	# install via npm https://github.com/sindresorhus/create-dmg
+	create-dmg ${MACOS_APP_PATH} target --overwrite --no-version-in-filename
+
+macos-release: macos-bundle macos-sign macos-notarize macos-dmg
 
 screenshot:
 	cd assets && \
