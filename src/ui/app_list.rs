@@ -11,24 +11,20 @@ pub fn AppList(apps: Vec<App>) -> Element {
     let selected = use_signal(HashSet::<String>::new);
     rsx! {
         div {
-            class: "flex flex-col flex-1 min-h-0 rounded-xl",
-            style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
+            class: "sidebar-static rounded-xl",
             div {
-                class: "flex items-center justify-between w-full !p-2 !pb-0",
+                class: "sidebar-header",
                 label { r#for: "app-list", class: "pl-1.25", "Apps" }
                 ListMenu { selected }
             }
             div {
-                class: "sidebar-group-content flex-1 min-h-0 overflow-y-auto p-1",
-                "data-sidebar": "group-content",
+                class: "sidebar-content",
                 ul {
                     id: "app-list",
                     class: "sidebar-menu",
-                    "data-sidebar": "menu",
                     for app in apps {
                         li {
                             class: "sidebar-menu-item",
-                            "data-sidebar": "menu-item",
                             AppRow { app, selected }
                         }
                     }

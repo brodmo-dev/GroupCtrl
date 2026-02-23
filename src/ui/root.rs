@@ -65,29 +65,19 @@ pub fn Root() -> Element {
             SidebarProvider {
                 Sidebar {
                     style: "padding-left: {border_pad_val};",
-                    side: SidebarSide::Left,
-                    variant: SidebarVariant::Sidebar,
                     collapsible: SidebarCollapsible::None,
                     SidebarHeader {
-                        class: "!p-2 !pb-0",
-                        div {
-                            class: "flex items-center justify-between w-full",
-                            label { r#for: "group-list", class: "pl-1", "Groups" }
-                            ListMenu { selected }
-                        }
+                        label { r#for: "group-list", class: "pl-1", "Groups" }
+                        ListMenu { selected }
                     }
                     SidebarContent {
-                        SidebarGroup { class: "!p-0 flex-1 min-h-0",
-                            SidebarGroupContent { class: "flex-1 min-h-0 overflow-y-auto p-1",
-                                SidebarMenu { id: "group-list",
-                                    for group in groups {
-                                        GroupMenuItem {
-                                            key: "{group.id()}",
-                                            group_id: group.id(),
-                                            name: group.name.clone(),
-                                            selected,
-                                        }
-                                    }
+                        SidebarMenu { id: "group-list",
+                            for group in groups {
+                                GroupMenuItem {
+                                    key: "{group.id()}",
+                                    group_id: group.id(),
+                                    name: group.name.clone(),
+                                    selected,
                                 }
                             }
                         }
