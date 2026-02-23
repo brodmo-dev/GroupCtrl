@@ -1,4 +1,7 @@
-use dioxus::desktop::window;
+use std::rc::Rc;
+
+use dioxus::desktop::tao::event::Event;
+use dioxus::desktop::{use_wry_event_handler, window};
 use dioxus::prelude::*;
 
 use crate::components::sidebar::SidebarProvider;
@@ -25,17 +28,31 @@ pub fn Window() -> Element {
     });
     handle_tray_icon_events();
 
+    let mut root_handle = use_signal(|| None::<Rc<MountedData>>);
+    let focus_root = Callback::new(move |()| {
+        spawn(async move {
+            if let Some(handle) = root_handle() {
+                let _ = handle.set_focus(true).await;
+            }
+        });
+    });
+    use_context_provider(|| focus_root);
+
+    use_wry_event_handler(move |event, _| {
+        if matches!(event, Event::Reopen { .. }) {
+            window().set_visible(true);
+            window().set_focus();
+            focus_root.call(());
+        }
+    });
+
     let onmounted = move |evt: MountedEvent| {
+        root_handle.set(Some(evt.data()));
         window().set_decorations(true);
         window().set_focus(); // necessary on macOS due to activation policy accessory
-        // Always keep focus in div so shortcuts work
-        let root_handle = use_signal(|| evt.data());
-        let focus_root = Callback::new(move |()| {
-            spawn(async move { drop(root_handle().set_focus(true).await) });
-        });
         focus_root.call(());
-        use_context_provider(|| focus_root);
     };
+
     let onkeydown = move |evt: KeyboardEvent| {
         if System::is_quit(evt.modifiers(), evt.key()) {
             std::process::exit(0);
