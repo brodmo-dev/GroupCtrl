@@ -14,6 +14,8 @@ Hotkeys for switching apps
 - Text config: Human-readable, can be manually edited and version-controlled.
 - Permissions: None required.
 
+<!--- App launcher: Hold a hotkey to launch any app in the group. The launcher will open immediately if no app in the group is running.-->
+
 ## Tips
 
 - Add GroupCtrl to `Open at Login` in System Settings
@@ -21,6 +23,8 @@ Hotkeys for switching apps
 - Use [Hyperkey](https://hyperkey.app/) or [Karabiner](https://karabiner-elements.pqrs.org/)
   to map Caps Lock to `Cmd+Opt+Control`
 - Show Desktop using `F11`
+
+<!--- Use Vim binds (j/k) to quickly navigate between apps in the launcher-->
 
 ## Alternatives
 
@@ -37,14 +41,14 @@ with the flexibility of FlashSpace and the consistency of AeroSpace.
 
 ## Roadmap
 
-### Complete Windows port
-
-- [ ] Custom app picker
-- [ ] Windows app enumeration for picker
-- [ ] Windows app metadata extraction
-- [ ] Windows app launching
-- [ ] Windows window tracking
-- [ ] UWP app support
+- [ ] Add launcher pop-up
+- [ ] Complete Windows port
+    - [ ] Custom app picker
+    - [ ] Windows app enumeration for picker
+    - [ ] Windows app metadata extraction
+    - [ ] Windows app launching
+    - [ ] Windows window tracking
+    - [ ] UWP app support
 
 ## Development
 
