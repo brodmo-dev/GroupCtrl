@@ -1,5 +1,3 @@
-use std::rc::Rc;
-
 use dioxus::desktop::window;
 use dioxus::prelude::*;
 
@@ -29,10 +27,23 @@ pub fn Window() -> Element {
 
     let onmounted = move |evt: MountedEvent| {
         window().set_decorations(true);
-        window().set_focus();
-        provide_unfocus_callback().set(Some(evt.data()));
+        window().set_focus(); // necessary on macOS due to activation policy accessory
+        // Always keep focus in div so shortcuts work
+        let root_handle = use_signal(|| evt.data());
+        let focus_root = Callback::new(move |()| {
+            spawn(async move { drop(root_handle().set_focus(true).await) });
+        });
+        focus_root.call(());
+        use_context_provider(|| focus_root);
     };
-    let onkeydown = move |evt: KeyboardEvent| handle_window_shortcuts(evt.modifiers(), evt.key());
+    let onkeydown = move |evt: KeyboardEvent| {
+        if System::is_quit(evt.modifiers(), evt.key()) {
+            std::process::exit(0);
+        } else if System::is_close(evt.modifiers(), evt.key()) {
+            window().set_visible(false);
+        }
+    };
+
     rsx! {
         div {
             tabindex: -1,
@@ -44,26 +55,5 @@ pub fn Window() -> Element {
                 }
             }
         }
-    }
-}
-
-// Dioxus shortcuts only work if focus is in window -> restore focus to root div to unfocus
-fn provide_unfocus_callback() -> Signal<Option<Rc<MountedData>>> {
-    let root_handle = use_signal(|| None::<Rc<MountedData>>);
-    use_context_provider(|| {
-        Callback::new(move |()| {
-            if let Some(handle) = root_handle() {
-                spawn(async move { drop(handle.set_focus(true).await) });
-            }
-        })
-    });
-    root_handle
-}
-
-fn handle_window_shortcuts(modifiers: Modifiers, key: Key) {
-    if System::is_quit(modifiers, key.clone()) {
-        std::process::exit(0);
-    } else if System::is_close(modifiers, key) {
-        window().set_visible(false);
     }
 }
