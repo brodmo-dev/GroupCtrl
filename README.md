@@ -22,7 +22,8 @@ Hotkeys for switching apps
 - Hide Dock using `Cmd+Opt+D`
 - Use [Hyperkey](https://hyperkey.app/) or [Karabiner](https://karabiner-elements.pqrs.org/)
   to map Caps Lock to `Cmd+Opt+Control`
-- Show Desktop using `F11`
+- Switch between windows of an app with `Cmd+Backtick`
+- Show desktop with `F11`
 
 <!--- Use Vim binds (j/k) to quickly navigate between apps in the launcher-->
 
