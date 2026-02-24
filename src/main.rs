@@ -13,8 +13,6 @@ use simplelog::*;
 use crate::os::{AppQuery, System};
 use crate::ui::Window;
 
-const FONT_URL: &str = "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap";
-
 #[cfg(all(debug_assertions, target_os = "macos"))]
 pub static PREVIOUS_APP: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
@@ -51,13 +49,24 @@ fn main() {
 
     #[cfg(target_os = "macos")]
     let head = format!(
-        r#"<link rel="stylesheet" href="{FONT_URL}"><link rel="stylesheet" href="{}">"#,
-        asset!("/assets/tailwind.css")
+        r#"
+        <link rel="stylesheet" href="{}">
+        <style>
+            @font-face {{
+                font-family: 'Inter';
+                font-display: block;
+                src: url('{}') format('woff2');
+            }}
+        </style>
+        "#,
+        asset!("/assets/tailwind.css"),
+        asset!("/assets/fonts/Inter.woff2"),
     );
     #[cfg(target_os = "windows")]
     let head = format!(
-        r#"<link rel="stylesheet" href="{FONT_URL}"><style>{}</style>"#,
-        include_str!("../assets/tailwind.css")
+        // TODO: bundle Inter font for Windows
+        r#"<style>{}</style>"#,
+        include_str!("../assets/tailwind.css"),
     );
 
     #[cfg(all(debug_assertions, target_os = "macos"))]
