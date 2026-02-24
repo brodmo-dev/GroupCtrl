@@ -41,7 +41,8 @@ pub fn EditableText(
         if !new_text.is_empty() {
             on_commit.call(new_text);
         }
-        draft.set(text()); // keep text or reset if invalid
+        // spawn so memo chain has updated after commit
+        spawn(async move { draft.set(text()) }); // reset on empty text or commit failure
         mode.set(InputMode::Edit);
     };
 
