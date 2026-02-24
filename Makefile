@@ -25,7 +25,7 @@ screenshot:
 	magick screenshot.png -bordercolor transparent -border 50x25 screenshot.png
 
 icon:
-	cd assets && \
+	cd assets/icons && \
 	rsvg-convert tray-icon.svg | magick png:- tray-icon.rgba && \
 	resvg -w 128 icon.svg icon.png && \
 	mkdir -p icon.iconset && \

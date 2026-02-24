@@ -10,7 +10,7 @@ pub(super) fn setup_tray_icon() -> TrayIcon {
         .append(&menu::PredefinedMenuItem::quit(None))
         .unwrap();
     let icon = Icon::from_rgba(
-        include_bytes!("../../assets/tray-icon.rgba").to_vec(),
+        include_bytes!("../../assets/icons/tray-icon.rgba").to_vec(),
         128,
         128,
     )
