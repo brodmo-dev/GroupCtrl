@@ -36,22 +36,25 @@ pub fn EditableText(
 
     let unfocus: Callback<()> = consume_context();
     let mut mode = use_signal(|| starting_mode);
-    let mut cancel = move || match mode() {
-        InputMode::Edit => draft.set(text()),
-        InputMode::Create { on_cancel } => on_cancel.call(()),
+    let mut commit = move || {
+        if draft().trim().is_empty() {
+            draft.set(text());
+        } else {
+            on_commit.call(draft());
+        }
+        mode.set(InputMode::Edit);
     };
+
     let onkeydown = move |evt: KeyboardEvent| match evt.key() {
         Key::Enter => {
-            mode.set(InputMode::Edit);
-            if draft().trim().is_empty() {
-                cancel();
-            } else {
-                on_commit.call(draft());
-            }
+            commit();
             unfocus.call(());
         }
         Key::Escape => {
-            cancel();
+            match mode() {
+                InputMode::Edit => draft.set(text()),
+                InputMode::Create { on_cancel } => on_cancel.call(()),
+            };
             unfocus.call(());
         }
         #[cfg(target_os = "macos")]
@@ -60,7 +63,7 @@ pub fn EditableText(
         }
         _ => (),
     };
-    let onblur = move |_| cancel();
+    let onblur = move |_| commit();
 
     rsx! {
         Input {
