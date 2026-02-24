@@ -3,7 +3,7 @@
   GroupCtrl
 </h1>
 
-Hotkeys for switching apps
+Hotkeys for switching apps. Download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases)
 
 <img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
 
@@ -19,11 +19,15 @@ Hotkeys for switching apps
 ## Tips
 
 - Add GroupCtrl to `Open at Login` in System Settings
-- Hide Dock using `Cmd+Opt+D`
 - Use [Hyperkey](https://hyperkey.app/) or [Karabiner](https://karabiner-elements.pqrs.org/)
   to map Caps Lock to `Cmd+Opt+Control`
-- Switch between windows of an app with `Cmd+Backtick`
-- Show desktop with `F11`
+- Config path is `~/.config/groupctrl/config.yaml`
+
+### Useful macOS shortcuts
+
+- `Cmd+Opt+D` to hide Dock
+- `Cmd+Backtick` to switch between windows of an app
+- `F11` to show desktop
 
 <!--- Use Vim binds (j/k) to quickly navigate between apps in the launcher-->
 
