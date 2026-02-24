@@ -37,11 +37,10 @@ pub fn EditableText(
     let unfocus: Callback<()> = consume_context();
     let mut mode = use_signal(|| starting_mode);
     let mut commit = move || {
-        if draft().trim().is_empty() {
-            draft.set(text());
-        } else {
+        if !draft().trim().is_empty() {
             on_commit.call(draft());
         }
+        draft.set(text());
         mode.set(InputMode::Edit);
     };
 
