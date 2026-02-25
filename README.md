@@ -5,9 +5,9 @@
 
 Instant app switching with shared hotkeys
 
-<img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
+[Download](https://github.com/brodmo-dev/GroupCtrl/releases/latest)
 
-[![Download](https://img.shields.io/github/v/release/brodmo-dev/GroupCtrl?label=Download&color=blue&style=for-the-badge)](https://github.com/brodmo-dev/GroupCtrl/releases/latest)
+<img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
 
 ## Features
 
