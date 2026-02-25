@@ -9,7 +9,7 @@ Instant app switching with shared hotkeys. Download from [Releases](https://gith
 
 ## Features
 
-- App groups: Assign one hotkey for many apps and cycle between them.
+- App groups: Assign one hotkey for many apps and cycle between those running.
 - Target app: Select one app per group to always open first. If not running, it will be launched.
 - Text config: Human-readable, can be manually edited and version-controlled.
 - Permissions: None required.
