@@ -3,7 +3,7 @@
   GroupCtrl
 </h1>
 
-Hotkeys for switching apps. Download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases)
+Instant app switching with shared hotkeys. Download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases)
 
 <img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
 
