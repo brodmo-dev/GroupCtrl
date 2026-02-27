@@ -14,7 +14,7 @@ macos-notarize:
 
 macos-dmg:
 	# install via npm https://github.com/sindresorhus/create-dmg
-	create-dmg ${MACOS_APP_PATH} target --overwrite --no-version-in-filename
+	create-dmg ${MACOS_APP_PATH} target --overwrite
 
 macos-release: macos-bundle macos-sign macos-notarize macos-dmg
 
