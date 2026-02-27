@@ -1,7 +1,5 @@
 # macOS
 
-## Setup
-
 Everything works through Keychain.
 
 - Signing
@@ -12,3 +10,5 @@ Everything works through Keychain.
     - `xcrun notarytool store-credentials dev`
     - Team ID: 7P73434GLV
     - App-specific password for notarytool from https://account.apple.com
+
+Then `just release`
