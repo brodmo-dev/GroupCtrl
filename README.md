@@ -36,14 +36,9 @@ Instant app switching with shared hotkeys
 
 ## Alternatives
 
-- [rcmd](https://lowtechguys.com/rcmd/) —
-  Similar functionality, but its hotkey sharing isn't practical since
-  it doesn't remember the most recent app and launches apps that aren't running instead of skipping them.
-  Not open source, used to be paid and will have a paid tier again soon.
-- [FlashSpace](https://github.com/wojciech-kulik/FlashSpace) —
-  Workspace manager with app hiding. Requires accessibility permissions.
-- [AeroSpace](https://github.com/nikitabobko/AeroSpace) —
-  Full tiling window manager. Takes over the entire layout.
+- [rcmd](https://lowtechguys.com/rcmd/) — Similar functionality, but no practical hotkey sharing
+- [FlashSpace](https://github.com/wojciech-kulik/FlashSpace) — Workspace manager with app hiding
+- [AeroSpace](https://github.com/nikitabobko/AeroSpace) — Tiling window manager
 
 I've used all three extensively but was never quite satisfied.
 I wanted to build something that combines the simplicity of rcmd
