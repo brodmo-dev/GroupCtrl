@@ -1,5 +1,5 @@
-mod dirs;
-pub use dirs::*;
+mod app_dirs;
+pub use app_dirs::*;
 
 mod traits;
 pub use traits::*;
