@@ -11,9 +11,10 @@ Instant app switching with shared hotkeys
 
 ## Features
 
-- App groups: Assign a single shared hotkey for many apps.
-  Hit once to switch to most recent, hit again to cycle to next running.
-- Target app: Select one app per group to always open first. If not running, it will be launched.
+- Hotkey sharing: Create an app group with multiple related apps and assign a single hotkey to it.
+  Hit once to switch to the most recent app, hit again to cycle to next running.
+- Direct access: Select one app per group to be the target and always open first instead of most recent.
+  If not running, it will be launched.
 - Text config: Human-readable, can be manually edited and version-controlled.
 - Permissions: None required.
 
