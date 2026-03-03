@@ -5,7 +5,8 @@
 
 Instant app switching with shared hotkeys
 
-[Download](https://github.com/brodmo-dev/GroupCtrl/releases/latest)
+`brew install brodmo/tap/groupctrl` or
+download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest)
 
 <img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
 
