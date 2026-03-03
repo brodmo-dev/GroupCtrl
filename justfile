@@ -1,7 +1,8 @@
 # This is all macOS
 
-app_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos/GroupCtrl.app"
 signing_identity := "Developer ID Application: Moritz Brödel (7P73434GLV)"
+app_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos/GroupCtrl.app"
+zip_path := "target/GroupCtrl.zip"
 
 release: icon bundle sign notarize dmg
 
@@ -12,8 +13,8 @@ sign:
     codesign --force --options runtime --sign "{{ signing_identity }}" {{ app_path }}
 
 notarize:
-    ditto -c -k --keepParent {{ app_path }} target/GroupCtrl.zip
-    xcrun notarytool submit target/GroupCtrl.zip --keychain-profile dev --wait
+    ditto -c -k --keepParent {{ app_path }} {{ zip_path }}
+    xcrun notarytool submit {{ zip_path }} --keychain-profile dev --wait
     xcrun stapler staple {{ app_path }}
 
 dmg:
