@@ -12,9 +12,9 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 
 ## Features
 
-- Hotkey sharing: Create an app group with multiple related apps and assign a single hotkey to it.
+- Shared hotkeys: Create an app group with multiple related apps and assign a single hotkey to it.
   Hit once to switch to the most recent app, hit again to cycle to next running.
-- Fixed target: Optionally select one app per group to always open first. If not running, it will be launched.
+- Fixed targets: Optionally select one app per group to always open first. If not running, it will be launched.
 - Text config: Easy to manually edit and version-control, if you're so inclined.
 
 <!--- App launcher: Hold a hotkey to launch any app in the group. The launcher will open immediately if no app in the group is running.-->
