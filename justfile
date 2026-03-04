@@ -1,13 +1,24 @@
 # This is all macOS
 
 signing_identity := "Developer ID Application: Moritz Brödel (7P73434GLV)"
-app_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos/GroupCtrl.app"
-zip_path := "target/GroupCtrl.zip"
+bundle_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos"
+app_path := bundle_path / "GroupCtrl.app"
+zip_path := bundle_path / "GroupCtrl.zip"
+arm := "aarch64-apple-darwin"
+intel := "x86_64-apple-darwin"
 
-release: icon bundle sign notarize dmg
+release: clean-dmgs icon (build intel) rename-intel-dmg (build arm)
 
-bundle:
-    dx bundle --release
+clean-dmgs:
+    rm -f target/GroupCtrl*.dmg
+
+rename-intel-dmg:
+    f="$(ls target/GroupCtrl*.dmg)" && mv "$f" "${f%.dmg} Intel.dmg"
+
+build target: (bundle target) sign notarize dmg
+
+bundle target:
+    dx bundle --release --target {{ target }}
 
 sign:
     codesign --force --options runtime --sign "{{ signing_identity }}" {{ app_path }}
