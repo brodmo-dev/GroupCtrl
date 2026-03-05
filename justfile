@@ -7,14 +7,14 @@ zip_path := bundle_path / "GroupCtrl.zip"
 arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
-release: clean-dmgs icon (build intel) rename-intel-dmg (build arm)
-    shasum -a 256 GroupCtrl*.dmg
+release: clean-dmgs icon (build intel) (rename-dmg "Intel") (build arm) (rename-dmg "Arm")
+    shasum -a 256 target/GroupCtrl*.dmg
 
 clean-dmgs:
     rm -f target/GroupCtrl*.dmg
 
-rename-intel-dmg:
-    f="$(ls target/GroupCtrl*.dmg)" && mv "$f" "${f%.dmg} Intel.dmg"
+rename-dmg suffix:
+    f="$(ls target/GroupCtrl*.dmg)" && mv "$f" "${f%.dmg}-{{ suffix }}.dmg"
 
 build target: (bundle target) sign notarize dmg
 
