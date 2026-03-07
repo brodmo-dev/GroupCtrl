@@ -1,4 +1,4 @@
-# This is all macOS
+# this is all macOS
 
 signing_identity := "Developer ID Application: Moritz Brödel (7P73434GLV)"
 bundle_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos"
@@ -7,19 +7,14 @@ zip_path := bundle_path / "GroupCtrl.zip"
 arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
-release: clean-dmgs icon (build intel) (rename-dmg "Intel") (build arm) (rename-dmg "Arm")
-    shasum -a 256 target/GroupCtrl*.dmg
+release: icon (build arm) (rename-dmg "Arm") (build intel) (rename-dmg "Intel")
+    shasum -a 256 target/*.dmg
 
-clean-dmgs:
-    rm -f target/GroupCtrl*.dmg
+build arch: (bundle arch)
+    just sign notarize dmg  # force repeat execution
 
-rename-dmg suffix:
-    f="$(ls target/GroupCtrl*.dmg)" && mv "$f" "${f%.dmg}-{{ suffix }}.dmg"
-
-build target: (bundle target) sign notarize dmg
-
-bundle target:
-    dx bundle --release --target {{ target }}
+bundle arch:
+    dx bundle --release --target {{ arch }}
 
 sign:
     codesign --force --options runtime --sign "{{ signing_identity }}" {{ app_path }}
@@ -31,6 +26,11 @@ notarize:
 
 dmg:
     create-dmg {{ app_path }} target --overwrite || { echo "run: npm install -g create-dmg"; exit 1; }
+
+version := `sed -nE 's/^version = "(.*)"/\1/p' Cargo.toml`
+
+rename-dmg arch:
+    mv "target/GroupCtrl {{ version }}.dmg" "target/GroupCtrl-{{ version }}-{{ arch }}.dmg"
 
 [working-directory('assets/icons')]
 icon:
