@@ -6,22 +6,12 @@ use dioxus::prelude::*;
 
 use crate::components::sidebar::SidebarProvider;
 use crate::components::toast::ToastProvider;
-use crate::os::{App, Keyboard, Openable, System, WindowConfiguration};
+use crate::os::{Keyboard, System, WindowConfiguration};
 use crate::ui::groups::Groups;
 use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
 
 #[component]
 pub fn Window() -> Element {
-    // restore focus for hot reload quality of life
-    #[cfg(all(debug_assertions, target_os = "macos"))]
-    use_effect(move || {
-        if let Some(id) = crate::PREVIOUS_APP.get() {
-            spawn(async move {
-                let _ = App::from(id.clone()).open().await;
-            });
-        }
-    });
-
     use_hook(|| {
         System::configure_window();
         setup_tray_icon()
@@ -48,9 +38,6 @@ pub fn Window() -> Element {
 
     let onmounted = move |evt: MountedEvent| {
         root_handle.set(Some(evt.data()));
-        window().set_decorations(true);
-        window().set_focus(); // necessary on macOS due to activation policy accessory
-        focus_root.call(());
     };
 
     let onkeydown = move |evt: KeyboardEvent| {

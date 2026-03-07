@@ -10,11 +10,7 @@ use dioxus::desktop::{Config, LogicalSize, WindowBuilder, WindowCloseBehaviour};
 use dioxus::prelude::*;
 use simplelog::*;
 
-use crate::os::{AppQuery, System};
 use crate::ui::Window;
-
-#[cfg(all(debug_assertions, target_os = "macos"))]
-pub static PREVIOUS_APP: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 
 #[cfg(debug_assertions)]
 fn setup_logging() -> anyhow::Result<()> {
@@ -69,19 +65,13 @@ fn main() {
         include_str!("../assets/tailwind.css"),
     );
 
-    #[cfg(all(debug_assertions, target_os = "macos"))]
-    if let Ok(Some(id)) = System::current_app() {
-        let _ = PREVIOUS_APP.set(id);
-    }
-
     let max_size = if cfg!(debug_assertions) {
         LogicalSize::new(1200, 800)
     } else {
         LogicalSize::new(600, 600)
     };
     let window = WindowBuilder::new()
-        .with_transparent(true) // don't render background before rsx to reduce pop-in
-        .with_decorations(false) // restored later to reduce pop-in
+        .with_visible(false)
         .with_always_on_top(true)
         .with_inner_size(LogicalSize::new(500, 400))
         .with_min_inner_size(LogicalSize::new(400, 400))
