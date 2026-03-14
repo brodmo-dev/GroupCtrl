@@ -10,18 +10,26 @@ pub fn TargetPicker(
     target: Option<App>,
     set_target: Callback<Option<App>>,
 ) -> Element {
+    let disabled = apps.len() <= 1;
     let value: Option<Option<Option<App>>> = Some(Some(target.clone()));
     rsx! {
         div { class: "flex-1",
         Select::<Option<App>> {
             value,
+            disabled,
             on_value_change: move |choice: Option<Option<App>>| {
                 set_target.call(choice.flatten());
             },
             SelectTrigger {
-                match &target {
-                    Some(app) => rsx! { AppLabel { app: app.clone() } },
-                    None => rsx! { span { class: "text-(--muted-text)", "Most Recent" } },
+                if apps.is_empty() {
+                    span { class: "text-(--muted-text)", "None" }
+                } else if apps.len() == 1 {
+                    AppLabel { app: apps[0].clone() }
+                } else {
+                    match &target {
+                        Some(app) => rsx! { AppLabel { app: app.clone() } },
+                        None => rsx! { span { class: "text-(--muted-text)", "Most Recent" } },
+                    }
                 }
             }
             SelectList {

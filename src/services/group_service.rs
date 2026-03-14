@@ -41,6 +41,10 @@ impl GroupService {
 
     pub async fn open(&self, group_id: Uuid) {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
+        if group.apps().len() == 1 {
+            Self::open_app(&group.apps()[0]).await;
+            return;
+        }
         let all_running = System::running_apps().unwrap_or_default();
         let group_running: Vec<App> = group
             .apps()

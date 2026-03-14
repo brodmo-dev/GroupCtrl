@@ -53,13 +53,17 @@
     stroke-width: 2;
 }
 
-.select[data-disabled="true"] .select-trigger {
-    color: var(--secondary-color-5);
-    cursor: not-allowed;
+.select-trigger:disabled {
+    box-shadow: none;
+    cursor: default;
 }
 
-.select-trigger:hover:not([data-disabled="true"]),
-.select-trigger:focus-visible {
+.select-trigger:disabled .select-expand-icon {
+    display: none;
+}
+
+.select-trigger:hover:not(:disabled),
+.select-trigger:focus-visible:not(:disabled) {
     background-color: var(--primary-color-4);
     color: var(--secondary-color-1);
     outline: none;
