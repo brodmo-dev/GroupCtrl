@@ -73,6 +73,9 @@
     width: 100%;
     max-height: 60vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
     box-sizing: border-box;
     padding: 0.25rem;
     border-radius: 0.5rem;
@@ -124,10 +127,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: calc(0.5rem - 0.25rem);
     cursor: pointer;
     font-size: 14px;
+}
+
+.select-option[aria-selected="true"] {
+    background: var(--primary-color-4);
 }
 
 .select-option[data-disabled="true"] {
