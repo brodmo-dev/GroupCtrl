@@ -2,7 +2,7 @@ use std::collections::VecDeque;
 use std::sync::{Arc, RwLock};
 use std::thread;
 
-use log::error;
+use log::{error, info};
 use uuid::Uuid;
 
 use crate::models::Identifiable;
@@ -41,6 +41,7 @@ impl GroupService {
 
     pub async fn open(&self, group_id: Uuid) {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
+        info!("opening group {}", group.name);
         if group.apps().len() == 1 {
             Self::open_app(&group.apps()[0]).await;
             return;
