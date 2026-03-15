@@ -36,7 +36,7 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 
 ## Alternatives
 
-- [rcmd](https://lowtechguys.com/rcmd/) – Similar functionality, but no practical hotkey sharing
+- [rcmd](https://lowtechguys.com/rcmd/) – Similar functionality, but shared hotkeys aren't practical
 - [FlashSpace](https://github.com/wojciech-kulik/FlashSpace) – Workspace manager with app hiding
 - [AeroSpace](https://github.com/nikitabobko/AeroSpace) – Tiling window manager
 
