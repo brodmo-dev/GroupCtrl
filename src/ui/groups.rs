@@ -94,7 +94,9 @@ fn use_config_service() -> Signal<ConfigService> {
         } else {
             let service = action_service.clone();
             spawn(async move {
-                service.execute(&action).await;
+                if let Some(apps) = service.execute(&action).await {
+                    super::launcher::show(apps).await;
+                }
             });
         }
     }));

@@ -31,20 +31,9 @@ fn setup_logging() -> anyhow::Result<()> {
     Ok(())
 }
 
-fn main() {
-    setup_logging().expect("Logging setup failed");
-
-    if os::icons_dir().exists() {
-        let _ = std::fs::remove_dir_all(os::icons_dir());
-    }
-
-    std::panic::set_hook(Box::new(|panic_info| {
-        log::error!("PANIC: {}", panic_info);
-        std::process::exit(1);
-    }));
-
-    #[cfg(target_os = "macos")]
-    let head = format!(
+#[cfg(target_os = "macos")]
+pub fn custom_head() -> String {
+    format!(
         r#"
         <link rel="stylesheet" href="{}">
         <style>
@@ -57,13 +46,31 @@ fn main() {
         "#,
         asset!("/assets/tailwind.css"),
         asset!("/assets/fonts/Inter.woff2"),
-    );
-    #[cfg(target_os = "windows")]
-    let head = format!(
+    )
+}
+
+#[cfg(target_os = "windows")]
+pub fn custom_head() -> String {
+    format!(
         // TODO: bundle Inter font for Windows
         r#"<style>{}</style>"#,
         include_str!("../assets/tailwind.css"),
     );
+}
+
+fn main() {
+    setup_logging().expect("Logging setup failed");
+
+    if os::icons_dir().exists() {
+        let _ = std::fs::remove_dir_all(os::icons_dir());
+    }
+
+    std::panic::set_hook(Box::new(|panic_info| {
+        log::error!("PANIC: {}", panic_info);
+        std::process::exit(1);
+    }));
+
+    let head = custom_head();
 
     let max_size = if cfg!(debug_assertions) {
         LogicalSize::new(1200, 800)

@@ -39,12 +39,14 @@ impl GroupService {
         });
     }
 
-    pub async fn open(&self, group_id: Uuid) {
+    /// Returns `None` if an app was opened, or `Some(apps)` if nothing could be
+    /// opened and the caller should show the launcher.
+    pub async fn open(&self, group_id: Uuid) -> Option<Vec<App>> {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
         info!("opening group {}", group.name);
         if group.apps().len() == 1 {
             Self::open_app(&group.apps()[0]).await;
-            return;
+            return None;
         }
         let all_running = System::running_apps().unwrap_or_default();
         let group_running: Vec<App> = group
@@ -60,6 +62,9 @@ impl GroupService {
             .or_else(|| group_running.first().cloned())
         {
             Self::open_app(&app).await;
+            None
+        } else {
+            Some(group.apps().clone())
         }
     }
 
