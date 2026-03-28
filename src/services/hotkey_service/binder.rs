@@ -2,10 +2,9 @@ use std::collections::HashMap;
 
 use dioxus::desktop::{ShortcutHandle, ShortcutRegistryError, window};
 use dioxus::hooks::UnboundedSender;
-use global_hotkey::HotKeyState::Pressed;
 use log::warn;
 
-use crate::models::{Action, Hotkey};
+use crate::models::{Action, Hotkey, HotkeyEvent};
 use crate::services::hotkey_service::error::HotkeyBindError;
 
 pub trait HotkeyBinder {
@@ -14,12 +13,12 @@ pub trait HotkeyBinder {
 }
 
 pub struct DioxusBinder {
-    hotkey_sender: UnboundedSender<(Hotkey, Action)>,
+    hotkey_sender: UnboundedSender<HotkeyEvent>,
     handles: HashMap<Hotkey, ShortcutHandle>,
 }
 
 impl DioxusBinder {
-    pub(super) fn new(hotkey_sender: UnboundedSender<(Hotkey, Action)>) -> Self {
+    pub(super) fn new(hotkey_sender: UnboundedSender<HotkeyEvent>) -> Self {
         Self {
             hotkey_sender,
             handles: HashMap::new(),
@@ -32,11 +31,12 @@ impl HotkeyBinder for DioxusBinder {
         let my_hotkey_sender = self.hotkey_sender.clone();
         let my_action = action.clone();
         let callback = move |state| {
-            if state == Pressed {
-                my_hotkey_sender
-                    .unbounded_send((hotkey, my_action.clone()))
-                    .unwrap();
-            }
+            let event = HotkeyEvent {
+                hotkey,
+                state,
+                action: my_action.clone(),
+            };
+            my_hotkey_sender.unbounded_send(event).unwrap();
         };
         let handle = window()
             .create_shortcut(hotkey.global_hotkey(), callback)

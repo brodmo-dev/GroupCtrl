@@ -3,7 +3,7 @@ use std::sync::{Arc, RwLock, RwLockReadGuard, RwLockWriteGuard};
 use dioxus::hooks::UnboundedSender;
 use uuid::Uuid;
 
-use crate::models::{Action, Bindable, Config, DuplicateGroupName, Hotkey};
+use crate::models::{Bindable, Config, DuplicateGroupName, Hotkey, HotkeyEvent};
 use crate::os::App;
 use crate::services::HotkeyService;
 use crate::services::config_reader::ConfigReader;
@@ -15,10 +15,7 @@ pub struct ConfigService {
 }
 
 impl ConfigService {
-    pub fn new(
-        config: Arc<RwLock<Config>>,
-        hotkey_sender: UnboundedSender<(Hotkey, Action)>,
-    ) -> Self {
+    pub fn new(config: Arc<RwLock<Config>>, hotkey_sender: UnboundedSender<HotkeyEvent>) -> Self {
         Self {
             config: config.clone(),
             hotkey_service: HotkeyService::new(ConfigReader::new(config), hotkey_sender),

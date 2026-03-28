@@ -65,7 +65,10 @@ fn Window(group: Group) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
         div {
-            onmounted: move |_| window().set_visible(true),
+            onmounted: move |_| {
+                window().set_visible(true);
+                window().set_focus();
+            },
             AppList { group }
         }
     }

@@ -1,4 +1,5 @@
 use std::collections::VecDeque;
+use std::rc::Rc;
 use std::sync::{Arc, RwLock};
 use std::thread;
 
@@ -15,17 +16,23 @@ const MAX_HISTORY: usize = 1024; // Prevent potential memory leak
 pub struct GroupService {
     config_reader: ConfigReader,
     history: Arc<RwLock<VecDeque<String>>>,
-    on_launch: Arc<dyn Fn(Group)>,
+    on_app_open: Rc<dyn Fn(Uuid)>,
+    on_no_app_to_open: Rc<dyn Fn(Group)>,
 }
 
 impl GroupService {
-    pub fn new(config_reader: ConfigReader, on_launch: Arc<dyn Fn(Group)>) -> Self {
+    pub fn new(
+        config_reader: ConfigReader,
+        on_app_open: Rc<dyn Fn(Uuid)>,
+        on_no_app_to_open: Rc<dyn Fn(Group)>,
+    ) -> Self {
         let history = Arc::new(RwLock::new(VecDeque::new()));
         Self::spawn_history_writer(history.clone());
         Self {
             config_reader,
             history,
-            on_launch,
+            on_app_open,
+            on_no_app_to_open,
         }
     }
 
@@ -62,8 +69,9 @@ impl GroupService {
             .or_else(|| group_running.first().cloned())
         {
             Self::open_app(&app).await;
+            (self.on_app_open)(group_id);
         } else {
-            (self.on_launch)(group);
+            (self.on_no_app_to_open)(group);
         }
     }
 

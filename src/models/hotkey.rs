@@ -1,10 +1,19 @@
 use std::fmt::{Debug, Display, Formatter};
 
+use global_hotkey::HotKeyState as HotkeyState;
 use global_hotkey::hotkey::{Code, HotKey as GlobalHotkey, Modifiers};
 use serde::{Deserialize, Serialize};
 
+use crate::models::Action;
 use crate::models::hotkey_conversion::show_hotkey_parts;
 use crate::os::{Keyboard, System};
+
+#[derive(Clone)]
+pub struct HotkeyEvent {
+    pub hotkey: Hotkey,
+    pub state: HotkeyState,
+    pub action: Action,
+}
 
 #[derive(Clone, Copy, Hash, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(into = "String", from = "String")]

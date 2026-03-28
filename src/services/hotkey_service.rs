@@ -6,7 +6,7 @@ use dioxus::hooks::UnboundedSender;
 pub use error::HotkeyBindError;
 use log::error;
 
-use crate::models::{Action, Hotkey};
+use crate::models::{Action, Hotkey, HotkeyEvent};
 use crate::services::config_reader::ConfigReader;
 
 pub struct HotkeyService<B: HotkeyBinder = DioxusBinder> {
@@ -15,10 +15,7 @@ pub struct HotkeyService<B: HotkeyBinder = DioxusBinder> {
 }
 
 impl HotkeyService<DioxusBinder> {
-    pub fn new(
-        config_reader: ConfigReader,
-        hotkey_sender: UnboundedSender<(Hotkey, Action)>,
-    ) -> Self {
+    pub fn new(config_reader: ConfigReader, hotkey_sender: UnboundedSender<HotkeyEvent>) -> Self {
         let mut service = Self {
             config_reader: config_reader.clone(),
             binder: DioxusBinder::new(hotkey_sender),
