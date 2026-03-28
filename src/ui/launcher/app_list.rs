@@ -23,8 +23,11 @@ pub(super) fn AppList(group: Group) -> Element {
         ));
     };
 
-    let mut selected_idx = use_signal(|| 0usize);
     let apps = group.apps().clone();
+    if apps.is_empty() {
+        return rsx! { EmptyGroup {} };
+    }
+    let mut selected_idx = use_signal(|| 0usize);
     let len = apps.len();
     let mut navigate = move |to: usize| {
         selected_idx.set(to);
@@ -83,6 +86,27 @@ pub(super) fn AppList(group: Group) -> Element {
                         }
                     }
                 }
+            }
+        }
+    }
+}
+
+#[component]
+fn EmptyGroup() -> Element {
+    rsx! {
+        div {
+            class: "sidebar-static rounded-lg outline-none",
+            tabindex: -1,
+            onmounted: move |evt| async move {
+                let _ = evt.data().set_focus(true).await;
+            },
+            onkeydown: move |evt: KeyboardEvent| {
+                if evt.key() == Key::Escape { close(); }
+            },
+            p {
+                class: "p-2 text-sm text-center",
+                color: "var(--muted-text)",
+                "No apps assigned to group"
             }
         }
     }
