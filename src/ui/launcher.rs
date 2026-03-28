@@ -1,4 +1,5 @@
 mod content;
+mod show;
 mod window;
 
-pub use window::show;
+pub use show::show;

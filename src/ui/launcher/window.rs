@@ -1,37 +1,37 @@
-use dioxus::desktop::{Config, LogicalPosition, LogicalSize, WindowBuilder, window};
+use dioxus::desktop::tao::event::{Event, WindowEvent};
+use dioxus::desktop::{use_wry_event_handler, window};
 use dioxus::prelude::*;
 
-use super::content::{Content, ContentProps};
+use super::content::Content;
 use crate::os::App;
 
-const WIDTH: f64 = 250.0;
-const MAX_HEIGHT: f64 = 280.0;
-const Y_POS: f64 = 0.4;
+#[component]
+pub(super) fn Window(apps: Vec<App>) -> Element {
+    let window_id = window().id();
+    use_wry_event_handler(move |event, _| {
+        if let Event::WindowEvent {
+            event: WindowEvent::Focused(false),
+            window_id: id,
+            ..
+        } = event
+            && *id == window_id
+        {
+            window().close();
+        }
+    });
 
-pub async fn show(apps: Vec<App>) {
-    let dom = VirtualDom::new_with_props(Content, ContentProps { apps });
-    let monitor = window()
-        .primary_monitor()
-        .or_else(|| window().current_monitor())
-        .unwrap();
-    let scale = monitor.scale_factor();
-    let screen = monitor.size().to_logical::<f64>(scale);
-
-    let cfg = Config::new()
-        .with_window(
-            WindowBuilder::new()
-                .with_visible(false)
-                .with_decorations(false)
-                .with_transparent(true)
-                .with_always_on_top(true)
-                .with_resizable(false)
-                .with_inner_size(LogicalSize::new(WIDTH, MAX_HEIGHT))
-                .with_position(LogicalPosition::new(
-                    (screen.width - WIDTH) / 2.0,
-                    screen.height * Y_POS,
-                )),
-        )
-        .with_custom_head(crate::custom_head());
-
-    window().new_window(dom, cfg).await;
+    rsx! {
+        document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
+        div {
+            class: "h-full overflow-hidden outline-none",
+            tabindex: -1,
+            onmounted: move |evt| {
+                spawn(async move {
+                    window().set_visible(true);
+                    let _ = evt.data().set_focus(true).await;
+                });
+            },
+            Content { apps }
+        }
+    }
 }
