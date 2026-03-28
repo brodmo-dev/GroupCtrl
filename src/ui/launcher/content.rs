@@ -1,30 +1,13 @@
 use dioxus::desktop::tao::event::{Event, WindowEvent};
 use dioxus::desktop::{use_wry_event_handler, window};
 use dioxus::prelude::*;
-use futures::channel::mpsc;
 
-use crate::os::{App, AppMetadata};
+use crate::os::{App, AppMetadata, Openable};
 use crate::ui::util::AppLabel;
 
-#[derive(Clone)]
-pub(super) struct Sender(pub mpsc::UnboundedSender<Option<App>>);
-
-impl PartialEq for Sender {
-    fn eq(&self, _: &Self) -> bool {
-        true
-    }
-}
-
-#[derive(Clone, PartialEq, Props)]
-pub(super) struct ContentProps {
-    pub(super) apps: Vec<App>,
-    pub(super) sender: Sender,
-}
-
 #[component]
-pub(super) fn Content(props: ContentProps) -> Element {
+pub(super) fn Content(apps: Vec<App>) -> Element {
     let window_id = window().id();
-    let sender_for_focus = props.sender.0.clone();
     use_wry_event_handler(move |event, _| {
         if let Event::WindowEvent {
             event: WindowEvent::Focused(false),
@@ -33,22 +16,18 @@ pub(super) fn Content(props: ContentProps) -> Element {
         } = event
             && *id == window_id
         {
-            let _ = sender_for_focus.unbounded_send(None);
             window().close();
         }
     });
 
     let mut selected = use_signal(|| 0usize);
-    let len = props.apps.len();
-    let apps = &props.apps;
-    let sender = &props.sender.0;
+    let len = apps.len();
 
-    let send = {
-        let sender = sender.clone();
-        move |app: Option<App>| {
-            let _ = sender.unbounded_send(app);
-            window().close();
-        }
+    let open = move |app: App| {
+        spawn(async move {
+            let _ = app.open().await;
+        });
+        window().close();
     };
 
     // Dioxus serializes ScrollToOptions with wrong field names (vertical/horizontal
@@ -61,7 +40,6 @@ pub(super) fn Content(props: ContentProps) -> Element {
 
     let onkeydown = {
         let apps = apps.clone();
-        let send = send.clone();
         move |evt: KeyboardEvent| {
             let key = evt.key();
             let down =
@@ -74,9 +52,9 @@ pub(super) fn Content(props: ContentProps) -> Element {
                 selected.set(selected().checked_sub(1).unwrap_or(len - 1));
                 scroll_into_view(selected());
             } else if matches!(key, Key::Enter) {
-                send(Some(apps[selected()].clone()));
+                open(apps[selected()].clone());
             } else if matches!(key, Key::Escape) {
-                send(None);
+                window().close();
             }
         }
     };
@@ -111,8 +89,7 @@ pub(super) fn Content(props: ContentProps) -> Element {
                                     "data-active": selected() == i,
                                     onclick: {
                                         let app = app.clone();
-                                        let send = send.clone();
-                                        move |_| send(Some(app.clone()))
+                                        move |_| open(app.clone())
                                     },
                                     AppLabel { app: app.clone() }
                                 }

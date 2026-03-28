@@ -1,25 +1,15 @@
 use dioxus::desktop::{Config, LogicalPosition, LogicalSize, WindowBuilder, window};
 use dioxus::prelude::*;
-use futures::StreamExt;
-use futures::channel::mpsc;
 
-use super::content::{Content, ContentProps, Sender};
-use crate::os::{App, Openable};
+use super::content::{Content, ContentProps};
+use crate::os::App;
 
 const WIDTH: f64 = 250.0;
 const MAX_HEIGHT: f64 = 280.0;
 const Y_POS: f64 = 0.4;
 
 pub async fn show(apps: Vec<App>) {
-    let (tx, mut rx) = mpsc::unbounded::<Option<App>>();
-
-    let dom = VirtualDom::new_with_props(
-        Content,
-        ContentProps {
-            apps,
-            sender: Sender(tx),
-        },
-    );
+    let dom = VirtualDom::new_with_props(Content, ContentProps { apps });
     let monitor = window()
         .primary_monitor()
         .or_else(|| window().current_monitor())
@@ -44,8 +34,4 @@ pub async fn show(apps: Vec<App>) {
         .with_custom_head(crate::custom_head());
 
     window().new_window(dom, cfg).await;
-
-    if let Some(Some(app)) = rx.next().await {
-        let _ = app.open().await;
-    }
 }
