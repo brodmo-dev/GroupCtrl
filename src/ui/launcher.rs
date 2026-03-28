@@ -1,4 +1,4 @@
-mod content;
+mod app_list;
 mod show;
 mod window;
 

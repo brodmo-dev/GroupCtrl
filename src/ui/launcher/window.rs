@@ -2,7 +2,7 @@ use dioxus::desktop::tao::event::{Event, WindowEvent};
 use dioxus::desktop::{use_wry_event_handler, window};
 use dioxus::prelude::*;
 
-use super::content::Content;
+use super::app_list::AppList;
 use crate::os::App;
 
 #[component]
@@ -23,15 +23,10 @@ pub(super) fn Window(apps: Vec<App>) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
         div {
-            class: "h-full overflow-hidden outline-none",
-            tabindex: -1,
-            onmounted: move |evt| {
-                spawn(async move {
-                    window().set_visible(true);
-                    let _ = evt.data().set_focus(true).await;
-                });
+            onmounted: move |_| {
+                window().set_visible(true);
             },
-            Content { apps }
+            AppList { apps }
         }
     }
 }

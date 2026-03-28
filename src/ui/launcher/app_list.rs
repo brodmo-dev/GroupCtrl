@@ -5,10 +5,7 @@ use crate::os::{App, AppMetadata, Openable};
 use crate::ui::util::AppLabel;
 
 #[component]
-pub(super) fn Content(apps: Vec<App>) -> Element {
-    let mut selected = use_signal(|| 0usize);
-    let len = apps.len();
-
+pub(super) fn AppList(apps: Vec<App>) -> Element {
     let open = move |app: App| {
         spawn(async move {
             let _ = app.open().await;
@@ -24,31 +21,36 @@ pub(super) fn Content(apps: Vec<App>) -> Element {
         ));
     };
 
+    let mut selected_idx = use_signal(|| 0usize);
     let onkeydown = {
         let apps = apps.clone();
         move |evt: KeyboardEvent| {
-            let key = evt.key();
-            let down =
-                matches!(key, Key::ArrowDown) || matches!(&key, Key::Character(c) if c == "j");
-            let up = matches!(key, Key::ArrowUp) || matches!(&key, Key::Character(c) if c == "k");
-            if down {
-                selected.set((selected() + 1) % len);
-                scroll_into_view(selected());
-            } else if up {
-                selected.set(selected().checked_sub(1).unwrap_or(len - 1));
-                scroll_into_view(selected());
-            } else if matches!(key, Key::Enter) {
-                open(apps[selected()].clone());
-            } else if matches!(key, Key::Escape) {
-                window().close();
+            let idx = selected_idx();
+            let next = (idx + 1) % apps.len();
+            let prev = idx.checked_sub(1).unwrap_or(apps.len() - 1);
+            let mut navigate = |to: usize| {
+                selected_idx.set(to);
+                scroll_into_view(to);
+            };
+            match evt.key() {
+                Key::ArrowDown => navigate(next),
+                Key::Character(c) if c == "j" => navigate(next),
+                Key::ArrowUp => navigate(prev),
+                Key::Character(c) if c == "k" => navigate(prev),
+                Key::Enter => open(apps[idx].clone()),
+                Key::Escape => window().close(),
+                _ => {}
             }
         }
     };
 
     rsx! {
         div {
-            class: "rounded-lg overflow-y-auto w-full max-h-screen",
-            style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
+            class: "sidebar-static rounded-lg overflow-hidden max-h-screen",
+            tabindex: -1,
+            onmounted: move |evt| async move {
+                let _ = evt.data().set_focus(true).await;
+            },
             onkeydown,
             div {
                 class: "sidebar-content",
@@ -62,10 +64,10 @@ pub(super) fn Content(apps: Vec<App>) -> Element {
                                 class: "sidebar-menu-button scroll-m-1",
                                 "data-sidebar": "menu-button",
                                 "data-size": "default",
-                                "data-active": selected() == i,
+                                "data-active": selected_idx() == i,
                                 onclick: {
-                                    let app = app.clone();
-                                    move |_| open(app.clone())
+                                    let my_app = app.clone();
+                                    move |_| open(my_app.clone())
                                 },
                                 AppLabel { app: app.clone() }
                             }

@@ -9,14 +9,11 @@ const MAX_HEIGHT: f64 = 280.0;
 const Y_POS: f64 = 0.4;
 
 pub async fn show(apps: Vec<App>) {
-    let dom = VirtualDom::new_with_props(Window, WindowProps { apps });
     let monitor = window()
         .primary_monitor()
         .or_else(|| window().current_monitor())
         .unwrap();
-    let scale = monitor.scale_factor();
-    let screen = monitor.size().to_logical::<f64>(scale);
-
+    let screen = monitor.size().to_logical::<f64>(monitor.scale_factor());
     let cfg = Config::new()
         .with_window(
             WindowBuilder::new()
@@ -32,6 +29,6 @@ pub async fn show(apps: Vec<App>) {
                 )),
         )
         .with_custom_head(crate::custom_head());
-
+    let dom = VirtualDom::new_with_props(Window, WindowProps { apps });
     window().new_window(dom, cfg).await;
 }
