@@ -10,12 +10,9 @@ use crate::os::{App, AppMetadata, Openable};
 use crate::ui::util::AppLabel;
 
 const WIDTH: f64 = 250.0;
-const ROW_HEIGHT: usize = 32;
-const PAD: usize = 4;
-const GAP: usize = 4;
+
 pub async fn show(apps: Vec<App>) {
     let (tx, mut rx) = mpsc::unbounded::<Option<App>>();
-    let height = ((ROW_HEIGHT + GAP) * apps.len() - GAP + 2 * PAD) as f64;
 
     let dom = VirtualDom::new_with_props(
         Launcher,
@@ -39,11 +36,8 @@ pub async fn show(apps: Vec<App>) {
                 .with_transparent(true)
                 .with_always_on_top(true)
                 .with_resizable(false)
-                .with_inner_size(LogicalSize::new(WIDTH, height))
-                .with_position(LogicalPosition::new(
-                    (screen.width - WIDTH) / 2.0,
-                    (screen.height - height) / 2.0,
-                )),
+                .with_inner_size(LogicalSize::new(WIDTH, screen.height))
+                .with_position(LogicalPosition::new((screen.width - WIDTH) / 2.0, 0.0)),
         )
         .with_custom_head(crate::custom_head());
 
@@ -122,8 +116,7 @@ fn Launcher(props: LauncherProps) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../components/sidebar/style.css") }
         div {
-            class: "rounded-lg outline-none overflow-hidden",
-            style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
+            class: "h-screen flex items-center outline-none",
             tabindex: -1,
             onmounted: move |evt| {
                 spawn(async move {
@@ -133,24 +126,28 @@ fn Launcher(props: LauncherProps) -> Element {
             },
             onkeydown,
             div {
-                class: "sidebar-content",
-                ul {
-                    class: "sidebar-menu",
-                    for (i, app) in apps.iter().enumerate() {
-                        li {
-                            key: "{app.name()}",
-                            class: "sidebar-menu-item",
-                            button {
-                                class: "sidebar-menu-button",
-                                "data-sidebar": "menu-button",
-                                "data-size": "default",
-                                "data-active": selected() == i,
-                                onclick: {
-                                    let app = app.clone();
-                                    let send = send.clone();
-                                    move |_| send(Some(app.clone()))
-                                },
-                                AppLabel { app: app.clone() }
+                class: "rounded-lg overflow-hidden w-full",
+                style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
+                div {
+                    class: "sidebar-content",
+                    ul {
+                        class: "sidebar-menu",
+                        for (i, app) in apps.iter().enumerate() {
+                            li {
+                                key: "{app.name()}",
+                                class: "sidebar-menu-item",
+                                button {
+                                    class: "sidebar-menu-button",
+                                    "data-sidebar": "menu-button",
+                                    "data-size": "default",
+                                    "data-active": selected() == i,
+                                    onclick: {
+                                        let app = app.clone();
+                                        let send = send.clone();
+                                        move |_| send(Some(app.clone()))
+                                    },
+                                    AppLabel { app: app.clone() }
+                                }
                             }
                         }
                     }
