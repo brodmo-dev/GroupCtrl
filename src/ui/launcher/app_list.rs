@@ -48,7 +48,7 @@ pub(super) fn AppList(group: Group) -> Element {
 
     rsx! {
         div {
-            class: "sidebar-static rounded-lg overflow-hidden max-h-screen",
+            class: "sidebar-static rounded-lg overflow-hidden max-h-screen outline-none",
             tabindex: -1,
             onmounted: move |evt| async move {
                 let _ = evt.data().set_focus(true).await;
