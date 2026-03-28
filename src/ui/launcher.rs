@@ -81,6 +81,7 @@ fn Launcher(props: LauncherProps) -> Element {
     });
 
     let mut selected = use_signal(|| 0usize);
+    let len = props.apps.len();
     let apps = &props.apps;
     let sender = &props.sender.0;
 
@@ -92,19 +93,28 @@ fn Launcher(props: LauncherProps) -> Element {
         }
     };
 
+    // Dioxus serializes ScrollToOptions with wrong field names (vertical/horizontal
+    // instead of block/inline), so scrollIntoView options are silently ignored.
+    let scroll_into_view = move |i: usize| {
+        document::eval(&format!(
+            "document.querySelectorAll('[data-sidebar=\"menu-button\"]')[{i}]?.scrollIntoView({{block:'nearest'}})"
+        ));
+    };
+
     let onkeydown = {
         let apps = apps.clone();
         let send = send.clone();
         move |evt: KeyboardEvent| {
-            let len = apps.len();
             let key = evt.key();
             let down =
                 matches!(key, Key::ArrowDown) || matches!(&key, Key::Character(c) if c == "j");
             let up = matches!(key, Key::ArrowUp) || matches!(&key, Key::Character(c) if c == "k");
             if down {
                 selected.set((selected() + 1) % len);
+                scroll_into_view(selected());
             } else if up {
                 selected.set(selected().checked_sub(1).unwrap_or(len - 1));
+                scroll_into_view(selected());
             } else if matches!(key, Key::Enter) {
                 send(Some(apps[selected()].clone()));
             } else if matches!(key, Key::Escape) {
@@ -116,7 +126,7 @@ fn Launcher(props: LauncherProps) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../components/sidebar/style.css") }
         div {
-            class: "h-screen flex items-center outline-none",
+            class: "h-screen overflow-hidden outline-none",
             tabindex: -1,
             onmounted: move |evt| {
                 spawn(async move {
@@ -126,7 +136,7 @@ fn Launcher(props: LauncherProps) -> Element {
             },
             onkeydown,
             div {
-                class: "rounded-lg overflow-hidden w-full",
+                class: "rounded-lg overflow-y-auto w-full max-h-[25vh] mt-[40vh]",
                 style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
                 div {
                     class: "sidebar-content",
@@ -137,7 +147,7 @@ fn Launcher(props: LauncherProps) -> Element {
                                 key: "{app.name()}",
                                 class: "sidebar-menu-item",
                                 button {
-                                    class: "sidebar-menu-button",
+                                    class: "sidebar-menu-button scroll-m-1",
                                     "data-sidebar": "menu-button",
                                     "data-size": "default",
                                     "data-active": selected() == i,
