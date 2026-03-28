@@ -17,10 +17,10 @@ pub fn resolve(bundle_id: &str) -> App {
     let icon_path = app_path
         .as_deref()
         .and_then(|path| save_icon(path, bundle_id));
-    App::new(bundle_id.to_string(), app_path, name, icon_path)
+    App::new(bundle_id.to_string(), name, icon_path)
 }
 
-fn resolve_app_path(bundle_id: &str) -> Option<String> {
+pub fn resolve_app_path(bundle_id: &str) -> Option<String> {
     let ns_id = NSString::from_str(bundle_id);
     let url = NSWorkspace::sharedWorkspace().URLForApplicationWithBundleIdentifier(&ns_id)?;
     Some(url.path()?.to_string())

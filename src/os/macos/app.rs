@@ -12,21 +12,14 @@ use crate::os::AppMetadata;
 #[serde(into = "String", from = "String")]
 pub struct App {
     pub(super) bundle_id: String,
-    pub(super) app_path: Option<String>,
     name: String,
     icon_path: Option<PathBuf>,
 }
 
 impl App {
-    pub(super) fn new(
-        bundle_id: String,
-        app_path: Option<String>,
-        name: String,
-        icon_path: Option<PathBuf>,
-    ) -> Self {
+    pub(super) fn new(bundle_id: String, name: String, icon_path: Option<PathBuf>) -> Self {
         Self {
             bundle_id,
-            app_path,
             name,
             icon_path,
         }

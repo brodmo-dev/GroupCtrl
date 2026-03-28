@@ -4,7 +4,7 @@ mod open_app;
 mod win32;
 
 impl Openable for App {
-    async fn open(&self) -> anyhow::Result<()> {
-        open_app::open_app(&self.exe_path)
+    async fn open(id: &str) -> anyhow::Result<()> {
+        open_app::open_app(id)
     }
 }

@@ -32,7 +32,7 @@ pub trait AppSelection {
 }
 
 pub trait Openable {
-    async fn open(&self) -> anyhow::Result<()>;
+    async fn open(id: &str) -> anyhow::Result<()>;
 }
 
 pub trait AppMetadata {

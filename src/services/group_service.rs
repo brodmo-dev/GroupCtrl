@@ -92,7 +92,7 @@ impl GroupService {
     }
 
     async fn open_app(app: &App) {
-        let result = app.open().await;
+        let result = App::open(&app.id()).await;
         if let Err(error) = result {
             // This can fail because the app was uninstalled, etc
             error!(
