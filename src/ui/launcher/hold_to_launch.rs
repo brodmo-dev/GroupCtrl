@@ -5,7 +5,8 @@ use dioxus::prelude::*;
 use tokio::time::sleep;
 use uuid::Uuid;
 
-use super::show_launcher::{ACTIVE_LAUNCHER, show_launcher};
+use super::launcher_state::ACTIVE_LAUNCHER;
+use super::show_launcher::show_launcher;
 use crate::services::ConfigReader;
 
 pub fn use_hold_to_launch(config_reader: ConfigReader) -> HoldToLaunch {
@@ -28,7 +29,7 @@ impl HoldToLaunch {
         let reader = self.config_reader.clone();
         let task = spawn(async move {
             sleep(Duration::from_millis(200)).await;
-            if ACTIVE_LAUNCHER.read().unwrap().is_none() {
+            if ACTIVE_LAUNCHER.get().is_none() {
                 let group = reader.read().group(group_id).unwrap().clone();
                 show_launcher(group);
             }

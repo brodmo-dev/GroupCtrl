@@ -11,7 +11,8 @@ use super::util::{ListMenu, ListOperation, use_listener, use_selection};
 use crate::components::sidebar::*;
 use crate::models::{Config, Group, Hotkey, HotkeyEvent, Identifiable};
 use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
-use crate::ui::launcher::{ACTIVE_LAUNCHER, show_launcher, use_hold_to_launch};
+use crate::ui::launcher::launcher_state::ACTIVE_LAUNCHER;
+use crate::ui::launcher::{show_launcher, use_hold_to_launch};
 
 #[component]
 pub fn Groups() -> Element {
@@ -104,7 +105,7 @@ fn use_config_service() -> Signal<ConfigService> {
         if event.state == HotkeyState::Pressed {
             if let Some(tx) = active_recorder() {
                 tx.unbounded_send(event.hotkey).unwrap();
-            } else if let Some(tx) = ACTIVE_LAUNCHER.read().unwrap().as_ref() {
+            } else if let Some(tx) = ACTIVE_LAUNCHER.get() {
                 tx.unbounded_send(()).unwrap();
             } else {
                 let service = action_service.clone();

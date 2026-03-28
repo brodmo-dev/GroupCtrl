@@ -1,4 +1,3 @@
-use std::sync::RwLock;
 use std::thread;
 
 use dioxus::desktop::tao::event::{Event, WindowEvent};
@@ -9,6 +8,7 @@ use dioxus::prelude::*;
 use futures::executor::block_on;
 
 use super::launcher_apps::LauncherApps;
+use super::launcher_state::{ACTIVE_LAUNCHER, PRE_LAUNCHER_APP};
 use crate::models::Group;
 use crate::os::{App, AppQuery, Openable, System};
 
@@ -16,11 +16,8 @@ const WIDTH: f64 = 250.0;
 const MAX_HEIGHT: f64 = 280.0;
 const Y_POS: f64 = 0.4;
 
-pub static ACTIVE_LAUNCHER: RwLock<Option<UnboundedSender<()>>> = RwLock::new(None);
-pub(super) static PREV_APP: RwLock<Option<String>> = RwLock::new(None);
-
 pub fn show_launcher(group: Group) {
-    *PREV_APP.write().unwrap() = System::current_app().ok().flatten();
+    PRE_LAUNCHER_APP.set(System::current_app().ok().flatten());
     let monitor = window()
         .primary_monitor()
         .or_else(|| window().current_monitor())
@@ -48,8 +45,9 @@ pub fn show_launcher(group: Group) {
 }
 
 pub(super) fn close() {
-    let prev_app = PREV_APP.write().unwrap().take();
-    *ACTIVE_LAUNCHER.write().unwrap() = None;
+    let prev_app = PRE_LAUNCHER_APP.get();
+    PRE_LAUNCHER_APP.set(None);
+    ACTIVE_LAUNCHER.set(None);
     window().close();
     if let Some(id) = prev_app {
         thread::spawn(move || {

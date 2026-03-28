@@ -1,7 +1,8 @@
 use dioxus::prelude::*;
 use lucide_dioxus::CornerDownLeft;
 
-use super::show_launcher::{ACTIVE_LAUNCHER, PREV_APP, close};
+use super::launcher_state::{ACTIVE_LAUNCHER, PRE_LAUNCHER_APP};
+use super::show_launcher::close;
 use crate::models::{Group, Identifiable};
 use crate::os::{App, Openable};
 use crate::ui::util::{AppLabel, use_listener};
@@ -9,7 +10,7 @@ use crate::ui::util::{AppLabel, use_listener};
 #[component]
 pub(super) fn LauncherApps(group: Group) -> Element {
     let open = move |app: App| {
-        *PREV_APP.write().unwrap() = None;
+        PRE_LAUNCHER_APP.set(None);
         let id = app.id();
         spawn(async move {
             let _ = App::open(&id).await;
@@ -37,8 +38,8 @@ pub(super) fn LauncherApps(group: Group) -> Element {
     };
     let mut select_next = move || navigate((selected_idx() + 1) % len);
     let mut select_prev = move || navigate(selected_idx().checked_sub(1).unwrap_or(len - 1));
-    let tx = use_listener(Callback::new(move |()| select_next()));
-    use_hook(|| *ACTIVE_LAUNCHER.write().unwrap() = Some(tx));
+    let launcher_cycle = use_listener(Callback::new(move |()| select_next()));
+    use_hook(|| ACTIVE_LAUNCHER.set(Some(launcher_cycle)));
     let onkeydown = {
         let my_apps = apps.clone();
         move |evt: KeyboardEvent| match evt.key() {
