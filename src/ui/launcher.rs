@@ -10,6 +10,8 @@ use crate::os::{App, AppMetadata, Openable};
 use crate::ui::util::AppLabel;
 
 const WIDTH: f64 = 250.0;
+const MAX_HEIGHT: f64 = 280.0;
+const Y_POS: f64 = 0.4;
 
 pub async fn show(apps: Vec<App>) {
     let (tx, mut rx) = mpsc::unbounded::<Option<App>>();
@@ -36,8 +38,11 @@ pub async fn show(apps: Vec<App>) {
                 .with_transparent(true)
                 .with_always_on_top(true)
                 .with_resizable(false)
-                .with_inner_size(LogicalSize::new(WIDTH, screen.height))
-                .with_position(LogicalPosition::new((screen.width - WIDTH) / 2.0, 0.0)),
+                .with_inner_size(LogicalSize::new(WIDTH, MAX_HEIGHT))
+                .with_position(LogicalPosition::new(
+                    (screen.width - WIDTH) / 2.0,
+                    screen.height * Y_POS,
+                )),
         )
         .with_custom_head(crate::custom_head());
 
@@ -126,7 +131,7 @@ fn Launcher(props: LauncherProps) -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../components/sidebar/style.css") }
         div {
-            class: "h-screen overflow-hidden outline-none",
+            class: "h-full overflow-hidden outline-none",
             tabindex: -1,
             onmounted: move |evt| {
                 spawn(async move {
@@ -136,7 +141,7 @@ fn Launcher(props: LauncherProps) -> Element {
             },
             onkeydown,
             div {
-                class: "rounded-lg overflow-y-auto w-full max-h-[25vh] mt-[40vh]",
+                class: "rounded-lg overflow-y-auto w-full max-h-screen",
                 style: "background: var(--sidebar-background); color: var(--sidebar-foreground);",
                 div {
                     class: "sidebar-content",
