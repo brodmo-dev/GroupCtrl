@@ -7,6 +7,9 @@ zip_path := bundle_path / "GroupCtrl.zip"
 arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
+test: (bundle arm)
+    mv {{ app_path }} /Applications/GroupCtrl-Test.app
+
 release: icon (build arm) (rename-dmg "Arm") (build intel) (rename-dmg "Intel")
     shasum -a 256 target/*.dmg
 
