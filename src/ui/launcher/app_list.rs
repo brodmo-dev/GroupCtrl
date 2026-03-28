@@ -2,8 +2,8 @@ use dioxus::prelude::*;
 use lucide_dioxus::CornerDownLeft;
 
 use super::show::{ACTIVE_LAUNCHER, close};
-use crate::models::Group;
-use crate::os::{App, AppMetadata, Openable};
+use crate::models::{Group, Identifiable};
+use crate::os::{App, Openable};
 use crate::ui::util::{AppLabel, use_listener};
 
 #[component]
@@ -38,13 +38,13 @@ pub(super) fn AppList(group: Group) -> Element {
     let tx = use_listener(Callback::new(move |()| select_next()));
     use_hook(|| *ACTIVE_LAUNCHER.write().unwrap() = Some(tx));
     let onkeydown = {
-        let apps = apps.clone();
+        let my_apps = apps.clone();
         move |evt: KeyboardEvent| match evt.key() {
             Key::ArrowDown => select_next(),
             Key::Character(c) if c == "j" => select_next(),
             Key::ArrowUp => select_prev(),
             Key::Character(c) if c == "k" => select_prev(),
-            Key::Enter => open(apps[selected_idx()].clone()),
+            Key::Enter => open(my_apps[selected_idx()].clone()),
             Key::Escape => close(),
             _ => {}
         }
@@ -62,29 +62,37 @@ pub(super) fn AppList(group: Group) -> Element {
                 class: "sidebar-content",
                 ul {
                     class: "sidebar-menu",
-                    for (i, app) in apps.iter().enumerate() {
+                    for (i, app) in apps.into_iter().enumerate() {
                         li {
-                            key: "{app.name()}",
+                            key: "{app.id()}",
                             class: "sidebar-menu-item",
-                            button {
-                                class: "sidebar-menu-button scroll-m-1",
-                                "data-sidebar": "menu-button",
-                                "data-size": "default",
-                                "data-active": selected_idx() == i,
-                                onclick: {
-                                    let my_app = app.clone();
-                                    move |_| open(my_app.clone())
-                                },
-                                AppLabel { app: app.clone() }
-                                if selected_idx() == i {
-                                    CornerDownLeft {
-                                        class: "ml-auto !size-3",
-                                        color: "var(--muted-text)",
-                                    }
-                                }
+                            AppRow {
+                                app: app.clone(),
+                                is_selected: selected_idx() == i,
+                                onclick: move |_| open(app.clone()),
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+}
+
+#[component]
+fn AppRow(app: App, is_selected: bool, onclick: EventHandler<MouseEvent>) -> Element {
+    rsx! {
+        button {
+            class: "sidebar-menu-button scroll-m-1",
+            "data-sidebar": "menu-button",
+            "data-size": "default",
+            "data-active": is_selected,
+            onclick,
+            AppLabel { app: app.clone() }
+            if is_selected {
+                CornerDownLeft {
+                    class: "ml-auto !size-3",
+                    color: "var(--muted-text)",
                 }
             }
         }
@@ -104,7 +112,7 @@ fn EmptyGroup() -> Element {
                 if evt.key() == Key::Escape { close(); }
             },
             p {
-                class: "p-2 text-sm text-center",
+                class: "p-3 text-sm text-center",
                 color: "var(--muted-text)",
                 "No apps assigned to group"
             }

@@ -25,6 +25,7 @@ pub fn AppList(apps: Vec<App>) -> Element {
                     class: "sidebar-menu",
                     for app in apps {
                         li {
+                            key: "{app.id()}",
                             class: "sidebar-menu-item",
                             AppRow { app, selected }
                         }
