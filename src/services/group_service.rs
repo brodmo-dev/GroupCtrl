@@ -15,15 +15,17 @@ const MAX_HISTORY: usize = 1024; // Prevent potential memory leak
 pub struct GroupService {
     config_reader: ConfigReader,
     history: Arc<RwLock<VecDeque<String>>>,
+    on_launch: Arc<dyn Fn(Vec<App>)>,
 }
 
 impl GroupService {
-    pub fn new(config_reader: ConfigReader) -> Self {
+    pub fn new(config_reader: ConfigReader, on_launch: Arc<dyn Fn(Vec<App>)>) -> Self {
         let history = Arc::new(RwLock::new(VecDeque::new()));
         Self::spawn_history_writer(history.clone());
         Self {
             config_reader,
             history,
+            on_launch,
         }
     }
 
@@ -39,14 +41,12 @@ impl GroupService {
         });
     }
 
-    /// Returns `None` if an app was opened, or `Some(apps)` if nothing could be
-    /// opened and the caller should show the launcher.
-    pub async fn open(&self, group_id: Uuid) -> Option<Vec<App>> {
+    pub async fn open(&self, group_id: Uuid) {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
         info!("opening group {}", group.name);
         if group.apps().len() == 1 {
             Self::open_app(&group.apps()[0]).await;
-            return None;
+            return;
         }
         let all_running = System::running_apps().unwrap_or_default();
         let group_running: Vec<App> = group
@@ -62,9 +62,8 @@ impl GroupService {
             .or_else(|| group_running.first().cloned())
         {
             Self::open_app(&app).await;
-            None
         } else {
-            Some(group.apps().clone())
+            (self.on_launch)(group.apps().clone());
         }
     }
 

@@ -7,4 +7,5 @@ mod hotkey_service;
 pub use action_service::ActionService;
 pub use config_reader::ConfigReader;
 pub use config_service::ConfigService;
+pub use group_service::GroupService;
 pub use hotkey_service::HotkeyService;

@@ -1,7 +1,5 @@
+use super::group_service::GroupService;
 use crate::models::Action;
-use crate::os::App;
-use crate::services::ConfigReader;
-use crate::services::group_service::GroupService;
 
 #[derive(Clone)]
 pub struct ActionService {
@@ -9,15 +7,11 @@ pub struct ActionService {
 }
 
 impl ActionService {
-    pub fn new(config_reader: ConfigReader) -> Self {
-        Self {
-            group_service: GroupService::new(config_reader),
-        }
+    pub fn new(group_service: GroupService) -> Self {
+        Self { group_service }
     }
-    /// Returns `None` if an app was opened, or `Some(apps)` if the caller
-    /// should show the launcher popup.
-    /// TODO this doesn't make any sense, we don't want a return type here
-    pub async fn execute(&self, action: &Action) -> Option<Vec<App>> {
+
+    pub async fn execute(&self, action: &Action) {
         match action {
             Action::OpenGroup { group_id } => self.group_service.open(*group_id).await,
         }

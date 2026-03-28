@@ -8,7 +8,8 @@ use super::group_config::GroupConfig;
 use super::util::{ListMenu, ListOperation, use_listener, use_selection};
 use crate::components::sidebar::*;
 use crate::models::{Config, Hotkey, Identifiable};
-use crate::services::{ActionService, ConfigReader, ConfigService};
+use crate::os::App;
+use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
 
 #[component]
 pub fn Groups() -> Element {
@@ -85,7 +86,13 @@ fn GroupMenuItem(group_id: Uuid, name: String, selected: Signal<HashSet<Uuid>>) 
 fn use_config_service() -> Signal<ConfigService> {
     let config = use_hook(|| Arc::new(RwLock::new(Config::load().unwrap_or_default())));
     let config_reader = use_hook(|| ConfigReader::new(config.clone()));
-    let action_service = use_hook(|| ActionService::new(config_reader.clone()));
+    let action_service = use_hook(|| {
+        let on_launch = Arc::new(|apps: Vec<App>| {
+            spawn(async move { super::launcher::show(apps).await });
+        });
+        let group_service = GroupService::new(config_reader.clone(), on_launch);
+        ActionService::new(group_service)
+    });
 
     let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
     let hotkey_sender = use_listener(Callback::new(move |(hotkey, action)| {
@@ -94,9 +101,7 @@ fn use_config_service() -> Signal<ConfigService> {
         } else {
             let service = action_service.clone();
             spawn(async move {
-                if let Some(apps) = service.execute(&action).await {
-                    super::launcher::show(apps).await;
-                }
+                service.execute(&action).await;
             });
         }
     }));
