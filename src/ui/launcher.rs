@@ -1,6 +1,6 @@
-mod app_list;
-mod hold;
-mod show;
+mod hold_to_launch;
+mod launcher_apps;
+mod show_launcher;
 
-pub use hold::use_hold_to_launch;
-pub use show::{ACTIVE_LAUNCHER, show_launcher};
+pub use hold_to_launch::use_hold_to_launch;
+pub use show_launcher::{ACTIVE_LAUNCHER, show_launcher};

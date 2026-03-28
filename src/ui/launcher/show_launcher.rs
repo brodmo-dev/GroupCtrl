@@ -6,7 +6,7 @@ use dioxus::desktop::{
 };
 use dioxus::prelude::*;
 
-use super::app_list::AppList;
+use super::launcher_apps::LauncherApps;
 use crate::models::Group;
 
 const WIDTH: f64 = 250.0;
@@ -69,7 +69,7 @@ fn Window(group: Group) -> Element {
                 window().set_visible(true);
                 window().set_focus();
             },
-            AppList { group }
+            LauncherApps { group }
         }
     }
 }

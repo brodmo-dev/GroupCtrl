@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 use tokio::time::sleep;
 use uuid::Uuid;
 
-use super::show::{ACTIVE_LAUNCHER, show_launcher};
+use super::show_launcher::{ACTIVE_LAUNCHER, show_launcher};
 use crate::services::ConfigReader;
 
 pub fn use_hold_to_launch(config_reader: ConfigReader) -> HoldToLaunch {
