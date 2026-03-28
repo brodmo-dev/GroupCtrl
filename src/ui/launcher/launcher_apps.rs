@@ -4,7 +4,7 @@ use lucide_dioxus::CornerDownLeft;
 use super::launcher_state::{ACTIVE_LAUNCHER, PRE_LAUNCHER_APP};
 use super::show_launcher::close;
 use crate::models::{Group, Identifiable};
-use crate::os::{App, Openable};
+use crate::os::{App, AppQuery, Openable, System};
 use crate::ui::util::{AppLabel, use_listener};
 
 #[component]
@@ -26,12 +26,21 @@ pub(super) fn LauncherApps(group: Group) -> Element {
         ));
     };
 
-    let apps = group.apps().clone();
-    if apps.is_empty() {
-        return rsx! { EmptyGroup {} };
+    if group.apps().is_empty() {
+        return rsx! { NoApps { message: "No apps assigned to group" } };
+    }
+    let running_apps = System::running_apps().unwrap_or_default();
+    let launch_apps: Vec<App> = group
+        .apps()
+        .iter()
+        .filter(|app| !running_apps.contains(&app.id()))
+        .cloned()
+        .collect();
+    if launch_apps.is_empty() {
+        return rsx! { NoApps { message: "All apps already running" } };
     }
     let mut selected_idx = use_signal(|| 0usize);
-    let len = apps.len();
+    let len = launch_apps.len();
     let mut navigate = move |to: usize| {
         selected_idx.set(to);
         scroll_into_view(to);
@@ -41,7 +50,7 @@ pub(super) fn LauncherApps(group: Group) -> Element {
     let launcher_cycle = use_listener(Callback::new(move |()| select_next()));
     use_hook(|| ACTIVE_LAUNCHER.set(Some(launcher_cycle)));
     let onkeydown = {
-        let my_apps = apps.clone();
+        let my_apps = launch_apps.clone();
         move |evt: KeyboardEvent| match evt.key() {
             Key::ArrowDown => select_next(),
             Key::Character(c) if c == "j" => select_next(),
@@ -65,7 +74,7 @@ pub(super) fn LauncherApps(group: Group) -> Element {
                 class: "sidebar-content",
                 ul {
                     class: "sidebar-menu",
-                    for (i, app) in apps.into_iter().enumerate() {
+                    for (i, app) in launch_apps.into_iter().enumerate() {
                         li {
                             key: "{app.id()}",
                             class: "sidebar-menu-item",
@@ -103,7 +112,7 @@ fn AppRow(app: App, is_selected: bool, onclick: EventHandler<MouseEvent>) -> Ele
 }
 
 #[component]
-fn EmptyGroup() -> Element {
+fn NoApps(message: String) -> Element {
     rsx! {
         div {
             class: "sidebar-static rounded-lg outline-none",
@@ -117,7 +126,7 @@ fn EmptyGroup() -> Element {
             p {
                 class: "p-3 text-sm text-center",
                 color: "var(--muted-text)",
-                "No apps assigned to group"
+                "{message}"
             }
         }
     }
