@@ -15,9 +15,11 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 - Shared hotkeys: Create an app group with multiple related apps and assign a single hotkey to it.
   Hit once to switch to the most recent app, hit again to cycle to next running.
 - Fixed targets: Optionally select one app per group to always open first. If not running, it will be launched.
+- App launcher: Hold a group hotkey to launch apps that aren't running.
+  The launcher will open immediately if no app in the group is running.
 - Text config: Easy to manually edit and version-control, if you're so inclined.
 
-<!--- App launcher: Hold a hotkey to launch any app in the group. The launcher will open immediately if no app in the group is running.-->
+<!--- With the launcher open, hit to cycle which app to launch, enter to confirm. --->
 
 ## Tips
 
@@ -32,8 +34,6 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 - `Cmd+Backtick` to switch between windows of an app
 - `F11` to show desktop
 
-<!--- Use Vim binds (j/k) to quickly navigate between apps in the launcher-->
-
 ## Alternatives
 
 - [rcmd](https://lowtechguys.com/rcmd/) – Similar functionality, but shared hotkeys aren't practical
@@ -46,7 +46,7 @@ with the flexibility of FlashSpace and the consistency of AeroSpace.
 
 ## Roadmap
 
-- [ ] Add launcher pop-up
+- [x] Add launcher pop-up
 - [ ] Complete Windows port
     - [ ] Custom app picker
     - [ ] Windows app enumeration for picker
