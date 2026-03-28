@@ -27,7 +27,7 @@ impl HoldToLaunch {
         self.cancel();
         let reader = self.config_reader.clone();
         let task = spawn(async move {
-            sleep(Duration::from_millis(500)).await;
+            sleep(Duration::from_millis(200)).await;
             if ACTIVE_LAUNCHER.read().unwrap().is_none() {
                 let group = reader.read().group(group_id).unwrap().clone();
                 show_launcher(group);
