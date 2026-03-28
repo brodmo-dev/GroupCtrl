@@ -1,4 +1,5 @@
 use dioxus::prelude::*;
+use lucide_dioxus::CornerDownLeft;
 
 use super::show::{ACTIVE_LAUNCHER, close};
 use crate::models::Group;
@@ -72,6 +73,12 @@ pub(super) fn AppList(group: Group) -> Element {
                                     move |_| open(my_app.clone())
                                 },
                                 AppLabel { app: app.clone() }
+                                if selected_idx() == i {
+                                    CornerDownLeft {
+                                        class: "ml-auto !size-3",
+                                        color: "var(--muted-text)",
+                                    }
+                                }
                             }
                         }
                     }
