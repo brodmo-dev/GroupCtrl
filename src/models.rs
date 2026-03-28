@@ -8,5 +8,6 @@ mod traits;
 
 pub use action::{Action, Bindable};
 pub use config::{Config, DuplicateGroupName};
+pub use group::Group;
 pub use hotkey::Hotkey;
 pub use traits::Identifiable;

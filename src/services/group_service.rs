@@ -5,7 +5,7 @@ use std::thread;
 use log::{error, info};
 use uuid::Uuid;
 
-use crate::models::Identifiable;
+use crate::models::{Group, Identifiable};
 use crate::os::{App, AppObserver, AppQuery, Openable, System};
 use crate::services::ConfigReader;
 
@@ -15,11 +15,11 @@ const MAX_HISTORY: usize = 1024; // Prevent potential memory leak
 pub struct GroupService {
     config_reader: ConfigReader,
     history: Arc<RwLock<VecDeque<String>>>,
-    on_launch: Arc<dyn Fn(Vec<App>)>,
+    on_launch: Arc<dyn Fn(Group)>,
 }
 
 impl GroupService {
-    pub fn new(config_reader: ConfigReader, on_launch: Arc<dyn Fn(Vec<App>)>) -> Self {
+    pub fn new(config_reader: ConfigReader, on_launch: Arc<dyn Fn(Group)>) -> Self {
         let history = Arc::new(RwLock::new(VecDeque::new()));
         Self::spawn_history_writer(history.clone());
         Self {
@@ -63,7 +63,7 @@ impl GroupService {
         {
             Self::open_app(&app).await;
         } else {
-            (self.on_launch)(group.apps().clone());
+            (self.on_launch)(group);
         }
     }
 

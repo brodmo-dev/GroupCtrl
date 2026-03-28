@@ -1,16 +1,17 @@
-use dioxus::desktop::window;
 use dioxus::prelude::*;
 
+use super::show::{ACTIVE_LAUNCHER, close};
+use crate::models::Group;
 use crate::os::{App, AppMetadata, Openable};
-use crate::ui::util::AppLabel;
+use crate::ui::util::{AppLabel, use_listener};
 
 #[component]
-pub(super) fn AppList(apps: Vec<App>) -> Element {
+pub(super) fn AppList(group: Group) -> Element {
     let open = move |app: App| {
         spawn(async move {
             let _ = app.open().await;
         });
-        window().close();
+        close();
     };
 
     // Dioxus serializes ScrollToOptions with wrong field names (vertical/horizontal
@@ -22,25 +23,26 @@ pub(super) fn AppList(apps: Vec<App>) -> Element {
     };
 
     let mut selected_idx = use_signal(|| 0usize);
+    let apps = group.apps().clone();
+    let len = apps.len();
+    let mut navigate = move |to: usize| {
+        selected_idx.set(to);
+        scroll_into_view(to);
+    };
+    let mut select_next = move || navigate((selected_idx() + 1) % len);
+    let mut select_prev = move || navigate(selected_idx().checked_sub(1).unwrap_or(len - 1));
+    let tx = use_listener(Callback::new(move |()| select_next()));
+    use_hook(|| *ACTIVE_LAUNCHER.write().unwrap() = Some(tx));
     let onkeydown = {
         let apps = apps.clone();
-        move |evt: KeyboardEvent| {
-            let idx = selected_idx();
-            let next = (idx + 1) % apps.len();
-            let prev = idx.checked_sub(1).unwrap_or(apps.len() - 1);
-            let mut navigate = |to: usize| {
-                selected_idx.set(to);
-                scroll_into_view(to);
-            };
-            match evt.key() {
-                Key::ArrowDown => navigate(next),
-                Key::Character(c) if c == "j" => navigate(next),
-                Key::ArrowUp => navigate(prev),
-                Key::Character(c) if c == "k" => navigate(prev),
-                Key::Enter => open(apps[idx].clone()),
-                Key::Escape => window().close(),
-                _ => {}
-            }
+        move |evt: KeyboardEvent| match evt.key() {
+            Key::ArrowDown => select_next(),
+            Key::Character(c) if c == "j" => select_next(),
+            Key::ArrowUp => select_prev(),
+            Key::Character(c) if c == "k" => select_prev(),
+            Key::Enter => open(apps[selected_idx()].clone()),
+            Key::Escape => close(),
+            _ => {}
         }
     };
 

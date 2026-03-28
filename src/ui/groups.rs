@@ -7,9 +7,9 @@ use uuid::Uuid;
 use super::group_config::GroupConfig;
 use super::util::{ListMenu, ListOperation, use_listener, use_selection};
 use crate::components::sidebar::*;
-use crate::models::{Config, Hotkey, Identifiable};
-use crate::os::App;
+use crate::models::{Config, Group, Hotkey, Identifiable};
 use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
+use crate::ui::launcher::{ACTIVE_LAUNCHER, show_launcher};
 
 #[component]
 pub fn Groups() -> Element {
@@ -87,17 +87,17 @@ fn use_config_service() -> Signal<ConfigService> {
     let config = use_hook(|| Arc::new(RwLock::new(Config::load().unwrap_or_default())));
     let config_reader = use_hook(|| ConfigReader::new(config.clone()));
     let action_service = use_hook(|| {
-        let on_launch = Arc::new(|apps: Vec<App>| {
-            spawn(async move { super::launcher::show(apps).await });
-        });
+        let on_launch = Arc::new(|group: Group| show_launcher(group));
         let group_service = GroupService::new(config_reader.clone(), on_launch);
         ActionService::new(group_service)
     });
 
     let active_recorder = use_context_provider(|| Signal::new(None::<UnboundedSender<Hotkey>>));
     let hotkey_sender = use_listener(Callback::new(move |(hotkey, action)| {
-        if let Some(sender) = active_recorder() {
-            sender.unbounded_send(hotkey).unwrap();
+        if let Some(tx) = active_recorder() {
+            tx.unbounded_send(hotkey).unwrap();
+        } else if let Some(tx) = ACTIVE_LAUNCHER.read().unwrap().as_ref() {
+            tx.unbounded_send(()).unwrap();
         } else {
             let service = action_service.clone();
             spawn(async move {
