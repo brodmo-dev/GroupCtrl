@@ -8,6 +8,7 @@ arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
 test: (bundle arm)
+    rm -rf /Applications/GroupCtrl-Test.app
     mv {{ app_path }} /Applications/GroupCtrl-Test.app
 
 release: icon (build arm) (rename-dmg "Arm") (build intel) (rename-dmg "Intel")
