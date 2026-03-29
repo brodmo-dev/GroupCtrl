@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use dioxus::prelude::*;
 
 use crate::components::button::{Button, ButtonVariant};
@@ -5,17 +7,14 @@ use crate::models::Hotkey;
 use crate::ui::util::use_listener;
 use crate::util::is_modifier;
 
+type ButtonHandle = Signal<Option<Rc<MountedData>>>;
+
 #[component]
 pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotkey>>) -> Element {
     let mut recording = use_signal(|| false);
+    let mut handle: ButtonHandle = use_context_provider(|| Signal::new(None));
     use_record_registered(recording, set_hotkey);
     let onkeydown = move |evt: KeyboardEvent| record_unregistered(recording, set_hotkey, evt);
-    let unfocus: Callback<()> = consume_context();
-    use_effect(move || {
-        if !recording() {
-            unfocus.call(());
-        }
-    });
 
     let label = if recording() {
         rsx! {
@@ -44,11 +43,19 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
             variant,
             class: "button",
             tabindex: 0,
+            onmounted: move |evt: MountedEvent| handle.set(Some(evt.data())),
             onclick: move |_| recording.set(true),
             onkeydown, // globally registered keys never make it here
             onblur: move |_| recording.set(false),
             { label }
         }
+    }
+}
+
+fn blur() {
+    let handle: ButtonHandle = consume_context();
+    if let Some(handle) = handle() {
+        spawn(async move { drop(handle.set_focus(false).await) });
     }
 }
 
@@ -71,14 +78,14 @@ fn record_unregistered(
     } else {
         Some(Hotkey::new(evt.modifiers(), code))
     });
-    recording.set(false);
+    blur(); // sets recording to false
 }
 
-fn use_record_registered(mut recording: Signal<bool>, set_hotkey: Callback<Option<Hotkey>>) {
+fn use_record_registered(recording: Signal<bool>, set_hotkey: Callback<Option<Hotkey>>) {
     let mut active_recorder = use_context::<Signal<Option<UnboundedSender<Hotkey>>>>();
     let recorder = use_listener(Callback::new(move |hotkey| {
         set_hotkey.call(Some(hotkey));
-        recording.set(false);
+        blur(); // sets recording to false
     }));
     use_effect(move || {
         active_recorder.set(if recording() {
