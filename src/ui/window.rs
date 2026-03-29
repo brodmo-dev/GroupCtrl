@@ -6,7 +6,7 @@ use dioxus::prelude::*;
 
 use crate::components::sidebar::SidebarProvider;
 use crate::components::toast::ToastProvider;
-use crate::os::{Keyboard, System, WindowConfiguration};
+use crate::os::{System, WindowConfiguration};
 use crate::ui::groups::Groups;
 use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
 
@@ -40,19 +40,10 @@ pub fn Window() -> Element {
         root_handle.set(Some(evt.data()));
     };
 
-    let onkeydown = move |evt: KeyboardEvent| {
-        if System::is_quit(evt.modifiers(), evt.key()) {
-            std::process::exit(0);
-        } else if System::is_close(evt.modifiers(), evt.key()) {
-            window().set_visible(false);
-        }
-    };
-
     rsx! {
         div {
             tabindex: -1,
             onmounted,
-            onkeydown,
             ToastProvider {
                 SidebarProvider {
                     Groups {}
