@@ -19,12 +19,12 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
 
     let label = if recording() {
         rsx! {
-            span { "Recording..." }
+            span { "Press hotkey..." }
         }
     } else {
         match hotkey {
             None => rsx! {
-                span { class: "text-(--muted-text)", "None" }
+                span { class: "text-(--muted-text)", "No hotkey assigned" }
             },
             Some(key) => rsx! {
                 span {
@@ -42,7 +42,7 @@ pub fn HotkeyPicker(mut hotkey: Option<Hotkey>, set_hotkey: Callback<Option<Hotk
     rsx! {
         Button {
             variant,
-            class: "button flex-1",
+            class: "button",
             tabindex: 0,
             onclick: move |_| recording.set(true),
             onkeydown, // globally registered keys never make it here
