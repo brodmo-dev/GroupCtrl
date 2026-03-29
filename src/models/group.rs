@@ -13,7 +13,6 @@ pub struct Group {
     id: Uuid,
     pub name: String,
     pub hotkey: Option<Hotkey>,
-    pub target: Option<App>,
     apps: Vec<App>,
 }
 
@@ -29,7 +28,6 @@ impl Group {
             id: Uuid::new_v4(),
             name,
             hotkey: None,
-            target: None,
             apps: Vec::new(),
         }
     }
@@ -46,9 +44,6 @@ impl Group {
     }
 
     pub(super) fn remove_app(&mut self, app_id: String) {
-        if self.target.as_ref().map(|a| a.id()).as_deref() == Some(&app_id) {
-            self.target = None;
-        }
         self.apps.retain(|a| a.id() != app_id)
     }
 }

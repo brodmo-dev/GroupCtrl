@@ -74,10 +74,6 @@ impl Config {
         self.group_mut(group_id).unwrap().hotkey = hotkey;
     }
 
-    pub fn set_target(&mut self, group_id: Uuid, app: Option<App>) {
-        self.group_mut(group_id).unwrap().target = app;
-    }
-
     pub fn add_app(&mut self, group_id: Uuid, app: App) {
         self.group_mut(group_id).unwrap().add_app(app);
     }

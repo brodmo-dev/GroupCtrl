@@ -5,9 +5,7 @@ use uuid::Uuid;
 use crate::os::{AppSelection, System};
 use crate::services::ConfigService;
 use crate::ui::app_list::AppList;
-use crate::ui::util::{
-    EditableText, HotkeyPicker, InputMode, ListOperation, TargetPicker, use_listener,
-};
+use crate::ui::util::{EditableText, HotkeyPicker, InputMode, ListOperation, use_listener};
 
 #[component]
 pub fn GroupConfig(
@@ -40,9 +38,6 @@ pub fn GroupConfig(
             );
         }
     };
-    let set_target = Callback::new(move |app| {
-        config_service.write().set_target(group_id, app);
-    });
     use_app_list_listener(config_service, group_id);
 
     let list_operation_tx = use_coroutine_handle::<ListOperation<Uuid>>();
@@ -76,12 +71,6 @@ pub fn GroupConfig(
                 label { r#for: "hotkey-picker", "Hotkey" }
                 HotkeyPicker { hotkey: group().hotkey, set_hotkey }
 
-                label { r#for: "target-picker", "Target" }
-                TargetPicker {
-                    apps: group().apps().to_vec(),
-                    target: group().target.clone(),
-                    set_target: set_target,
-                }
             }
             AppList { apps: group().apps().to_vec() }
         }

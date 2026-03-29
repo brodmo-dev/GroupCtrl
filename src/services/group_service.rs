@@ -64,7 +64,6 @@ impl GroupService {
             .collect();
         if let Some(app) = self
             .next_app(&group_running)
-            .or_else(|| group.target.clone())
             .or_else(|| self.find_in_history(&group_running))
             .or_else(|| group_running.first().cloned())
         {

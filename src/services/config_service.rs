@@ -54,11 +54,6 @@ impl ConfigService {
         Ok(())
     }
 
-    pub fn set_target(&mut self, group_id: Uuid, app: Option<App>) {
-        self.config_mut().set_target(group_id, app);
-        self.save();
-    }
-
     pub fn add_app(&mut self, group_id: Uuid, app: App) {
         self.config_mut().add_app(group_id, app);
         self.save();
