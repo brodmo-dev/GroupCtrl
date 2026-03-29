@@ -2,6 +2,7 @@ use std::sync::RwLock;
 
 use dioxus::hooks::UnboundedSender;
 
+// Since we're in a different DOM than in the config pane we can't use Signals to communicate
 pub static ACTIVE_LAUNCHER: State<UnboundedSender<()>> = State::new();
 pub static PRE_LAUNCHER_APP: State<String> = State::new();
 
