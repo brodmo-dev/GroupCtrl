@@ -75,13 +75,13 @@ fn main() {
     let max_size = if cfg!(debug_assertions) {
         LogicalSize::new(1200, 800)
     } else {
-        LogicalSize::new(600, 600)
+        LogicalSize::new(650, 600)
     };
     let window = WindowBuilder::new()
         .with_visible(false)
         .with_always_on_top(true)
-        .with_inner_size(LogicalSize::new(500, 400))
-        .with_min_inner_size(LogicalSize::new(400, 400))
+        .with_inner_size(LogicalSize::new(450, 400))
+        .with_min_inner_size(LogicalSize::new(450, 400))
         .with_max_inner_size(max_size)
         .with_title("GroupCtrl");
 

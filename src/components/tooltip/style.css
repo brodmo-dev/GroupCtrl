@@ -12,7 +12,7 @@
     position: absolute;
     z-index: 1000;
     max-width: 250px;
-    padding: 8px 12px;
+    padding: 8px 16px;
     border-radius: 0.5rem;
     animation: tooltip-fade-in 0.2s ease-in-out;
     background-color: var(--secondary-color-4);

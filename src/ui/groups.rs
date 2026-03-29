@@ -37,7 +37,7 @@ pub fn Groups() -> Element {
             onclick: move |_| selected.write().clear(),
             collapsible: SidebarCollapsible::None,
             SidebarHeader {
-                label { r#for: "group-list", class: "pl-1", "Groups" }
+                label { r#for: "group-list", class: "pl-1.5", "Groups" }
                 ListMenu { selected }
             }
             SidebarContent {

@@ -11,11 +11,11 @@ pub fn AppList(apps: Vec<App>) -> Element {
     let mut selected = use_signal(HashSet::<String>::new);
     rsx! {
         div {
-            class: "sidebar-static rounded-lg",
+            class: "sidebar-static rounded-lg flex-1",
             onclick: move |_| selected.write().clear(),
             div {
                 class: "sidebar-header",
-                label { r#for: "app-list", class: "pl-1.25", "Apps" }
+                label { r#for: "app-list", class: "pl-1.75", "Apps" }
                 ListMenu { selected }
             }
             div {

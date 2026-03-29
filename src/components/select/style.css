@@ -12,7 +12,7 @@
     justify-content: space-between;
     width: 100%;
     padding: 0.25rem;
-    padding: 8px 12px;
+    padding: 8px 16px;
     border: none;
     border-radius: 0.5rem;
     border-radius: calc(0.5rem);
@@ -131,7 +131,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 6px 10px;
+    padding: 6px 12px;
     border-radius: calc(0.5rem - 0.25rem);
     cursor: pointer;
     font-size: 14px;
