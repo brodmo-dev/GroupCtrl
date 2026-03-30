@@ -4,6 +4,7 @@ use dioxus::desktop::{
     use_wry_event_handler, window,
 };
 use dioxus::prelude::*;
+use log::{info, warn};
 
 use super::launcher_apps::LauncherApps;
 use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
@@ -56,7 +57,6 @@ pub(super) fn close() {
     let mut group: Signal<Option<Group>> = consume_context();
     let mut prev_app: Signal<Option<String>> = consume_context();
     let app = prev_app.peek().clone();
-    group.set(None);
     prev_app.set(None);
     ACTIVE_LAUNCHER.set(None);
     spawn(async move {
@@ -64,6 +64,7 @@ pub(super) fn close() {
             App::open(&id).await.ok();
         }
         window().set_visible(false);
+        group.set(None); // reset only after window is hidden to keep AppLauncher conditional stable
     });
 }
 
@@ -73,7 +74,12 @@ fn Window() -> Element {
     let mut prev_app: Signal<Option<String>> = use_context_provider(|| Signal::new(None));
 
     let tx = use_listener(Callback::new(move |new_group: Group| {
-        prev_app.set(System::current_app().ok().flatten());
+        let current = System::current_app().ok().flatten();
+        info!(
+            "showing launcher for group {}, prev_app={current:?}",
+            new_group.name
+        );
+        prev_app.set(current);
         group.set(Some(new_group));
         window().set_visible(true);
         window().set_focus();
@@ -96,6 +102,9 @@ fn Window() -> Element {
         }
     });
 
+    if window().is_visible() && group().is_none() {
+        warn!("launcher group should not be none with visible launcher window");
+    }
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
         if let Some(group) = group() {
