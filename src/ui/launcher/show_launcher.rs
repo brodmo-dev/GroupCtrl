@@ -53,8 +53,10 @@ pub fn show_launcher(group: Group) {
 }
 
 pub(super) fn close() {
+    let mut group: Signal<Option<Group>> = consume_context();
     let mut prev_app: Signal<Option<String>> = consume_context();
     let app = prev_app.peek().clone();
+    group.set(None);
     prev_app.set(None);
     ACTIVE_LAUNCHER.set(None);
     spawn(async move {
@@ -67,7 +69,7 @@ pub(super) fn close() {
 
 #[component]
 fn Window() -> Element {
-    let mut group: Signal<Option<Group>> = use_signal(|| None);
+    let mut group: Signal<Option<Group>> = use_context_provider(|| Signal::new(None));
     let mut prev_app: Signal<Option<String>> = use_context_provider(|| Signal::new(None));
 
     let tx = use_listener(Callback::new(move |new_group: Group| {
