@@ -50,6 +50,8 @@ pub fn create_launcher_window() {
 pub fn show_launcher(group: Group) {
     if let Some(tx) = LAUNCHER_WINDOW.get() {
         let _ = tx.unbounded_send(group);
+    } else {
+        error!("launcher window failed to initialize");
     }
 }
 
