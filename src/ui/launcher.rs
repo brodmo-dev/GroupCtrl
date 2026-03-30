@@ -4,4 +4,4 @@ pub mod launcher_state;
 mod show_launcher;
 
 pub use hold_to_launch::use_hold_to_launch;
-pub use show_launcher::show_launcher;
+pub use show_launcher::{create_launcher_window, show_launcher};
