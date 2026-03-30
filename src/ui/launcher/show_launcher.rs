@@ -9,7 +9,7 @@ use dioxus::prelude::*;
 use futures::executor::block_on;
 
 use super::launcher_apps::LauncherApps;
-use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW, PRE_LAUNCHER_APP};
+use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
 use crate::models::Group;
 use crate::os::{App, AppQuery, Openable, System};
 use crate::ui::util::use_listener;
@@ -48,30 +48,31 @@ pub fn create_launcher_window() {
 
 // Called from main DOM
 pub fn show_launcher(group: Group) {
-    PRE_LAUNCHER_APP.set(System::current_app().ok().flatten());
     if let Some(tx) = LAUNCHER_WINDOW.get() {
         let _ = tx.unbounded_send(group);
     }
 }
 
 pub(super) fn close() {
-    let prev_app = PRE_LAUNCHER_APP.get();
-    PRE_LAUNCHER_APP.set(None);
+    let mut prev_app: Signal<Option<String>> = consume_context();
+    let app = prev_app.peek().clone();
+    prev_app.set(None);
     ACTIVE_LAUNCHER.set(None);
     window().set_visible(false);
-    if let Some(id) = prev_app {
+    if let Some(id) = app {
         thread::spawn(move || {
             block_on(App::open(&id)).ok();
         });
-    };
-    // TODO need to block window close until app has re-opened -- make close async?
+    }
 }
 
 #[component]
 fn Window() -> Element {
     let mut group: Signal<Option<Group>> = use_signal(|| None);
+    let mut prev_app: Signal<Option<String>> = use_context_provider(|| Signal::new(None));
 
     let tx = use_listener(Callback::new(move |new_group: Group| {
+        prev_app.set(System::current_app().ok().flatten());
         group.set(Some(new_group));
         window().set_visible(true);
         window().set_focus();
@@ -102,7 +103,7 @@ fn Window() -> Element {
                     window().set_visible(true);
                     window().set_focus();
                 },
-                LauncherApps { group }
+                LauncherApps { group, prev_app }
             }
         }
     }

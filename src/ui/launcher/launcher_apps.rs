@@ -1,16 +1,16 @@
 use dioxus::prelude::*;
 use lucide_dioxus::CornerDownLeft;
 
-use super::launcher_state::{ACTIVE_LAUNCHER, PRE_LAUNCHER_APP};
+use super::launcher_state::ACTIVE_LAUNCHER;
 use super::show_launcher::close;
 use crate::models::{Group, Identifiable};
 use crate::os::{App, AppQuery, Openable, System};
 use crate::ui::util::{AppLabel, use_listener};
 
 #[component]
-pub(super) fn LauncherApps(group: Group) -> Element {
-    let open = move |app: App| {
-        PRE_LAUNCHER_APP.set(None);
+pub(super) fn LauncherApps(group: Group, mut prev_app: Signal<Option<String>>) -> Element {
+    let mut open = move |app: App| {
+        prev_app.set(None);
         let id = app.id();
         spawn(async move {
             let _ = App::open(&id).await;
