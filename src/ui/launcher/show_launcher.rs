@@ -62,7 +62,6 @@ pub(super) fn close() {
     spawn(async move {
         if let Some(id) = app {
             if CANCEL_RESTORE.get().is_some() {
-                CANCEL_RESTORE.set(None);
                 info!("skipping prev app restore");
             } else {
                 App::open(&id).await.ok();
@@ -87,6 +86,7 @@ fn Window() -> Element {
         );
         prev_app.set(current);
         group.set(Some(new_group));
+        CANCEL_RESTORE.set(None); // reset for new dialog
         window().set_visible(true);
         window().set_focus();
     }));

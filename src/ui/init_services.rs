@@ -28,6 +28,8 @@ pub fn use_config_service() -> Signal<ConfigService> {
     let hotkey_sender = use_listener(Callback::new(move |event: HotkeyEvent| {
         hold_to_launch.cancel();
         if event.state == HotkeyState::Pressed {
+            // TODO too much logic leaks in here... need a more general approach
+            // maybe sender with a condition to trigger it
             if let Some(tx) = active_recorder() {
                 tx.unbounded_send(event.hotkey).unwrap();
             } else if let Some((tx, active_group)) = ACTIVE_LAUNCHER.get()
