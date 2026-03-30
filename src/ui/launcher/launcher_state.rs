@@ -6,7 +6,7 @@ use crate::models::Group;
 
 // Since we're in a different DOM than in the config pane we can't use Signals to communicate
 pub static LAUNCHER_WINDOW: State<UnboundedSender<Group>> = State::new();
-pub static ACTIVE_LAUNCHER: State<UnboundedSender<()>> = State::new();
+pub static ACTIVE_LAUNCHER: State<(UnboundedSender<()>, uuid::Uuid)> = State::new();
 pub static CANCEL_RESTORE: State<()> = State::new();
 
 pub struct State<T>(RwLock<Option<T>>);

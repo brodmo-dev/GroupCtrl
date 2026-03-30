@@ -48,7 +48,7 @@ pub(super) fn LauncherApps(group: Group, mut prev_app: Signal<Option<String>>) -
     let mut select_next = move || navigate((selected_idx() + 1) % len);
     let mut select_prev = move || navigate(selected_idx().checked_sub(1).unwrap_or(len - 1));
     let launcher_cycle = use_listener(Callback::new(move |()| select_next()));
-    use_hook(|| ACTIVE_LAUNCHER.set(Some(launcher_cycle)));
+    use_hook(|| ACTIVE_LAUNCHER.set(Some((launcher_cycle, group.id()))));
     let onkeydown = {
         let my_apps = launch_apps.clone();
         move |evt: KeyboardEvent| match evt.key() {

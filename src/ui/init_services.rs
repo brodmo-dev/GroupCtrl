@@ -5,7 +5,7 @@ use dioxus::prelude::*;
 use global_hotkey::HotKeyState as HotkeyState;
 use uuid::Uuid;
 
-use crate::models::{Config, Group, Hotkey, HotkeyEvent};
+use crate::models::{Action, Config, Group, Hotkey, HotkeyEvent};
 use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
 use crate::ui::launcher::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE};
 use crate::ui::launcher::{show_launcher, use_hold_to_launch};
@@ -30,8 +30,10 @@ pub fn use_config_service() -> Signal<ConfigService> {
         if event.state == HotkeyState::Pressed {
             if let Some(tx) = active_recorder() {
                 tx.unbounded_send(event.hotkey).unwrap();
-            } else if let Some(tx) = ACTIVE_LAUNCHER.get() {
-                tx.unbounded_send(()).unwrap();
+            } else if let Some((tx, active_group)) = ACTIVE_LAUNCHER.get()
+                && matches!(&event.action, Action::OpenGroup { group_id } if active_group == *group_id)
+            {
+                let _ = tx.unbounded_send(());
             } else {
                 CANCEL_RESTORE.set(Some(()));
                 let service = action_service.clone();
