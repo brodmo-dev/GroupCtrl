@@ -1,12 +1,9 @@
-use std::thread;
-
 use dioxus::desktop::tao::event::{Event, WindowEvent};
 use dioxus::desktop::{
     Config, LogicalPosition, LogicalSize, WindowBuilder, WindowCloseBehaviour,
     use_wry_event_handler, window,
 };
 use dioxus::prelude::*;
-use futures::executor::block_on;
 
 use super::launcher_apps::LauncherApps;
 use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
@@ -60,12 +57,12 @@ pub(super) fn close() {
     let app = prev_app.peek().clone();
     prev_app.set(None);
     ACTIVE_LAUNCHER.set(None);
-    window().set_visible(false);
-    if let Some(id) = app {
-        thread::spawn(move || {
-            block_on(App::open(&id)).ok();
-        });
-    }
+    spawn(async move {
+        if let Some(id) = app {
+            App::open(&id).await.ok();
+        }
+        window().set_visible(false);
+    });
 }
 
 #[component]
