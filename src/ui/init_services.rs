@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::models::{Config, Group, Hotkey, HotkeyEvent};
 use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
-use crate::ui::launcher::launcher_state::ACTIVE_LAUNCHER;
+use crate::ui::launcher::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE};
 use crate::ui::launcher::{show_launcher, use_hold_to_launch};
 use crate::ui::util::use_listener;
 
@@ -33,6 +33,7 @@ pub fn use_config_service() -> Signal<ConfigService> {
             } else if let Some(tx) = ACTIVE_LAUNCHER.get() {
                 tx.unbounded_send(()).unwrap();
             } else {
+                CANCEL_RESTORE.set(Some(()));
                 let service = action_service.clone();
                 spawn(async move {
                     service.execute(&event.action).await;

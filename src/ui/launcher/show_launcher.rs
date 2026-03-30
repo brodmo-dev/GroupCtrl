@@ -7,7 +7,7 @@ use dioxus::prelude::*;
 use log::{info, warn};
 
 use super::launcher_apps::LauncherApps;
-use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
+use super::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE, LAUNCHER_WINDOW};
 use crate::models::Group;
 use crate::os::{App, AppQuery, Openable, System};
 use crate::ui::util::use_listener;
@@ -61,10 +61,16 @@ pub(super) fn close() {
     ACTIVE_LAUNCHER.set(None);
     spawn(async move {
         if let Some(id) = app {
-            App::open(&id).await.ok();
+            if CANCEL_RESTORE.get().is_some() {
+                CANCEL_RESTORE.set(None);
+                info!("skipping prev app restore");
+            } else {
+                App::open(&id).await.ok();
+            }
         }
         window().set_visible(false);
-        group.set(None); // reset only after window is hidden to keep AppLauncher conditional stable
+        // reset only after window is hidden to keep LauncherApps conditional stable
+        group.set(None);
     });
 }
 
