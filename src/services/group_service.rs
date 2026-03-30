@@ -51,10 +51,7 @@ impl GroupService {
     pub async fn open(&self, group_id: Uuid) {
         let group = self.config_reader.read().group(group_id).unwrap().clone();
         info!("opening group {}", group.name);
-        if group.apps().len() == 1 {
-            Self::open_app(&group.apps()[0]).await;
-            return;
-        }
+        let current = System::current_app().ok().flatten();
         let all_running = System::running_apps().unwrap_or_default();
         let group_running: Vec<App> = group
             .apps()
@@ -63,9 +60,10 @@ impl GroupService {
             .cloned()
             .collect();
         if let Some(app) = self
-            .next_app(&group_running)
+            .next_in_group(current.as_deref(), &group_running)
             .or_else(|| self.find_in_history(&group_running))
             .or_else(|| group_running.first().cloned())
+            .filter(|app| current != Some(app.id()))
         {
             Self::open_app(&app).await;
             (self.on_app_open)(group_id);
@@ -74,9 +72,9 @@ impl GroupService {
         }
     }
 
-    fn next_app(&self, apps: &[App]) -> Option<App> {
-        let current_id = System::current_app().ok()??;
-        let pos = apps.iter().position(|app| app.id() == current_id)?;
+    fn next_in_group(&self, current: Option<&str>, apps: &[App]) -> Option<App> {
+        let current = current?;
+        let pos = apps.iter().position(|app| app.id() == current)?;
         let next_pos = (pos + 1) % apps.len();
         Some(apps[next_pos].clone())
     }
