@@ -2,7 +2,6 @@ use dioxus::desktop::trayicon::{
     Icon, MouseButton, MouseButtonState, TrayIcon, TrayIconBuilder, TrayIconEvent, menu,
 };
 use dioxus::desktop::{use_tray_icon_event_handler, window};
-use dioxus::prelude::*;
 
 pub(super) fn setup_tray_icon() -> TrayIcon {
     let tray_menu = menu::Menu::new();
@@ -25,27 +24,18 @@ pub(super) fn setup_tray_icon() -> TrayIcon {
 }
 
 pub(super) fn handle_tray_icon_events() {
-    let mut is_visible = use_signal(|| false);
     use_tray_icon_event_handler(move |evt| {
         if let TrayIconEvent::Click {
             button: MouseButton::Left,
-            button_state,
+            button_state: MouseButtonState::Down,
             ..
         } = evt
         {
-            match button_state {
-                // Dioxus always sets the window to visible on left click up, so we capture
-                // visibility on Down and act on Up to work around it.
-                MouseButtonState::Down => {
-                    is_visible.set(window().is_visible());
-                }
-                MouseButtonState::Up => {
-                    if is_visible() {
-                        spawn(async move {
-                            window().set_visible(false);
-                        });
-                    }
-                }
+            if window().is_visible() {
+                window().set_visible(false);
+            } else {
+                window().set_visible(true);
+                window().set_focus();
             }
         }
     });

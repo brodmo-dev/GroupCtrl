@@ -9,7 +9,7 @@ global-hotkey = "0.7.0"
 anyhow = "1.0.100"
 log = "0.4.29"
 simplelog = "0.12.2"
-dioxus = { version = "0.7.2", features = ["desktop"] }
+dioxus = { version = "0.7.4", features = ["desktop"] }
 rfd = "0.17.2"
 plist = "1.8.0"
 futures-util = "0.3.31"

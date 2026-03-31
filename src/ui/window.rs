@@ -30,10 +30,11 @@ pub fn Window() -> Element {
     });
     use_context_provider(|| focus_root);
 
+    // for opening the config pane via Spotlight
     use_wry_event_handler(move |event, _| {
         if matches!(event, Event::Reopen { .. }) {
-            window().set_focus();
             window().set_visible(true);
+            window().set_focus();
         }
     });
 

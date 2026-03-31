@@ -92,7 +92,8 @@ fn main() {
                 .with_menu(None)
                 .with_custom_head(head)
                 .with_close_behaviour(WindowCloseBehaviour::WindowHides)
-                .with_exits_when_last_window_closes(false),
+                .with_exits_when_last_window_closes(false)
+                .with_tray_icon_show_window_on_click(false),
         )
         .launch(Window);
 }
