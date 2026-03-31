@@ -1,15 +1,14 @@
 # this is all macOS
 
 signing_identity := "Developer ID Application: Moritz Brödel (7P73434GLV)"
-bundle_path := "target/dx/GroupCtrl/bundle/macos/bundle/macos"
+bundle_path := "target/dx/GroupCtrl/bundle/macos/macos"
 app_path := bundle_path / "GroupCtrl.app"
 zip_path := bundle_path / "GroupCtrl.zip"
 arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
 test: (bundle arm)
-    rm -rf /Applications/GroupCtrl-Test.app
-    mv {{ app_path }} /Applications/GroupCtrl-Test.app
+    cp {{ app_path }} /Applications/GroupCtrl-Test.app
 
 release: icon (build arm) (rename-dmg "Arm") (build intel) (rename-dmg "Intel")
     shasum -a 256 target/*.dmg
@@ -18,7 +17,7 @@ build arch: (bundle arch)
     just sign notarize dmg  # force repeat execution
 
 bundle arch:
-    dx bundle --release --target {{ arch }}
+    dx bundle --release --package-types macos --target {{ arch }}
 
 sign:
     codesign --force --options runtime --sign "{{ signing_identity }}" {{ app_path }}
