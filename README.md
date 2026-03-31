@@ -13,7 +13,7 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 ## Features
 
 - **Instant app switching**
-- **Shared hotkeys** – App groups let you assign multiple related apps to a single hotkey
+- **Shared hotkeys** – Group related apps and assign a single hotkey to them
 - **App launcher** – Hold a group hotkey to launch apps that aren't running
 - **Text config** – Easy to manually edit and version-control, if you're so inclined
 
