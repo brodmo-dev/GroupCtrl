@@ -34,6 +34,7 @@ pub fn EditableText(
         }
     });
 
+    let unfocus: Callback<()> = consume_context();
     let mut mode = use_signal(|| starting_mode);
     let mut commit = move || {
         let new_text = draft().trim().to_string();
@@ -48,14 +49,14 @@ pub fn EditableText(
     let onkeydown = move |evt: KeyboardEvent| match evt.key() {
         Key::Enter => {
             commit();
-            set_focus(false);
+            unfocus.call(());
         }
         Key::Escape => {
             match mode() {
                 InputMode::Edit => draft.set(text()),
                 InputMode::Create { on_cancel } => on_cancel.call(()),
             };
-            set_focus(false);
+            unfocus.call(());
         }
         #[cfg(target_os = "macos")]
         Key::Character(c) if c == "a" && evt.modifiers().contains(Modifiers::META) => {
