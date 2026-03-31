@@ -6,6 +6,7 @@ use super::show_launcher::close;
 use crate::models::{Group, Identifiable};
 use crate::os::{App, AppQuery, Openable, System};
 use crate::ui::util::{AppLabel, use_listener};
+use crate::util::is_modifier;
 
 #[component]
 pub(super) fn LauncherApps(group: Group, mut prev_app: Signal<Option<String>>) -> Element {
@@ -58,7 +59,9 @@ pub(super) fn LauncherApps(group: Group, mut prev_app: Signal<Option<String>>) -
             Key::Character(c) if c == "k" => select_prev(),
             Key::Enter => open(my_apps[selected_idx()].clone()),
             Key::Escape => close(),
-            _ => {}
+            // this checks the hardware key so could lead to inconsistent behavior
+            _ if is_modifier(&evt.code()) => {}
+            _ => close(),
         }
     };
 
@@ -120,9 +123,7 @@ fn NoApps(message: String) -> Element {
             onmounted: move |evt| async move {
                 let _ = evt.data().set_focus(true).await;
             },
-            onkeydown: move |evt: KeyboardEvent| {
-                if evt.key() == Key::Escape { close(); }
-            },
+            onkeydown: move |_: KeyboardEvent| close(),
             p {
                 class: "p-3 text-sm text-center",
                 color: "var(--muted-text)",
