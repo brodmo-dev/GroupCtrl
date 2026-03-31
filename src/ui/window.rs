@@ -32,14 +32,14 @@ pub fn Window() -> Element {
 
     use_wry_event_handler(move |event, _| {
         if matches!(event, Event::Reopen { .. }) {
-            window().set_visible(true);
             window().set_focus();
-            focus_root.call(());
+            window().set_visible(true);
         }
     });
 
     let onmounted = move |evt: MountedEvent| {
         root_handle.set(Some(evt.data()));
+        focus_root.call(());
     };
 
     let onkeydown = move |evt: KeyboardEvent| {
