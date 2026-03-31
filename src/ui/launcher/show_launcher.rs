@@ -106,13 +106,7 @@ fn Window() -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
         if let Some(group) = group() {
-            div {
-                onmounted: move |_| {
-                    window().set_visible(true);
-                    window().set_focus();
-                },
-                LauncherApps { group, prev_app }
-            }
+            LauncherApps { group, prev_app }
         }
     }
 }
