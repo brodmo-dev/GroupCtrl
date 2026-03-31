@@ -9,11 +9,11 @@ impl Keyboard for System {
     }
 
     fn is_quit(modifiers: Modifiers, key: Key) -> bool {
-        modifiers.alt() && key == Key::F4
+        modifiers == Modifiers::ALT && key == Key::F4
     }
 
     fn is_close(modifiers: Modifiers, key: Code) -> bool {
-        modifiers.ctrl() && key == Key::F4
+        modifiers == Modifiers::CONTROL && key == Key::F4
     }
 
     fn show_parts_sep() -> &'static str {

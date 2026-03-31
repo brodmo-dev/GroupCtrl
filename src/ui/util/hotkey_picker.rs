@@ -72,6 +72,7 @@ fn record_unregistered(
         Some(Hotkey::new(evt.modifiers(), code))
     });
     recording.set(false);
+    evt.stop_propagation();
 }
 
 fn use_record_registered(mut recording: Signal<bool>, set_hotkey: Callback<Option<Hotkey>>) {
