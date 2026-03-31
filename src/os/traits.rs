@@ -44,3 +44,9 @@ pub trait AppObserver {
 pub trait WindowConfiguration {
     fn configure_window();
 }
+
+/// Returns the screen rect (x, y, width, height) of the currently focused window,
+/// using top-left origin coordinates (matching tao's coordinate system).
+pub trait FocusedScreen {
+    fn focused_screen() -> Option<(f64, f64, f64, f64)>;
+}

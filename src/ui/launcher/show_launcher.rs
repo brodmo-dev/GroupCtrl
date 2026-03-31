@@ -8,8 +8,8 @@ use log::{info, warn};
 
 use super::launcher_apps::LauncherApps;
 use super::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE, LAUNCHER_WINDOW};
-use crate::models::Group;
-use crate::os::{App, AppQuery, Openable, System};
+use crate::models::{Group, Identifiable};
+use crate::os::{App, AppQuery, FocusedScreen, Openable, System};
 use crate::ui::util::use_listener;
 
 const WIDTH: f64 = 250.0;
@@ -17,11 +17,6 @@ const MAX_HEIGHT: f64 = 280.0;
 const Y_POS: f64 = 0.4;
 
 pub fn create_launcher_window() {
-    let monitor = window()
-        .primary_monitor()
-        .or_else(|| window().current_monitor())
-        .unwrap();
-    let screen = monitor.size().to_logical::<f64>(monitor.scale_factor());
     let cfg = Config::new()
         .with_window(
             WindowBuilder::new()
@@ -30,11 +25,7 @@ pub fn create_launcher_window() {
                 .with_transparent(true)
                 .with_always_on_top(true)
                 .with_resizable(false)
-                .with_inner_size(LogicalSize::new(WIDTH, MAX_HEIGHT))
-                .with_position(LogicalPosition::new(
-                    (screen.width - WIDTH) / 2.0,
-                    screen.height * Y_POS,
-                )),
+                .with_inner_size(LogicalSize::new(WIDTH, MAX_HEIGHT)),
         )
         .with_custom_head(crate::custom_head())
         .with_close_behaviour(WindowCloseBehaviour::WindowHides);
@@ -78,12 +69,13 @@ fn Window() -> Element {
     let mut group: Signal<Option<Group>> = use_context_provider(|| Signal::new(None));
     let mut prev_app: Signal<Option<String>> = use_context_provider(|| Signal::new(None));
 
-    let tx = use_listener(Callback::new(move |new_group: Group| {
+    let set_launcher_window = use_listener(Callback::new(move |new_group: Group| {
         let current = System::current_app().ok().flatten();
         info!(
             "showing launcher for group {}, prev_app={current:?}",
             new_group.name
         );
+        set_launcher_position(&current, &new_group);
         prev_app.set(current);
         group.set(Some(new_group));
         CANCEL_RESTORE.set(None); // reset for new dialog
@@ -92,7 +84,7 @@ fn Window() -> Element {
     }));
 
     use_hook(|| {
-        LAUNCHER_WINDOW.set(Some(tx));
+        LAUNCHER_WINDOW.set(Some(set_launcher_window));
     });
 
     let window_id = window().id();
@@ -123,4 +115,19 @@ fn Window() -> Element {
             }
         }
     }
+}
+
+fn set_launcher_position(current: &Option<String>, group: &Group) {
+    let (x, y, w, h) = current
+        .as_ref()
+        .filter(|id| group.apps().iter().any(|a| a.id() == **id))
+        .and_then(|_| System::focused_screen())
+        .unwrap_or_else(|| {
+            let monitor = window().primary_monitor().unwrap();
+            let s = monitor.size().to_logical::<f64>(monitor.scale_factor());
+            (0.0, 0.0, s.width, s.height)
+        });
+    window()
+        .window
+        .set_outer_position(LogicalPosition::new(x + (w - WIDTH) / 2.0, y + h * Y_POS));
 }

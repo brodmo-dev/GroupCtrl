@@ -7,6 +7,7 @@ mod app_selection;
 mod config_dir;
 mod dock;
 mod edit_actions;
+mod focused_screen;
 mod keyboard;
 
 pub use app::App;
