@@ -89,6 +89,7 @@ fn main() {
         .with_cfg(
             Config::new()
                 .with_window(window)
+                .with_menu(None)
                 .with_custom_head(head)
                 .with_close_behaviour(WindowCloseBehaviour::WindowHides)
                 .with_exits_when_last_window_closes(false),
