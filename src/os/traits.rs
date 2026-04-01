@@ -49,3 +49,9 @@ pub trait AppObserver {
 pub trait FocusedScreen {
     fn focused_screen() -> Option<(f64, f64, f64, f64)>;
 }
+
+pub trait LauncherWindow {
+    fn configure_launcher_window(window: &dioxus::desktop::DesktopContext);
+    fn show_launcher_window(window: &dioxus::desktop::DesktopContext);
+    fn hide_launcher_window(window: &dioxus::desktop::DesktopContext);
+}

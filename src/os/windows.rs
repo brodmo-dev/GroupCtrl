@@ -6,6 +6,7 @@ mod app_selection;
 mod config_dir;
 mod focused_screen;
 mod keyboard;
+mod launcher_panel;
 
 pub use app::App;
 

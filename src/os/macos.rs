@@ -8,6 +8,7 @@ mod config_dir;
 mod edit_actions;
 mod focused_screen;
 mod keyboard;
+mod launcher_panel;
 
 pub use app::App;
 pub use edit_actions::EditActions;

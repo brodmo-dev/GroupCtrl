@@ -4,12 +4,12 @@ use dioxus::desktop::{
     use_wry_event_handler, window,
 };
 use dioxus::prelude::*;
-use log::{info, warn};
+use log::{error, info, warn};
 
 use super::launcher_apps::LauncherApps;
 use super::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE, LAUNCHER_WINDOW};
 use crate::models::{Group, Identifiable};
-use crate::os::{App, AppQuery, FocusedScreen, Openable, System};
+use crate::os::{App, AppQuery, FocusedScreen, LauncherWindow, Openable, System};
 use crate::ui::util::use_listener;
 
 const WIDTH: f64 = 250.0;
@@ -58,7 +58,7 @@ pub(super) fn close() {
                 App::open(&id).await.ok();
             }
         }
-        window().set_visible(false);
+        System::hide_launcher_window(&window());
         // reset only after window is hidden to keep LauncherApps conditional stable
         group.set(None);
     });
@@ -79,11 +79,11 @@ fn Window() -> Element {
         prev_app.set(current);
         group.set(Some(new_group));
         CANCEL_RESTORE.set(None); // reset for new dialog
-        window().set_visible(true);
-        window().set_focus();
+        System::show_launcher_window(&window());
     }));
 
     use_hook(|| {
+        System::configure_launcher_window(&window());
         LAUNCHER_WINDOW.set(Some(set_launcher_window));
     });
 
