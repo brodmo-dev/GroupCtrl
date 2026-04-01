@@ -8,7 +8,8 @@ arm := "aarch64-apple-darwin"
 intel := "x86_64-apple-darwin"
 
 test: (bundle arm)
-    cp {{ app_path }} /Applications/GroupCtrl-Test.app
+    rm -rf /Applications/GroupCtrl.app
+    cp -r {{ app_path }} /Applications
 
 release: icon (build arm) (rename-dmg "Arm") (build intel) (rename-dmg "Intel")
     shasum -a 256 target/*.dmg
