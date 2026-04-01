@@ -1,66 +1,60 @@
-use std::sync::Once;
+use std::ffi::CStr;
+use std::sync::LazyLock;
 
 use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
 use objc2::ffi::object_setClass;
 use objc2::runtime::{AnyClass, AnyObject, Bool, ClassBuilder, Sel};
 use objc2::sel;
-use objc2_app_kit::{NSFloatingWindowLevel, NSWindow, NSWindowStyleMask};
+use objc2_app_kit::{NSFloatingWindowLevel, NSPanel, NSResponder, NSWindowStyleMask};
 
 use super::System;
 use crate::os::traits::LauncherWindow;
 
-impl LauncherWindow for System {
-    fn configure_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let ns_window_ptr = window.window.ns_window();
-        let panel_class = launcher_panel_class();
-        unsafe { object_setClass(ns_window_ptr as *mut _, panel_class as *const _ as *mut _) };
+const LAUNCHER_PANEL_NAME: &CStr = c"LauncherPanel";
+static LAUNCHER_PANEL_CLASS: LazyLock<&'static AnyClass> =
+    LazyLock::new(|| register_class().expect("LauncherPanel class registration failed"));
 
-        let ns_window = unsafe { &*(ns_window_ptr as *const NSWindow) };
-        let mask = ns_window.styleMask();
-        ns_window.setStyleMask(NSWindowStyleMask(
-            mask.0 | NSWindowStyleMask::NonactivatingPanel.0,
-        ));
-        ns_window.setLevel(NSFloatingWindowLevel);
+fn register_class() -> Option<&'static AnyClass> {
+    let mut builder = ClassBuilder::new(LAUNCHER_PANEL_NAME, AnyClass::get(c"NSPanel")?)?;
+    unsafe {
+        builder.add_method(
+            sel!(canBecomeKeyWindow),
+            can_become_key_window as extern "C-unwind" fn(_, _) -> Bool,
+        );
     }
-
-    fn show_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let ns_window_ptr = window.window.ns_window();
-        let ns_view_ptr = window.window.ns_view();
-
-        let ns_window = unsafe { &*(ns_window_ptr as *const NSWindow) };
-        ns_window.makeKeyAndOrderFront(None);
-
-        // Make the WKWebView (ns_view) the first responder so keyboard events reach the DOM
-        let ns_view = unsafe { &*(ns_view_ptr as *const objc2_app_kit::NSResponder) };
-        ns_window.makeFirstResponder(Some(ns_view));
-    }
-
-    fn hide_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let ns_window_ptr = window.window.ns_window();
-        let ns_window = unsafe { &*(ns_window_ptr as *const NSWindow) };
-        ns_window.orderOut(None);
-    }
-}
-
-fn launcher_panel_class() -> &'static AnyClass {
-    static REGISTER: Once = Once::new();
-    REGISTER.call_once(|| {
-        let panel_class = AnyClass::get(c"NSPanel").unwrap();
-        let mut builder = ClassBuilder::new(c"LauncherPanel", panel_class).unwrap();
-
-        unsafe {
-            builder.add_method(
-                sel!(canBecomeKeyWindow),
-                can_become_key_window as extern "C-unwind" fn(_, _) -> Bool,
-            );
-        }
-
-        builder.register();
-    });
-
-    AnyClass::get(c"LauncherPanel").unwrap()
+    builder.register();
+    AnyClass::get(LAUNCHER_PANEL_NAME)
 }
 
 extern "C-unwind" fn can_become_key_window(_this: *mut AnyObject, _sel: Sel) -> Bool {
     Bool::YES
+}
+
+impl LauncherWindow for System {
+    fn configure_launcher_window(window: &dioxus::desktop::DesktopContext) {
+        let ns_window_ptr = window.window.ns_window();
+        // Isa-swizzle to our custom class (registers on first access via LazyLock)
+        unsafe {
+            object_setClass(
+                ns_window_ptr as *mut _,
+                *LAUNCHER_PANEL_CLASS as *const _ as *mut _,
+            )
+        };
+        let panel = unsafe { &*(ns_window_ptr as *const NSPanel) };
+        let mask = panel.styleMask().0 | NSWindowStyleMask::NonactivatingPanel.0;
+        panel.setStyleMask(NSWindowStyleMask(mask));
+        panel.setLevel(NSFloatingWindowLevel);
+    }
+
+    fn show_launcher_window(window: &dioxus::desktop::DesktopContext) {
+        let panel = unsafe { &*(window.window.ns_window() as *const NSPanel) };
+        let view = unsafe { &*(window.window.ns_view() as *const NSResponder) };
+        panel.makeKeyAndOrderFront(None);
+        panel.makeFirstResponder(Some(view));
+    }
+
+    fn hide_launcher_window(window: &dioxus::desktop::DesktopContext) {
+        let panel = unsafe { &*(window.window.ns_window() as *const NSPanel) };
+        panel.orderOut(None);
+    }
 }
