@@ -9,10 +9,4 @@ mod keyboard;
 
 pub use app::App;
 
-use crate::os::WindowConfiguration;
-
 pub struct System;
-
-impl WindowConfiguration for System {
-    fn configure_window() {}
-}

@@ -1,12 +1,14 @@
 use std::rc::Rc;
 
 use dioxus::desktop::tao::event::Event;
+#[cfg(target_os = "macos")]
+use dioxus::desktop::tao::platform::macos::{ActivationPolicy, EventLoopWindowTargetExtMacOS};
 use dioxus::desktop::{use_wry_event_handler, window};
 use dioxus::prelude::*;
 
 use crate::components::sidebar::SidebarProvider;
 use crate::components::toast::ToastProvider;
-use crate::os::{Keyboard, System, WindowConfiguration};
+use crate::os::{Keyboard, System};
 use crate::ui::groups::Groups;
 use crate::ui::launcher::create_launcher_window;
 use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
@@ -14,7 +16,6 @@ use crate::ui::tray_icon::{handle_tray_icon_events, setup_tray_icon};
 #[component]
 pub fn Window() -> Element {
     use_hook(|| {
-        System::configure_window();
         create_launcher_window();
         setup_tray_icon()
     });
@@ -30,10 +31,11 @@ pub fn Window() -> Element {
     });
     use_context_provider(|| focus_root);
 
-    // for opening the config pane via Spotlight
-    use_wry_event_handler(move |event, _| {
+    // for opening via Spotlight
+    use_wry_event_handler(move |event, event_loop| {
         if matches!(event, Event::Reopen { .. }) {
-            System::configure_window();
+            #[cfg(target_os = "macos")] // macOS promotes the app to regular on open, undo
+            event_loop.set_activation_policy_at_runtime(ActivationPolicy::Accessory);
             window().set_visible(true);
             window().set_focus();
         }

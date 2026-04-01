@@ -5,7 +5,6 @@ mod app_openable;
 mod app_query;
 mod app_selection;
 mod config_dir;
-mod dock;
 mod edit_actions;
 mod focused_screen;
 mod keyboard;

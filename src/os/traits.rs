@@ -44,10 +44,6 @@ pub trait AppObserver {
     fn observe_app_activations() -> std::sync::mpsc::Receiver<String>;
 }
 
-pub trait WindowConfiguration {
-    fn configure_window();
-}
-
 /// Returns the screen rect (x, y, width, height) of the currently focused window,
 /// using top-left origin coordinates (matching tao's coordinate system).
 pub trait FocusedScreen {
