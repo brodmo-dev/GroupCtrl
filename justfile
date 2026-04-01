@@ -19,6 +19,11 @@ build arch: (bundle arch)
 
 bundle arch:
     dx bundle --release --package-types macos --target {{ arch }}
+    just patch-plist
+
+# Dioxus bug
+patch-plist:
+    plutil -insert LSUIElement -bool true {{ app_path }}/Contents/Info.plist
 
 sign:
     codesign --force --options runtime --sign "{{ signing_identity }}" {{ app_path }}

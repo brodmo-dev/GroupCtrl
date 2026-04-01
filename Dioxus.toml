@@ -7,6 +7,6 @@ identifier = "dev.brodmo.groupctrl"
 publisher = "Moritz Brödel"
 icon = ["assets/icons/icon.icns"]
 
-# TODO this doesn't end up in the right bundle
+# Dioxus ignores this -> bug, fix via just patch-plist
 [macos.plist]
 LSUIElement = true
