@@ -9,9 +9,8 @@ use crate::ui::util::{AppLabel, use_listener};
 use crate::util::is_modifier;
 
 #[component]
-pub(super) fn LauncherApps(group: Group, mut prev_app: Signal<Option<String>>) -> Element {
-    let mut open = move |app: App| {
-        prev_app.set(None);
+pub(super) fn LauncherApps(group: Group) -> Element {
+    let open = move |app: App| {
         let id = app.id();
         spawn(async move {
             let _ = App::open(&id).await;

@@ -7,9 +7,9 @@ use dioxus::prelude::*;
 use log::{error, info, warn};
 
 use super::launcher_apps::LauncherApps;
-use super::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE, LAUNCHER_WINDOW};
+use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
 use crate::models::{Group, Identifiable};
-use crate::os::{App, AppQuery, FocusedScreen, LauncherWindow, Openable, System};
+use crate::os::{AppQuery, FocusedScreen, LauncherWindow, System};
 use crate::ui::util::use_listener;
 
 const WIDTH: f64 = 250.0;
@@ -45,43 +45,22 @@ pub fn show_launcher(group: Group) {
 }
 
 pub(super) fn close() {
-    let mut group: Signal<Option<Group>> = consume_context();
-    let mut prev_app: Signal<Option<String>> = consume_context();
-    let app = prev_app.peek().clone();
-    prev_app.set(None);
+    System::hide_launcher_window(&window());
     ACTIVE_LAUNCHER.set(None);
-    spawn(async move {
-        if let Some(id) = app {
-            if CANCEL_RESTORE.get().is_some() {
-                info!("skipping prev app restore");
-            } else {
-                App::open(&id).await.ok();
-            }
-        }
-        System::hide_launcher_window(&window());
-        // reset only after window is hidden to keep LauncherApps conditional stable
-        group.set(None);
-    });
+    let mut group: Signal<Option<Group>> = consume_context();
+    group.set(None); // reset only after window is hidden to keep LauncherApps conditional stable
 }
 
 #[component]
 fn Window() -> Element {
     let mut group: Signal<Option<Group>> = use_context_provider(|| Signal::new(None));
-    let mut prev_app: Signal<Option<String>> = use_context_provider(|| Signal::new(None));
 
     let set_launcher_window = use_listener(Callback::new(move |new_group: Group| {
-        let current = System::current_app().ok().flatten();
-        info!(
-            "showing launcher for group {}, prev_app={current:?}",
-            new_group.name
-        );
-        set_launcher_position(&current, &new_group);
-        prev_app.set(current);
+        info!("showing launcher for group {}", new_group.name);
+        set_launcher_position(&new_group);
         group.set(Some(new_group));
-        CANCEL_RESTORE.set(None); // reset for new dialog
         System::show_launcher_window(&window());
     }));
-
     use_hook(|| {
         System::configure_launcher_window(&window());
         LAUNCHER_WINDOW.set(Some(set_launcher_window));
@@ -106,12 +85,13 @@ fn Window() -> Element {
     rsx! {
         document::Link { rel: "stylesheet", href: asset!("../../components/sidebar/style.css") }
         if let Some(group) = group() {
-            LauncherApps { group, prev_app }
+            LauncherApps { group }
         }
     }
 }
 
-fn set_launcher_position(current: &Option<String>, group: &Group) {
+fn set_launcher_position(group: &Group) {
+    let current = System::current_app().ok().flatten();
     let (x, y, w, h) = current
         .as_ref()
         .filter(|id| group.apps().iter().any(|a| a.id() == **id))

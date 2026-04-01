@@ -7,7 +7,7 @@ use uuid::Uuid;
 
 use crate::models::{Action, Config, Group, Hotkey, HotkeyEvent};
 use crate::services::{ActionService, ConfigReader, ConfigService, GroupService};
-use crate::ui::launcher::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE};
+use crate::ui::launcher::launcher_state::ACTIVE_LAUNCHER;
 use crate::ui::launcher::{HoldToLaunch, show_launcher, use_hold_to_launch};
 use crate::ui::util::use_listener;
 
@@ -49,7 +49,6 @@ fn dispatch_hotkey(
     {
         let _ = tx.unbounded_send(());
     } else {
-        CANCEL_RESTORE.set(Some(()));
         spawn(async move {
             action_service.execute(&event.action).await;
         });
