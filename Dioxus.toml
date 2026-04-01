@@ -6,3 +6,7 @@ default_platform = "desktop"
 identifier = "dev.brodmo.groupctrl"
 publisher = "Moritz Brödel"
 icon = ["assets/icons/icon.icns"]
+
+# TODO this doesn't end up in the right bundle
+[macos.plist]
+LSUIElement = true
