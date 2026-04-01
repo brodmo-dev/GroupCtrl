@@ -6,6 +6,9 @@ mod services;
 mod ui;
 mod util;
 
+use dioxus::desktop::tao::event_loop::EventLoopBuilder;
+#[cfg(target_os = "macos")]
+use dioxus::desktop::tao::platform::macos::{ActivationPolicy, EventLoopExtMacOS};
 use dioxus::desktop::{Config, LogicalSize, WindowBuilder, WindowCloseBehaviour};
 use dioxus::prelude::*;
 use simplelog::*;
@@ -85,9 +88,13 @@ fn main() {
         .with_max_inner_size(max_size)
         .with_title("GroupCtrl");
 
+    let mut event_loop = EventLoopBuilder::with_user_event().build();
+    #[cfg(target_os = "macos")]
+    event_loop.set_activation_policy(ActivationPolicy::Accessory);
     LaunchBuilder::desktop()
         .with_cfg(
             Config::new()
+                .with_event_loop(event_loop)
                 .with_window(window)
                 .with_menu(None)
                 .with_custom_head(head)

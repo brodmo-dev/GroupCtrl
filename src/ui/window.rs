@@ -33,6 +33,7 @@ pub fn Window() -> Element {
     // for opening the config pane via Spotlight
     use_wry_event_handler(move |event, _| {
         if matches!(event, Event::Reopen { .. }) {
+            System::configure_window();
             window().set_visible(true);
             window().set_focus();
         }
