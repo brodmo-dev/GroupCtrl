@@ -1,4 +1,6 @@
 use dioxus::desktop::tao::event::{Event, WindowEvent};
+#[cfg(target_os = "macos")]
+use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
 use dioxus::desktop::{
     Config, LogicalPosition, LogicalSize, WindowBuilder, WindowCloseBehaviour,
     use_wry_event_handler, window,
@@ -7,9 +9,9 @@ use dioxus::prelude::*;
 use log::{info, warn};
 
 use super::launcher_apps::LauncherApps;
-use super::launcher_state::{ACTIVE_LAUNCHER, CANCEL_RESTORE, LAUNCHER_WINDOW};
+use super::launcher_state::{ACTIVE_LAUNCHER, LAUNCHER_WINDOW};
 use crate::models::{Group, Identifiable};
-use crate::os::{App, AppQuery, FocusedScreen, Openable, System};
+use crate::os::{AppQuery, FocusedScreen, System};
 use crate::ui::util::use_listener;
 
 const WIDTH: f64 = 250.0;
@@ -47,21 +49,14 @@ pub fn show_launcher(group: Group) {
 pub(super) fn close() {
     let mut group: Signal<Option<Group>> = consume_context();
     let mut prev_app: Signal<Option<String>> = consume_context();
-    let app = prev_app.peek().clone();
     prev_app.set(None);
     ACTIVE_LAUNCHER.set(None);
-    spawn(async move {
-        if let Some(id) = app {
-            if CANCEL_RESTORE.get().is_some() {
-                info!("skipping prev app restore");
-            } else {
-                App::open(&id).await.ok();
-            }
-        }
-        window().set_visible(false);
-        // reset only after window is hidden to keep LauncherApps conditional stable
-        group.set(None);
-    });
+    #[cfg(target_os = "macos")]
+    crate::os::launcher_panel::hide_panel(window().window.ns_window());
+    #[cfg(not(target_os = "macos"))]
+    window().set_visible(false);
+    // reset only after window is hidden to keep LauncherApps conditional stable
+    group.set(None);
 }
 
 #[component]
@@ -78,12 +73,21 @@ fn Window() -> Element {
         set_launcher_position(&current, &new_group);
         prev_app.set(current);
         group.set(Some(new_group));
-        CANCEL_RESTORE.set(None); // reset for new dialog
-        window().set_visible(true);
-        window().set_focus();
+        #[cfg(target_os = "macos")]
+        crate::os::launcher_panel::show_panel(
+            window().window.ns_window(),
+            window().window.ns_view(),
+        );
+        #[cfg(not(target_os = "macos"))]
+        {
+            window().set_visible(true);
+            window().set_focus();
+        }
     }));
 
     use_hook(|| {
+        #[cfg(target_os = "macos")]
+        crate::os::launcher_panel::configure_as_panel(window().window.ns_window());
         LAUNCHER_WINDOW.set(Some(set_launcher_window));
     });
 

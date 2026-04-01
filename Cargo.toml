@@ -26,7 +26,7 @@ tokio = { version = "1", features = ["time"] }
 objc2 = "0.6.3"
 block2 = "0.6.2"
 objc2-foundation = { version = "0.3.2", features = ["NSString", "NSURL", "NSError", "NSDictionary", "NSNotification", "NSOperation", "NSData", "NSFileManager", "NSArray"] }
-objc2-app-kit = { version = "0.3.2", features = ["NSWorkspace", "NSBitmapImageRep", "NSImage", "objc2-core-graphics", "NSScreen"] }
+objc2-app-kit = { version = "0.3.2", features = ["NSWorkspace", "NSBitmapImageRep", "NSImage", "objc2-core-graphics", "NSScreen", "NSWindow", "NSApplication", "NSResponder", "NSPanel"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 windows = { version = "0.62.2", features = ["Win32", "Win32_UI", "Win32_UI_WindowsAndMessaging", "Win32_System", "Win32_System_Threading"] }
