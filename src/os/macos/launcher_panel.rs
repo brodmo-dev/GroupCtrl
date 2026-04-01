@@ -1,11 +1,12 @@
 use std::ffi::CStr;
 use std::sync::LazyLock;
 
+use dioxus::desktop::DesktopContext;
 use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
 use objc2::ffi::object_setClass;
 use objc2::runtime::{AnyClass, AnyObject, Bool, ClassBuilder, Sel};
 use objc2::sel;
-use objc2_app_kit::{NSFloatingWindowLevel, NSPanel, NSResponder, NSWindowStyleMask};
+use objc2_app_kit::{NSFloatingWindowLevel, NSPanel, NSWindowStyleMask};
 
 use super::System;
 use crate::os::traits::LauncherWindow;
@@ -30,31 +31,30 @@ extern "C-unwind" fn can_become_key_window(_this: *mut AnyObject, _sel: Sel) -> 
     Bool::YES
 }
 
+fn ns_panel(window: &DesktopContext) -> &NSPanel {
+    unsafe { &*(window.window.ns_window() as *const NSPanel) }
+}
+
 impl LauncherWindow for System {
-    fn configure_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let ns_window_ptr = window.window.ns_window();
+    fn configure_launcher_window(window: &DesktopContext) {
         // Isa-swizzle to our custom class (registers on first access via LazyLock)
         unsafe {
             object_setClass(
-                ns_window_ptr as *mut _,
+                window.window.ns_window() as *mut _,
                 *LAUNCHER_PANEL_CLASS as *const _ as *mut _,
             )
         };
-        let panel = unsafe { &*(ns_window_ptr as *const NSPanel) };
+        let panel = ns_panel(window);
         let mask = panel.styleMask().0 | NSWindowStyleMask::NonactivatingPanel.0;
         panel.setStyleMask(NSWindowStyleMask(mask));
         panel.setLevel(NSFloatingWindowLevel);
     }
 
-    fn show_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let panel = unsafe { &*(window.window.ns_window() as *const NSPanel) };
-        let view = unsafe { &*(window.window.ns_view() as *const NSResponder) };
-        panel.makeKeyAndOrderFront(None);
-        panel.makeFirstResponder(Some(view));
+    fn show_launcher_window(window: &DesktopContext) {
+        ns_panel(window).makeKeyAndOrderFront(None);
     }
 
-    fn hide_launcher_window(window: &dioxus::desktop::DesktopContext) {
-        let panel = unsafe { &*(window.window.ns_window() as *const NSPanel) };
-        panel.orderOut(None);
+    fn hide_launcher_window(window: &DesktopContext) {
+        ns_panel(window).orderOut(None);
     }
 }
