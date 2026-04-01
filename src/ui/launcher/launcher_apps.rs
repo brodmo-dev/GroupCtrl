@@ -14,8 +14,8 @@ pub(super) fn LauncherApps(group: Group) -> Element {
         let id = app.id();
         spawn(async move {
             let _ = App::open(&id).await;
+            close();
         });
-        close();
     };
 
     // Dioxus serializes ScrollToOptions with wrong field names (vertical/horizontal
