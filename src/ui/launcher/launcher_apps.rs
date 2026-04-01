@@ -1,5 +1,5 @@
 use dioxus::prelude::*;
-use lucide_dioxus::CornerDownLeft;
+use lucide_dioxus::{CornerDownLeft, LoaderCircle};
 
 use super::launcher_state::ACTIVE_LAUNCHER;
 use super::show_launcher::close;
@@ -10,8 +10,13 @@ use crate::util::is_modifier;
 
 #[component]
 pub(super) fn LauncherApps(group: Group) -> Element {
-    let open = move |app: App| {
+    let mut opening = use_signal(|| None::<String>);
+    let mut open = move |app: App| {
+        if opening().is_some() {
+            return;
+        }
         let id = app.id();
+        opening.set(Some(id.clone()));
         spawn(async move {
             let _ = App::open(&id).await;
             close();
@@ -39,6 +44,7 @@ pub(super) fn LauncherApps(group: Group) -> Element {
     if launch_apps.is_empty() {
         return rsx! { NoApps { message: "All apps already running" } };
     }
+
     let mut selected_idx = use_signal(|| 0usize);
     let len = launch_apps.len();
     let mut navigate = move |to: usize| {
@@ -49,19 +55,18 @@ pub(super) fn LauncherApps(group: Group) -> Element {
     let mut select_prev = move || navigate(selected_idx().checked_sub(1).unwrap_or(len - 1));
     let launcher_cycle = use_listener(Callback::new(move |()| select_next()));
     use_hook(|| ACTIVE_LAUNCHER.set(Some((launcher_cycle, group.id()))));
-    let onkeydown = {
-        let my_apps = launch_apps.clone();
-        move |evt: KeyboardEvent| match evt.key() {
-            Key::ArrowDown => select_next(),
-            Key::Character(c) if c == "j" => select_next(),
-            Key::ArrowUp => select_prev(),
-            Key::Character(c) if c == "k" => select_prev(),
-            Key::Enter => open(my_apps[selected_idx()].clone()),
-            Key::Escape => close(),
-            // this checks the hardware key so could lead to inconsistent behavior
-            _ if is_modifier(&evt.code()) => {}
-            _ => close(),
-        }
+
+    let my_apps = launch_apps.clone();
+    let onkeydown = move |evt: KeyboardEvent| match evt.key() {
+        Key::ArrowDown => select_next(),
+        Key::Character(c) if c == "j" => select_next(),
+        Key::ArrowUp => select_prev(),
+        Key::Character(c) if c == "k" => select_prev(),
+        Key::Enter => open(my_apps[selected_idx()].clone()),
+        Key::Escape => close(),
+        // this checks the hardware key so could lead to inconsistent behavior
+        _ if is_modifier(&evt.code()) => {}
+        _ => close(),
     };
 
     rsx! {
@@ -83,6 +88,7 @@ pub(super) fn LauncherApps(group: Group) -> Element {
                             AppRow {
                                 app: app.clone(),
                                 is_selected: selected_idx() == i,
+                                is_opening: opening().as_ref() == Some(&app.id()),
                                 onclick: move |_| open(app.clone()),
                             }
                         }
@@ -94,7 +100,12 @@ pub(super) fn LauncherApps(group: Group) -> Element {
 }
 
 #[component]
-fn AppRow(app: App, is_selected: bool, onclick: EventHandler<MouseEvent>) -> Element {
+fn AppRow(
+    app: App,
+    is_selected: bool,
+    is_opening: bool,
+    onclick: EventHandler<MouseEvent>,
+) -> Element {
     rsx! {
         button {
             class: "sidebar-menu-button scroll-m-1",
@@ -103,7 +114,12 @@ fn AppRow(app: App, is_selected: bool, onclick: EventHandler<MouseEvent>) -> Ele
             "data-active": is_selected,
             onclick,
             AppLabel { app: app.clone() }
-            if is_selected {
+            if is_opening {
+                LoaderCircle {
+                    class: "ml-auto !size-3 animate-spin",
+                    color: "var(--muted-text)"
+                }
+            } else if is_selected {
                 CornerDownLeft {
                     class: "ml-auto !size-3",
                     color: "var(--muted-text)",
