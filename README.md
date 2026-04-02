@@ -3,7 +3,7 @@
   GroupCtrl
 </h1>
 
-Instant app switching exactly how you set it up. Share hotkeys via app groups
+Instant app switching exactly how you set it up
 
 <img alt="GroupCtrl screenshot" src="assets/screenshot.png?v=4" width="500">
 
@@ -16,8 +16,6 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 - **Shared hotkeys** – Group related apps and assign a single hotkey to them
 - **App launcher** – Hold a group hotkey to launch apps that aren't running
 - **Text config** – Easy to manually edit and version-control, if you're so inclined
-
-<!--- With the launcher open, hit to cycle which app to launch, enter to confirm. --->
 
 ## Tips
 
