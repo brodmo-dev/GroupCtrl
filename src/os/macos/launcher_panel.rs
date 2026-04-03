@@ -6,7 +6,7 @@ use dioxus::desktop::tao::platform::macos::WindowExtMacOS;
 use objc2::ffi::object_setClass;
 use objc2::runtime::{AnyClass, AnyObject, Bool, ClassBuilder, Sel};
 use objc2::sel;
-use objc2_app_kit::{NSFloatingWindowLevel, NSPanel, NSWindowStyleMask};
+use objc2_app_kit::{NSModalPanelWindowLevel, NSPanel, NSWindowStyleMask};
 
 use super::System;
 use crate::os::traits::LauncherWindow;
@@ -47,7 +47,7 @@ impl LauncherWindow for System {
         let panel = ns_panel(window);
         let mask = panel.styleMask().0 | NSWindowStyleMask::NonactivatingPanel.0;
         panel.setStyleMask(NSWindowStyleMask(mask));
-        panel.setLevel(NSFloatingWindowLevel);
+        panel.setLevel(NSModalPanelWindowLevel);
     }
 
     fn show_launcher_window(window: &DesktopContext) {

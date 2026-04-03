@@ -23,7 +23,6 @@ pub fn create_launcher_window() {
                 .with_visible(false)
                 .with_decorations(false)
                 .with_transparent(true)
-                .with_always_on_top(true)
                 .with_resizable(false)
                 .with_inner_size(LogicalSize::new(WIDTH, MAX_HEIGHT)),
         )
