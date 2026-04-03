@@ -5,7 +5,7 @@
 
 Instant app switching exactly how you set it up
 
-![GroupCtrl demo](assets/demo-2.gif)
+![GroupCtrl demo](assets/demo-3.gif)
 
 `brew install brodmo/tap/groupctrl` or
 download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest)
