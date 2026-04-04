@@ -3,7 +3,7 @@
   GroupCtrl
 </h1>
 
-Instant hotkey app switching exactly how you set it up
+Gain control over your apps with hotkeys for app groups
 
 ![GroupCtrl demo](assets/demo.gif)
 
