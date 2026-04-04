@@ -3,7 +3,7 @@
   GroupCtrl
 </h1>
 
-Instant app switching exactly how you set it up
+Instant hotkey app switching exactly how you set it up
 
 ![GroupCtrl demo](assets/demo.gif)
 
