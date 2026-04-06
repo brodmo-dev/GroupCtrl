@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024">
+    <style>
+        @font-face {
+            font-family: 'Bungee';
+            src: url('data:font/woff2;base64,d09GMgABAAAAAAMYABEAAAAABlwAAAK/AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhgbgR4cSgZgADwRCAqCFIF9ATYCJAMQCwoABCAFgw4HIAwHFyQYEBsTBQAehXHDXYIyxeKAiGixf35E1BrZs7ePoBAkCYPuhUMFFFJxxBrIxahUjInwEfqj70rXNjnEJI9K3lDRI49ph1cmJUNlojUVHZRi/V9YS3rimvzf9vcCKfpgMbCJdFOWzTrABjbeRCo1z5ttONuWZFjBJkjX8gw2/vvTgn5ARCOIoNcKN+S+T1AUyNxLZ0pARoWWgii32bgEZB4X4hJQAiIIik7rSES3YpwY9mkglIxQEyq6dwNCwgk6GgxGf0JZltBgdP9WGgcxzKveZLdYC9fq2rDSCx2Uj2QcgIP5JDkFOhYcEV/E2Q2mYJuvlObn7x50PkTjQCB35DUwB6GgwTgkGCdkDehURWGJt5B4++d/9n2ItAyBCrrR4AS4D0AFRGRmWk9Wqv2RQC1PkpId4LmERDt4LilJtKzlluexieN7Z/Cwkx3t+FGJqHmdhL6+8b5P43EjvJj2cLUqFJEem+T5YM8rdGysysyzy5ukG78MDGpa3rUz/WZrlT6CDMNlJtcAjP8W1q+orW/40yNrK9eMTMM221vBlEZOc++FxtiB7dYGy348UwrZ5olOds7mCepOIdlqn42Tld6UfnTy+9kAQeH11KdHqbJO/8UQegX8e7JVUE9lfid+ikQHRLIAdCogvBpHx4cd+O+4OrLBGetqYVbZ51BOsfAj9hConhB1TkgAQCPocghJFQe+AExFvy9UMegX1dg0TVVTXqgOE/7u02kqajyVKlMDy5crD4NCs0Fjo0QJkF3qQaBErmzjhsFKFZgzY36hOwFGnlJYBYqJPAxGmQoOrFnLlY+RRyCDlUylilnLUgDDMlhnGTSVYyJkyyVQJB1Gs2LjrY4coxTHNsQyqvE5H+WLkX3umnylSlAytM/qRpy89rBpt9/Ef9O1CzKMuPuTAh0/fz50CpF3IB+D0oDObA9KBE8A') format('woff2');
+        }
+    </style>
     <rect width="1024" height="1024" rx="224" ry="224" fill="#282c34"/>
     <g transform="translate(120, 790)">
         <text
