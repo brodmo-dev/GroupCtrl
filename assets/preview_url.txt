@@ -1,0 +1,1 @@
+https://socialify.git.ci/brodmo/GroupCtrl?custom_description=fast%20%26%20intentional%20app%20switcher%20for%20macOS&description=1&font=Inter&logo=https%3A%2F%2Fraw.githubusercontent.com%2Fbrodmo%2FGroupCtrl%2F2f5b7af4cc16b4942fc2f4fecc748c40a9877642%2Fassets%2Ficons%2Ficon.svg&name=1&owner=1&pattern=Diagonal%20Stripes&theme=Light
