@@ -30,6 +30,10 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 - `Cmd+Backtick` to switch between windows of an app
 - `F11` to show desktop
 
+## Privacy
+
+GroupCtrl is 100% offline and does not gather any user data.
+
 ## Alternatives
 
 - [rcmd](https://lowtechguys.com/rcmd/) – Similar functionality, but shared hotkeys aren't practical
