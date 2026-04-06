@@ -1,25 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">
-    <style>
-        @font-face {
-            font-family: 'Bungee';
-            src: url('data:font/woff2;base64,d09GMgABAAAAAAMYABEAAAAABlwAAAK/AAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhgbgR4cSgZgADwRCAqCFIF9ATYCJAMQCwoABCAFgw4HIAwHFyQYEBsTBQAehXHDXYIyxeKAiGixf35E1BrZs7ePoBAkCYPuhUMFFFJxxBrIxahUjInwEfqj70rXNjnEJI9K3lDRI49ph1cmJUNlojUVHZRi/V9YS3rimvzf9vcCKfpgMbCJdFOWzTrABjbeRCo1z5ttONuWZFjBJkjX8gw2/vvTgn5ARCOIoNcKN+S+T1AUyNxLZ0pARoWWgii32bgEZB4X4hJQAiIIik7rSES3YpwY9mkglIxQEyq6dwNCwgk6GgxGf0JZltBgdP9WGgcxzKveZLdYC9fq2rDSCx2Uj2QcgIP5JDkFOhYcEV/E2Q2mYJuvlObn7x50PkTjQCB35DUwB6GgwTgkGCdkDehURWGJt5B4++d/9n2ItAyBCrrR4AS4D0AFRGRmWk9Wqv2RQC1PkpId4LmERDt4LilJtKzlluexieN7Z/Cwkx3t+FGJqHmdhL6+8b5P43EjvJj2cLUqFJEem+T5YM8rdGysysyzy5ukG78MDGpa3rUz/WZrlT6CDMNlJtcAjP8W1q+orW/40yNrK9eMTMM221vBlEZOc++FxtiB7dYGy348UwrZ5olOds7mCepOIdlqn42Tld6UfnTy+9kAQeH11KdHqbJO/8UQegX8e7JVUE9lfid+ikQHRLIAdCogvBpHx4cd+O+4OrLBGetqYVbZ51BOsfAj9hConhB1TkgAQCPocghJFQe+AExFvy9UMegX1dg0TVVTXqgOE/7u02kqajyVKlMDy5crD4NCs0Fjo0QJkF3qQaBErmzjhsFKFZgzY36hOwFGnlJYBYqJPAxGmQoOrFnLlY+RRyCDlUylilnLUgDDMlhnGTSVYyJkyyVQJB1Gs2LjrY4coxTHNsQyqvE5H+WLkX3umnylSlAytM/qRpy89rBpt9/Ef9O1CzKMuPuTAh0/fz50CpF3IB+D0oDObA9KBE8A') format('woff2');
-        }
-    </style>
-    <g transform="translate(0, 108) scale(0.16)">
-        <text
-                x="0" y="0" font-size="700"
-                font-family="Bungee" fill="black"
-        >G
-        </text>
-        <text
-                x="460" y="-230" font-size="500"
-                font-family="Bungee" fill="black"
-        >^
-        </text>
-    </g>
-    <!-- for development only -->
-    <!--    <rect-->
-    <!--            width="128" height="128"-->
-    <!--            fill="none" stroke="white" stroke-width="2"-->
-    <!--    />-->
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="128"
+   height="128"
+   version="1.1"
+   id="svg2"
+   sodipodi:docname="tray-icon.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2" />
+  <sodipodi:namedview
+     id="namedview2"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
+  <g
+     transform="translate(0, 108) scale(0.16)"
+     id="g2">
+    <path
+       d="M 433.3,0 H 212.8 q -88.2,0 -130.2,-35 -42,-35 -42,-107.8 v -218.4 q 0,-72.8 42,-107.8 42,-35 130.2,-35 h 175 q 25.2,0 25.2,25.2 v 84.7 q 0,25.2 -25.2,25.2 H 242.2 q -42.7,0 -42.7,35 v 167.3 q 0,34.3 32.2,34.3 h 67.9 v -109.2 q 0,-25.2 25.2,-25.2 h 108.5 q 25.2,0 25.2,25.2 V -25.2 Q 458.5,0 433.3,0 Z"
+       id="text1"
+       style="font-size:700px;font-family:Bungee"
+       aria-label="G" />
+    <path
+       d="m 480,-334 54,-190.5 q 6,-21 14.5,-35 8.5,-14.5 23.5,-21.5 15,-7.5 39.5,-7.5 H 648 q 25,0 39.5,7.5 14.5,7 23,21.5 9,14 15,35 l 54,190.5 q 3.5,18 -15,18 l -66,0.5 Q 680,-315 678,-333 l -39,-144.5 q -1,-5.5 -3,-7 -1.5,-2 -6,-1.5 -5,-0.5 -7,1.5 -1.5,1.5 -2.5,7 l -39,144.5 q -2,18 -20.5,17.5 l -66,-0.5 q -18.5,0 -15,-18 z"
+       id="text2"
+       style="font-size:500px;font-family:Bungee"
+       aria-label="^" />
+  </g>
+  <!-- for development only -->
+  <!--    <rect-->
+  <!--            width="128" height="128"-->
+  <!--            fill="none" stroke="white" stroke-width="2"-->
+  <!--    />-->
 </svg>

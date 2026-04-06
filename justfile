@@ -42,9 +42,14 @@ rename-dmg arch:
     mv "target/GroupCtrl {{ version }}.dmg" "target/GroupCtrl-{{ version }}-{{ arch }}.dmg"
 
 [working-directory('assets/icons')]
+icon-dev:
+    # generate outlined versions that don't depend on system font
+    inkscape icon-dev.svg --export-text-to-path --export-type=svg --export-filename=icon.svg
+    inkscape tray-icon-dev.svg --export-text-to-path --export-type=svg --export-filename=tray-icon.svg
+
+[working-directory('assets/icons')]
 icon:
     rsvg-convert tray-icon.svg | magick png:- tray-icon.rgba
-    resvg -w 128 icon.svg icon.png
     mkdir -p icon.iconset
     for size in 16 32 128 256 512; do \
         rsvg-convert -w $size       icon.svg -o icon.iconset/icon_${size}x${size}.png; \
