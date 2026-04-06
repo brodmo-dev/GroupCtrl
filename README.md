@@ -22,7 +22,20 @@ download from [Releases](https://github.com/brodmo-dev/GroupCtrl/releases/latest
 - Add GroupCtrl to `Open at Login` in System Settings
 - Use [Hyperkey](https://hyperkey.app/) or [Karabiner](https://karabiner-elements.pqrs.org/)
   to map Caps Lock to `Cmd+Opt+Control`
-- Config path is `~/.config/groupctrl/config.yaml`
+- Config path is `~/.config/groupctrl/config.yaml`. It looks like this:
+  ```yaml
+  groups:
+  - name: Files
+    hotkey: Cmd+Opt+Ctrl+F
+    apps:
+    - com.apple.finder
+    - com.apple.Preview
+    - com.sublimetext.4
+  - name: Terminal
+    hotkey: Cmd+Opt+Ctrl+T
+    apps:
+    - com.apple.Terminal
+  ```
 
 ### Useful macOS shortcuts
 
