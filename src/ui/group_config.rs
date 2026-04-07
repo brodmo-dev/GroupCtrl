@@ -56,7 +56,7 @@ pub fn GroupConfig(
 
     rsx! {
         div {
-            class: "flex flex-col flex-1 gap-2 p-2 text-sm",
+            class: "flex flex-col flex-1 min-h-0 gap-2 p-2 text-sm",
             EditableText {
                 text: name,
                 placeholder: "Enter group name...".to_string(),
